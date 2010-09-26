@@ -62,3 +62,9 @@ Any forks and stuff are welcome.
 ##License##
 
 All of the yepnope specific code is under the WTFPL license. However, LABjs is subject to it's own license (currently BSD or MIT)
+
+##Thanks##
+
+Kyle Simpson - He is the creator of LABjs of which is fantastic. All of the _actual_ loading in yepnope uses LABjs under the covers, so that's all him.
+
+Paul Irish - Thanks or whatever.
