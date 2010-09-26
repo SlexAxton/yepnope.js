@@ -1,5 +1,7 @@
 /**
  * Yepnope JS
+ * 
+ * Version 0.1.1
  *
  * by Alex Sexton - @SlexAxton
  *
@@ -47,7 +49,7 @@ window.yepnope = function(needs, currentLabChain){
       // start the chain as a plain instance
       labChain = currentLabChain || $LAB;
   
-  function loadScriptOrStyle (inc, callback, labChain) {
+  function loadScriptOrStyle (inc, callback, labChain, testResult) {
     var incLen    = inc.length,
         forceCss  = (inc.substr(0,4) === 'css!');
     
@@ -73,7 +75,7 @@ window.yepnope = function(needs, currentLabChain){
       
       // call the callback
       if (callback) {
-        callback(origInc);
+        callback(origInc, testResult);
       }
     }
     // Otherwise assume that it's a script
@@ -85,7 +87,7 @@ window.yepnope = function(needs, currentLabChain){
       if (callback) {
         labChain = labChain.wait(function(){
           // pass the callback the unique loaded script
-          callback(inc);
+          callback(inc, testResult);
         });
       }
     }
@@ -94,19 +96,20 @@ window.yepnope = function(needs, currentLabChain){
   }
   
   function loadFromTestObject(testObject, labChain) {
-      var needGroup = (testObject.test) ? testObject.yep : testObject.nope;
+      var testResult = !!(testObject.test),
+          needGroup = (testResult) ? testObject.yep : testObject.nope;
       
       // If it's a string
       if (test.isString(needGroup)) {
         // Just load the script of style
-        labChain = loadScriptOrStyle(needGroup, testObject.callback, labChain);
+        labChain = loadScriptOrStyle(needGroup, testObject.callback, labChain, testResult);
       }
       // If it's an array
       else if (test.isArray(needGroup)) {
         // Grab each thing out of it
         for (var i = 0; i < needGroup.length; i++) {
           // Load each thing
-          labChain = loadScriptOrStyle(needGroup[i], testObject.callback, labChain);
+          labChain = loadScriptOrStyle(needGroup[i], testObject.callback, labChain, testResult);
         }
       }
       
@@ -118,14 +121,14 @@ window.yepnope = function(needs, currentLabChain){
       // get anything in the load object as well
       if (test.isString(testObject.load)) {
         // Just load the script of style
-        labChain = loadScriptOrStyle(testObject.load, testObject.callback, labChain);
+        labChain = loadScriptOrStyle(testObject.load, testObject.callback, labChain, testResult);
       }
       // If it's an array
       else if (test.isArray(testObject.load)) {
         // Grab each thing out of it
         for (var i = 0; i < testObject.load.length; i++) {
           // Load each thing
-          labChain = loadScriptOrStyle(testObject.load[i], testObject.callback, labChain);
+          labChain = loadScriptOrStyle(testObject.load[i], testObject.callback, labChain, testResult);
         }
       }
       

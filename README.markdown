@@ -1,5 +1,7 @@
 #Yepnope JS#
 
+Regressive Enhancement With Style.
+
 A small wrapper around LABjs to help use feature detection to load exactly the scripts that your _user_ needs, not just all the scripts that you _think_ they might need.
 
 A simple example (assuming modernizr is there):
@@ -7,8 +9,8 @@ A simple example (assuming modernizr is there):
     yepnope([
       {
         test : Modernizr.indexeddb,
-        yep  : ['/indexeddb-wrapper.js', 'coolbrowser.css'],
-        nope : ['/js/lawnchair.js', '/js/cookies.js', '/css/oldbrowser.css']
+        yep  : ['/js/indexeddb-wrapper.js', '/css/coolbrowser.css'],
+        nope : ['/js/polyfills/lawnchair.js', '/js/cookies.js', '/css/oldbrowser.css']
       }
     ]);
 
@@ -46,12 +48,12 @@ A crazy/contrived example:
         both: 'http://www.json.org/json2.js',
         
         // For each thing loaded
-        callback: function(id) {
+        callback: function(id, testResult) {
           
           // check for the load of json2, specifically
           if (id === 'http://www.json.org/json2.js') {
             window.alert = window.oldalert;
-            console.log('bypassed crock\'s alert in json2 yo');
+            console.log('bypassed crock\'s alert in json2 yo, because the test result was: ', testResult);
           }
         }
       }
