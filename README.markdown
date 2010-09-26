@@ -61,6 +61,10 @@ A crazy/contrived example:
 
 Any forks and stuff are welcome.
 
+##Current Version##
+
+0.1.1
+
 ##License##
 
 All of the yepnope specific code is under the WTFPL license. However, LABjs is subject to it's own license (currently BSD or MIT)
