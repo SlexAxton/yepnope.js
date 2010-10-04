@@ -63,7 +63,7 @@ Any forks and stuff are welcome.
 
 ##Current Version##
 
-0.1.1
+0.1.2
 
 ##License##
 
