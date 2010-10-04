@@ -1,0 +1,3 @@
+.test1b:after {
+ content: " | 1b CSS loaded.";
+}
