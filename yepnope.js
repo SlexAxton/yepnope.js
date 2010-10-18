@@ -13,6 +13,7 @@
 // Save old $LAB value
 var $LAB,
     old$LAB = window.$LAB,
+    toString = {}.toString,
     test = {
       isArray: Array.isArray || function( obj ) {
         return toString.call(obj) == "[object Array]";  
