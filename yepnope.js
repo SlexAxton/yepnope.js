@@ -15,7 +15,7 @@ var $LAB,
     old$LAB = window.$LAB,
     test = {
       isArray: Array.isArray || function( obj ) {
-	return jQuery.type(obj) === "array";
+        return toString.call(obj) == "[object Array]";  
       },
       isObject: function(obj) {
         // Lame object detection, but don't pass it stupid stuff?
