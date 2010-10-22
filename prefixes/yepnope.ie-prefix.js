@@ -103,7 +103,7 @@
   for (i in iePrefixes) {
     if (hasOwnProperty(iePrefixes, i)) {
       // add each prefix
-      yepnope.addPrefix(iePrefixes[i], function(resource){
+      yepnope.addPrefix(i, function(resource){
         // if they all all fail, set a bypass flag
         if (!checkAllIEPrefixes(resource)) {
           resource.bypass = true;
