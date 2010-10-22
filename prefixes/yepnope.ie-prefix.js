@@ -81,7 +81,6 @@
   },
   checkAllIEPrefixes = function(resource) {
     var prefixes = resource.prefixes,
-        uniq     = prefixes.join(''),
         pfx, k;
     
     // go through all other prefixes
