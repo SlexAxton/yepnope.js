@@ -35,13 +35,12 @@ A crazy/contrived example:
         // The test
         test: Modernizr.csstransforms && Modernizr.csstransforms3d,
         
-        // If it passes
-        yep: 'css!http://yayquery.com/css/base.css?supports3d=true',
+        // If it passes, 'yep' is completely optional, so let's not load anything...
         
         // If it fails
         nope: [
           'http://github.com/madrobby/vapor.js/raw/master/vapor.min.js',
-          'css!http://yayquery.com/css/base.css?supports3d=false'
+          'css!http://yayquery.com/css/base.css?supports3d=false' //prefix with css! if it doesn't end in .css
         ],
         
         // Load it no matter what
@@ -63,7 +62,7 @@ Any forks and stuff are welcome.
 
 ##Current Version##
 
-0.1.2
+0.2.0 alpha  (Note LABjs is in a bit of flux with some new browsers, so check the labjs repo for changes there. I'll keep on top of it as well.)
 
 ##License##
 
