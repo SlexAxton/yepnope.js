@@ -90,7 +90,7 @@ window.yepnope = function(needs, currentLabChain){
     var resource = satisfyPrefixes(input);
 
     // if no object is returned or the url is empty/false just exit the load
-    if (!resource || !resource.url) {
+    if (!resource || !resource.url || resource.bypass) {
       return labChain;
     }
     
