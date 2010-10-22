@@ -9,12 +9,14 @@
  *
  * Feature-test driven script loader on top of LABJS
  */
-(function(window, doc, undefined){
+(function(window, doc, undef){
 // Save old $LAB value
 var $LAB,
-    old$LAB = window.$LAB,
+    old$LAB  = window.$LAB,
+    docHead  = doc.getElementsByTagName("head")[0] || doc.documentElement,
+    docFirst = docHead.firstChild,
     toString = {}.toString,
-    test = {
+    test     = {
       isArray: Array.isArray || function( obj ) {
         return toString.call(obj) == "[object Array]";  
       },
@@ -64,14 +66,14 @@ window.yepnope = function(needs, currentLabChain){
           pLen  = parts.length,
           res = {
             url: parts[pLen-1],
-            prefixes: (pLen > 1) ? parts.slice(0, pLen-1) : undefined
+            prefixes: (pLen > 1) ? parts.slice(0, pLen-1) : undef
           },
           mFunc;
 
       // loop through prefixes
       // if there are none, this automatically gets skipped
-      for (var i = 0; i < pLen-1; i++) {
-        mFunc = prefixes[parts[i]];
+      for (var j = 0; j < pLen-1; j++) {
+        mFunc = prefixes[parts[j]];
         if (mFunc) {
           res = mFunc(res);
         }
@@ -101,13 +103,12 @@ window.yepnope = function(needs, currentLabChain){
     
     // if someone is overriding all normal functionality
     if (instead) {
-      return instead(input, callback, labChain, restResult);
+      return instead(input, callback, labChain, testResult);
     }
     // If it's specifically css with the prefix, just inject it (useful for weird extensions and cachebusted urls, etc)
     // Also do this if it ends in a .css extension
     else if (incLen > 4 && (forceCSS || (!forceJS && inc.substr(incLen-4) === '.css'))) {
-      var docHead   = doc.getElementsByTagName("head")[0] || doc.documentElement,
-          styleElem = doc.createElement('link'),
+      var styleElem = doc.createElement('link'),
           origInc   = inc;
       
       // add our src to it
@@ -116,7 +117,7 @@ window.yepnope = function(needs, currentLabChain){
       styleElem.type = 'text/css';
       
       // inject the file
-      docHead.insertBefore(styleElem, docHead.firstChild);
+      docHead.insertBefore(styleElem, docFirst);
       
       // call the callback
       if (callback) {
@@ -155,9 +156,9 @@ window.yepnope = function(needs, currentLabChain){
       // If it's an array
       else if (test.isArray(needGroup)) {
         // Grab each thing out of it
-        for (var i = 0; i < needGroup.length; i++) {
+        for (var l = 0; l < needGroup.length; l++) {
           // Load each thing
-          labChain = loadScriptOrStyle(needGroup[i], testObject.callback, labChain, testResult);
+          labChain = loadScriptOrStyle(needGroup[l], testObject.callback, labChain, testResult);
         }
       }
       
@@ -174,9 +175,9 @@ window.yepnope = function(needs, currentLabChain){
       // If it's an array
       else if (test.isArray(testObject.load)) {
         // Grab each thing out of it
-        for (var i = 0; i < testObject.load.length; i++) {
+        for (var k = 0; k < testObject.load.length; k++) {
           // Load each thing
-          labChain = loadScriptOrStyle(testObject.load[i], testObject.callback, labChain, testResult);
+          labChain = loadScriptOrStyle(testObject.load[k], testObject.callback, labChain, testResult);
         }
       }
       
