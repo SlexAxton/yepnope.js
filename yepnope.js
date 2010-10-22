@@ -83,22 +83,29 @@ window.yepnope = function(needs, currentLabChain){
     return false;
   }
   
-  function loadScriptOrStyle (inc, callback, labChain, testResult) {
+  function loadScriptOrStyle (input, callback, labChain, testResult) {
     // run through our set of prefixes
-    var resource = satisfyPrefixes(inc);
-    console.log(resource);
+    var resource = satisfyPrefixes(input);
+
     // if no object is returned or the url is empty/false just exit the load
     if (!resource || !resource.url) {
       return labChain;
     }
-
-    var inc       = resource.url,
-        incLen    = inc.length,
-        forceCss  = resource.forceCSS; 
     
+    var inc          = resource.url,
+        incLen       = inc.length,
+        instead      = resource.instead,
+        autoCallback = resource.autoCallback,
+        forceJS      = resource.forceJS,
+        forceCSS     = resource.forceCSS; 
+    
+    // if someone is overriding all normal functionality
+    if (instead) {
+      return instead(input, callback, labChain, restResult);
+    }
     // If it's specifically css with the prefix, just inject it (useful for weird extensions and cachebusted urls, etc)
     // Also do this if it ends in a .css extension
-    if (incLen > 4 && (forceCss || inc.substr(incLen-4) === '.css')) {
+    else if (incLen > 4 && (forceCSS || (!forceJS && inc.substr(incLen-4) === '.css'))) {
       var docHead   = doc.getElementsByTagName("head")[0] || doc.documentElement,
           styleElem = doc.createElement('link'),
           origInc   = inc;
@@ -114,6 +121,9 @@ window.yepnope = function(needs, currentLabChain){
       // call the callback
       if (callback) {
         callback(origInc, testResult);
+      }
+      if (autoCallback) {
+        autoCallback(origInc, testResult);
       }
     }
     // Otherwise assume that it's a script
