@@ -159,8 +159,7 @@ with an :after {content: '' } string that shows which style loaded (may not work
 
 // Load jQuery and initialize the demo
 yepnope({
-  test     : window.builtInjQuery,
-  both     : "http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.js",
+  load     : "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js",
   callback : function() {
     Demo.init();
   }

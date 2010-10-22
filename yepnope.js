@@ -9,7 +9,7 @@
  *
  * Feature-test driven script loader on top of LABJS
  */
-(function(window, doc){
+(function(window, doc, undefined){
 // Save old $LAB value
 var $LAB,
     old$LAB = window.$LAB,
@@ -24,6 +24,12 @@ var $LAB,
       },
       isString: function(s) {
         return typeof s == "string";
+      }
+    },
+    prefixes = {
+      'css': function(resource) {
+        resource.forceCSS = true;
+        return resource;
       }
     };
 
@@ -49,10 +55,46 @@ window.yepnope = function(needs, currentLabChain){
       nlen = needs.length,
       // start the chain as a plain instance
       labChain = currentLabChain || $LAB;
+
+  function satisfyPrefixes(url) {
+    // make sure we have a url
+    if (url) {
+      // split all prefixes out
+      var parts = url.split('!'),
+          pLen  = parts.length,
+          res = {
+            url: parts[pLen-1],
+            prefixes: (pLen > 1) ? parts.slice(0, pLen-1) : undefined
+          },
+          mFunc;
+
+      // loop through prefixes
+      // if there are none, this automatically gets skipped
+      for (var i = 0; i < pLen-1; i++) {
+        mFunc = prefixes[parts[i]];
+        if (mFunc) {
+          res = mFunc(res);
+        }
+      }
+
+      // return the final url
+      return res;
+    }
+    return false;
+  }
   
   function loadScriptOrStyle (inc, callback, labChain, testResult) {
-    var incLen    = inc.length,
-        forceCss  = (inc.substr(0,4) === 'css!');
+    // run through our set of prefixes
+    var resource = satisfyPrefixes(inc);
+    console.log(resource);
+    // if no object is returned or the url is empty/false just exit the load
+    if (!resource || !resource.url) {
+      return labChain;
+    }
+
+    var inc       = resource.url,
+        incLen    = inc.length,
+        forceCss  = resource.forceCSS; 
     
     // If it's specifically css with the prefix, just inject it (useful for weird extensions and cachebusted urls, etc)
     // Also do this if it ends in a .css extension
@@ -60,11 +102,6 @@ window.yepnope = function(needs, currentLabChain){
       var docHead   = doc.getElementsByTagName("head")[0] || doc.documentElement,
           styleElem = doc.createElement('link'),
           origInc   = inc;
-      
-      if (forceCss) {
-        // remove the prefix if we found it
-        inc = inc.substr(4);
-      }
       
       // add our src to it
       styleElem.href = inc;
@@ -167,6 +204,10 @@ window.yepnope = function(needs, currentLabChain){
   
   // allow more loading on this chain
   return labChain;
+};
+
+window.yepnope.addPrefix = function(prefix, callback) {
+  prefixes[prefix] = callback;
 };
 
 })(this, this.document);
