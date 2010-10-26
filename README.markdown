@@ -4,7 +4,7 @@ Regressive Enhancement With Style.
 
 A small wrapper around LABjs to help use feature detection to load exactly the scripts that your _user_ needs, not just all the scripts that you _think_ they might need.
 
-A simple example (assuming modernizr is there):
+##A simple example (assuming modernizr is there):##
 
     yepnope([
       {
@@ -14,10 +14,43 @@ A simple example (assuming modernizr is there):
       }
     ]);
 
-A crazy/contrived example:
+##Common Use:##
+
+###The `wait` Flag###
+Forcing a wait between _all_ dependencies. The `wait` flag will ensure all items within the group execute in order, as well as before all subsequent groups.
+In this example: `jquery.js` will execute before anything in the next group, and `googleapis.js` will execute before `needs-googleapis.js`. The `wait` flag is more of a global way to force order.
 
     yepnope([
-      // straight up load
+      {
+        load: 'js/jquery.js',
+        wait: true
+      },
+      {
+        test: Modernizr.geolocation,
+        nope: ['googleapi.js', 'needs-googleapi.js'],
+        wait: true
+      }
+    ]);
+
+###The `wait!` prefix###
+Adding the `wait!` prefix to your scripts will ensure that anything listed after that script will wait for it. This includes within a single array of script strings:
+In this case, only `polyfill.js` has the `wait!` prefix, so `needs-polyfill.js` and `doesnt-need-anything.js` will execute after `polyfill.js` but may execute in different orders, between the two of them. The less `wait` calls you have, the faster your code may end up (as a general rule).
+
+    yepnope([
+    {
+      test: Modernizr.borderradius,
+      nope: ['wait!polyfill.js', 'needs-polyfill.js']
+    },
+    {
+      test: Modernizr.multiplebgs,
+      nope: ['doesnt-need-anything.js']
+    }
+    ]);
+
+##A crazy/contrived example:##
+
+    yepnope([
+      // straight up load (using a force css prefix)
       'css!http://yayquery.com/css/base.css?alwaysload',
       
       // no tests, just a load and a callback
@@ -58,11 +91,13 @@ A crazy/contrived example:
       }
     ]);
 
+
+
 Any forks and stuff are welcome.
 
 ##Current Version##
 
-0.2.0 alpha  (Note LABjs is in a bit of flux with some new browsers, so check the labjs repo for changes there. I'll keep on top of it as well.)
+0.2.3 alpha  (Note LABjs is in a bit of flux with some new browsers, so check the labjs repo for changes there. I'll keep on top of it as well.)
 
 ##License##
 

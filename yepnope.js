@@ -1,7 +1,7 @@
 /**
  * Yepnope JS
  * 
- * Version 0.2.1 alpha
+ * Version 0.2.3 alpha
  *
  * by Alex Sexton - AlexSexton@gmail.com 
  *
@@ -26,9 +26,15 @@ var $LAB,
         return typeof s == "string";
       }
     },
+    globalFilters = [],
     prefixes = {
       'css': function(resource) {
         resource.forceCSS = true;
+        return resource;
+      },
+      'wait': function(resource) {
+        // This just adds an empty callback to force a lab wait
+        resource.autoCallback = function(){};
         return resource;
       }
     };
@@ -49,7 +55,7 @@ $LAB        = window.$LAB;
 window.$LAB = old$LAB;
 
 // Yepnope
-window.yepnope = function(needs, currentLabChain){
+var yepnope = function(needs, currentLabChain){
   var i,
       need,
       nlen = needs.length,
@@ -62,19 +68,25 @@ window.yepnope = function(needs, currentLabChain){
       // split all prefixes out
       var parts = url.split('!'),
           pLen  = parts.length,
+          gLen  = globalFilters.length,
           res = {
             url: parts[pLen-1],
             prefixes: (pLen > 1) ? parts.slice(0, pLen-1) : undef
           },
-          mFunc;
+          mFunc, j, z;
 
       // loop through prefixes
       // if there are none, this automatically gets skipped
-      for (var j = 0; j < pLen-1; j++) {
+      for (j = 0; j < pLen-1; j++) {
         mFunc = prefixes[parts[j]];
         if (mFunc) {
           res = mFunc(res);
         }
+      }
+      
+      // Go through our global filters
+      for (z = 0; z < gLen; z++) {
+        res = globalFilters[z](res);
       }
 
       // return the final url
@@ -131,10 +143,12 @@ window.yepnope = function(needs, currentLabChain){
       labChain = labChain.script(inc);
       
       // Call the callback if we have one (via the labjs wait)
-      if (callback) {
+      if (callback || autoCallback) {
         labChain = labChain.wait(function(){
           // pass the callback the unique loaded script
-          callback(inc, testResult);
+          callback && callback(inc, testResult);
+          // If the autoCallback exists, call it
+          autoCallback && autoCallback(inc, testResult);
         });
       }
     }
@@ -200,7 +214,7 @@ window.yepnope = function(needs, currentLabChain){
       }
       // if it's an array, call our function recursively
       else if (test.isArray(need)) {
-        labChain = window.yepnope(need, labChain);
+        labChain = yepnope(need, labChain);
       }
       // if it's an object, use our modernizr logic to win
       else if (test.isObject(need)) {
@@ -217,8 +231,13 @@ window.yepnope = function(needs, currentLabChain){
   return labChain;
 };
 
-window.yepnope.addPrefix = function(prefix, callback) {
+yepnope.addPrefix = function(prefix, callback) {
   prefixes[prefix] = callback;
 };
+yepnope.addFilter = function(filter) {
+  globalFilters.push(filter);
+};
 
+// Leak me
+window.yepnope = yepnope;
 })(this, this.document);
