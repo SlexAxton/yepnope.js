@@ -237,6 +237,7 @@ yepnope.addPrefix = function(prefix, callback) {
 yepnope.addFilter = function(filter) {
   globalFilters.push(filter);
 };
+yepnope.$LAB = $LAB;
 
 // Leak me
 window.yepnope = yepnope;
