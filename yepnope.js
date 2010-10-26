@@ -1,13 +1,11 @@
 /**
  * Yepnope JS
  * 
- * Version 0.2.0alpha
+ * Version 0.2.1 alpha
  *
- * by Alex Sexton - @SlexAxton
+ * by Alex Sexton - AlexSexton@gmail.com 
  *
  * Tri-Licensed WTFPL, BSD, & MIT
- *
- * Feature-test driven script loader on top of LABJS
  */
 (function(window, doc, undef){
 // Save old $LAB value
@@ -148,7 +146,7 @@ window.yepnope = function(needs, currentLabChain){
       var testResult = !!(testObject.test),
           needGroup = (testResult) ? testObject.yep : testObject.nope,
           // Callback or wait option should cause LabLS to block
-          callback = testObject.callback || (testObject.wait ? function() { } : null);
+          callback = testObject.callback || (testObject.wait ? function(){} : undef);
       
       // If it's a string
       if (test.isString(needGroup)) {
