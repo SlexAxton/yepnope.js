@@ -50,11 +50,19 @@ window.$LAB = old$LAB;
 
 // Yepnope
 window.yepnope = function(needs, currentLabChain){
-  var i,
-      need,
-      nlen = needs.length,
+
+  var i, 
+      need, 
+      nlen, 
       // start the chain as a plain instance
       labChain = currentLabChain || $LAB;
+
+  // return chain if no args passed
+  if ( needs ) {
+    nlen = needs.length;
+  } else {
+    return labChain;
+  }
 
   function satisfyPrefixes(url) {
     // make sure we have a url
