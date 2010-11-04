@@ -97,7 +97,7 @@ Any forks and stuff are welcome.
 
 ##Current Version##
 
-0.2.3 alpha  (Note LABjs is in a bit of flux with some new browsers, so check the labjs repo for changes there. I'll keep on top of it as well.)
+0.2.3 (Note LABjs is in a bit of flux with some new browsers, so check the labjs repo for changes there. I'll keep on top of it as well.)
 
 ##License##
 

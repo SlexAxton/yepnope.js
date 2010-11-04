@@ -1,7 +1,7 @@
 /**
  * Yepnope JS
  * 
- * Version 0.2.3 alpha
+ * Version 0.2.3 
  *
  * by Alex Sexton - AlexSexton@gmail.com 
  *
