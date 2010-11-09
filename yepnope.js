@@ -69,8 +69,10 @@ var yepnope = function(needs, currentLabChain){
       var parts = url.split('!'),
           pLen  = parts.length,
           gLen  = globalFilters.length,
+          origUrl = parts[pLen-1],
           res = {
-            url: parts[pLen-1],
+            url: origUrl,
+            origUrl: origUrl, // keep this one static for callback variable consistency
             prefixes: (pLen > 1) ? parts.slice(0, pLen-1) : undef
           },
           mFunc, j, z;
@@ -105,21 +107,22 @@ var yepnope = function(needs, currentLabChain){
     }
     
     var inc          = resource.url,
+        origInc      = resource.origUrl,
         incLen       = inc.length,
         instead      = resource.instead,
         autoCallback = resource.autoCallback,
         forceJS      = resource.forceJS,
-        forceCSS     = resource.forceCSS; 
+        forceCSS     = resource.forceCSS,
+        styleElem;
     
     // if someone is overriding all normal functionality
     if (instead) {
-      return instead(input, callback, labChain, testResult);
+      return instead(input, callback, labChain, testResult, index);
     }
     // If it's specifically css with the prefix, just inject it (useful for weird extensions and cachebusted urls, etc)
     // Also do this if it ends in a .css extension
     else if (incLen > 4 && (forceCSS || (!forceJS && inc.substr(incLen-4) === '.css'))) {
-      var styleElem = doc.createElement('link'),
-          origInc   = inc;
+      styleElem = doc.createElement('link');
       
       // add our src to it
       styleElem.href = inc;
@@ -147,9 +150,9 @@ var yepnope = function(needs, currentLabChain){
       if (callback || autoCallback) {
         labChain = labChain.wait(function(){
           // pass the callback the unique loaded script
-          callback && (callback[input] || callback[index] || callback)(origInc, testResult);
+          callback && (callback[input] || callback[index] || callback)(origInc, testResult, index);
           // If the autoCallback exists, call it
-          autoCallback && autoCallback(inc, testResult);
+          autoCallback && autoCallback(inc, testResult, index);
         });
       }
     }
