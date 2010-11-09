@@ -95,7 +95,7 @@ var yepnope = function(needs, currentLabChain){
     return false;
   }
   
-  function loadScriptOrStyle (input, callback, labChain, testResult) {
+  function loadScriptOrStyle (input, callback, labChain, testResult, index) {
     // run through our set of prefixes
     var resource = satisfyPrefixes(input);
 
@@ -129,9 +129,10 @@ var yepnope = function(needs, currentLabChain){
       // inject the file
       docHead.insertBefore(styleElem, docFirst);
       
+      
       // call the callback
       if (callback) {
-        callback(origInc, testResult);
+        (callback[input] || callback[index] || callback)(origInc, testResult);
       }
       if (autoCallback) {
         autoCallback(origInc, testResult);
@@ -146,7 +147,7 @@ var yepnope = function(needs, currentLabChain){
       if (callback || autoCallback) {
         labChain = labChain.wait(function(){
           // pass the callback the unique loaded script
-          callback && callback(inc, testResult);
+          callback && (callback[input] || callback[index] || callback)(origInc, testResult);
           // If the autoCallback exists, call it
           autoCallback && autoCallback(inc, testResult);
         });
@@ -165,14 +166,14 @@ var yepnope = function(needs, currentLabChain){
       // If it's a string
       if (test.isString(needGroup)) {
         // Just load the script of style
-        labChain = loadScriptOrStyle(needGroup, callback, labChain, testResult);
+        labChain = loadScriptOrStyle(needGroup, callback, labChain, testResult, 0);
       }
       // If it's an array
       else if (test.isArray(needGroup)) {
         // Grab each thing out of it
         for (var l = 0; l < needGroup.length; l++) {
           // Load each thing
-          labChain = loadScriptOrStyle(needGroup[l], callback, labChain, testResult);
+          labChain = loadScriptOrStyle(needGroup[l], callback, labChain, testResult, l);
         }
       }
       
@@ -184,14 +185,14 @@ var yepnope = function(needs, currentLabChain){
       // get anything in the load object as well
       if (test.isString(testObject.load)) {
         // Just load the script of style
-        labChain = loadScriptOrStyle(testObject.load, callback, labChain, testResult);
+        labChain = loadScriptOrStyle(testObject.load, callback, labChain, testResult, 0);
       }
       // If it's an array
       else if (test.isArray(testObject.load)) {
         // Grab each thing out of it
         for (var k = 0; k < testObject.load.length; k++) {
           // Load each thing
-          labChain = loadScriptOrStyle(testObject.load[k], callback, labChain, testResult);
+          labChain = loadScriptOrStyle(testObject.load[k], callback, labChain, testResult, k);
         }
       }
       
@@ -200,7 +201,7 @@ var yepnope = function(needs, currentLabChain){
   
   // Someone just decides to load a single script or css file as a string
   if (test.isString(needs)) {
-    labChain = loadScriptOrStyle(needs, false, labChain);
+    labChain = loadScriptOrStyle(needs, false, labChain, null, 0);
   }
   // Normal case is likely an array of different types of loading options
   else if (test.isArray(needs)) {
@@ -210,7 +211,7 @@ var yepnope = function(needs, currentLabChain){
       
       // if it's a string, just load it
       if (test.isString(need)) {
-        labChain = loadScriptOrStyle(need, false, labChain);
+        labChain = loadScriptOrStyle(need, false, labChain, null, 0);
       }
       // if it's an array, call our function recursively
       else if (test.isArray(need)) {
