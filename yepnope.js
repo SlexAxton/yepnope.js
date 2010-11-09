@@ -132,10 +132,10 @@ var yepnope = function(needs, currentLabChain){
       
       // call the callback
       if (callback) {
-        (callback[input] || callback[index] || callback)(origInc, testResult);
+        (callback[input] || callback[index] || callback)(origInc, testResult, index);
       }
       if (autoCallback) {
-        autoCallback(origInc, testResult);
+        autoCallback(origInc, testResult, index);
       }
     }
     // Otherwise assume that it's a script
