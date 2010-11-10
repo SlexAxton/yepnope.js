@@ -7,13 +7,14 @@
  *
  * Tri-Licensed WTFPL, BSD, & MIT
  */
-(function(window, doc, undef){
+(function(window, doc, undef) {
 // Save old $LAB value
 var $LAB,
     old$LAB  = window.$LAB,
     docHead  = doc.getElementsByTagName("head")[0] || doc.documentElement,
     docFirst = docHead.firstChild,
     toString = {}.toString,
+    noop     = function(){},
     test     = {
       isArray: Array.isArray || function( obj ) {
         return toString.call(obj) == "[object Array]";  
@@ -34,7 +35,7 @@ var $LAB,
       },
       'wait': function(resource) {
         // This just adds an empty callback to force a lab wait
-        resource.autoCallback = function(){};
+        resource.autoCallback = noop;
         return resource;
       }
     };
@@ -55,7 +56,7 @@ $LAB        = window.$LAB;
 window.$LAB = old$LAB;
 
 // Yepnope
-var yepnope = function(needs, currentLabChain){
+var yepnope = function(needs, currentLabChain) {
   var i,
       need,
       nlen = needs.length,
@@ -97,7 +98,7 @@ var yepnope = function(needs, currentLabChain){
     return false;
   }
   
-  function loadScriptOrStyle (input, callback, labChain, testResult, index) {
+  function loadScriptOrStyle(input, callback, labChain, index, testResult) {
     // run through our set of prefixes
     var resource = satisfyPrefixes(input);
 
@@ -117,7 +118,7 @@ var yepnope = function(needs, currentLabChain){
     
     // if someone is overriding all normal functionality
     if (instead) {
-      return instead(input, callback, labChain, testResult, index);
+      return instead(input, callback, labChain, index, testResult);
     }
     // If it's specifically css with the prefix, just inject it (useful for weird extensions and cachebusted urls, etc)
     // Also do this if it ends in a .css extension
@@ -164,19 +165,19 @@ var yepnope = function(needs, currentLabChain){
       var testResult = !!(testObject.test),
           needGroup = (testResult) ? testObject.yep : testObject.nope,
           // Callback or wait option should cause LabLS to block
-          callback = testObject.callback || (testObject.wait ? function(){} : undef);
+          callback = testObject.callback || (testObject.wait ? noop : undef);
       
       // If it's a string
       if (test.isString(needGroup)) {
         // Just load the script of style
-        labChain = loadScriptOrStyle(needGroup, callback, labChain, testResult, 0);
+        labChain = loadScriptOrStyle(needGroup, callback, labChain, 0, testResult);
       }
       // If it's an array
       else if (test.isArray(needGroup)) {
         // Grab each thing out of it
         for (var l = 0; l < needGroup.length; l++) {
           // Load each thing
-          labChain = loadScriptOrStyle(needGroup[l], callback, labChain, testResult, l);
+          labChain = loadScriptOrStyle(needGroup[l], callback, labChain, l, testResult);
         }
       }
       
@@ -188,14 +189,14 @@ var yepnope = function(needs, currentLabChain){
       // get anything in the load object as well
       if (test.isString(testObject.load)) {
         // Just load the script of style
-        labChain = loadScriptOrStyle(testObject.load, callback, labChain, testResult, 0);
+        labChain = loadScriptOrStyle(testObject.load, callback, labChain, 0, testResult);
       }
       // If it's an array
       else if (test.isArray(testObject.load)) {
         // Grab each thing out of it
         for (var k = 0; k < testObject.load.length; k++) {
           // Load each thing
-          labChain = loadScriptOrStyle(testObject.load[k], callback, labChain, testResult, k);
+          labChain = loadScriptOrStyle(testObject.load[k], callback, labChain, k, testResult);
         }
       }
       
@@ -204,7 +205,7 @@ var yepnope = function(needs, currentLabChain){
   
   // Someone just decides to load a single script or css file as a string
   if (test.isString(needs)) {
-    labChain = loadScriptOrStyle(needs, false, labChain, null, 0);
+    labChain = loadScriptOrStyle(needs, false, labChain, 0);
   }
   // Normal case is likely an array of different types of loading options
   else if (test.isArray(needs)) {
@@ -214,7 +215,7 @@ var yepnope = function(needs, currentLabChain){
       
       // if it's a string, just load it
       if (test.isString(need)) {
-        labChain = loadScriptOrStyle(need, false, labChain, null, 0);
+        labChain = loadScriptOrStyle(need, false, labChain, 0);
       }
       // if it's an array, call our function recursively
       else if (test.isArray(need)) {
