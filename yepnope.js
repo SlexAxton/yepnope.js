@@ -1,7 +1,7 @@
 /**
  * Yepnope JS
  * 
- * Version 0.2.4pre 
+ * Version 0.2.5pre 
  *
  * by Alex Sexton - AlexSexton@gmail.com 
  *
@@ -25,6 +25,9 @@ var $LAB,
       },
       isString: function(s) {
         return typeof s == "string";
+      },
+      isFunction: function(fn) {
+        return toString.call(fn) == '[object Function]';
       }
     },
     globalFilters = [],
@@ -116,6 +119,9 @@ var yepnope = function(needs, currentLabChain) {
         forceCSS     = resource.forceCSS,
         styleElem;
     
+    // Determine callback, if any
+    callback = callback && test.isFunction(callback) ? callback : callback[input] || callback[index] || callback[( input.split('/').pop().split('?')[0])]
+
     // if someone is overriding all normal functionality
     if (instead) {
       return instead(input, callback, labChain, index, testResult);
@@ -135,12 +141,8 @@ var yepnope = function(needs, currentLabChain) {
       
       
       // call the callback
-      if (callback) {
-        (callback[input] || callback[index] || callback)(origInc, testResult, index);
-      }
-      if (autoCallback) {
-        autoCallback(origInc, testResult, index);
-      }
+      callback && callback(origInc, testResult, index)
+      autoCallback && autoCallback(origInc, testResult, index);
     }
     // Otherwise assume that it's a script
     else {
@@ -151,7 +153,7 @@ var yepnope = function(needs, currentLabChain) {
       if (callback || autoCallback) {
         labChain = labChain.wait(function(){
           // pass the callback the unique loaded script
-          callback && (callback[input] || callback[index] || callback)(origInc, testResult, index);
+          callback && callback(origInc, testResult, index);
           // If the autoCallback exists, call it
           autoCallback && autoCallback(inc, testResult, index);
         });
@@ -199,7 +201,12 @@ var yepnope = function(needs, currentLabChain) {
           labChain = loadScriptOrStyle(testObject.load[k], callback, labChain, k, testResult);
         }
       }
-      
+
+      // Fire complete callback
+      if (testObject.complete) {
+        labChain = labChain.wait(testObject.complete);
+      }
+
       return labChain;
   }
   
