@@ -1,7 +1,7 @@
 /**
  * Yepnope JS
  * 
- * Version 0.2.5pre 
+ * Version 0.2.6pre 
  *
  * by Alex Sexton - AlexSexton@gmail.com 
  *
@@ -120,7 +120,9 @@ var yepnope = function(needs, currentLabChain) {
         styleElem;
     
     // Determine callback, if any
-    callback = callback && test.isFunction(callback) ? callback : callback[input] || callback[index] || callback[( input.split('/').pop().split('?')[0])]
+    if ( callback ) {
+	    callback = test.isFunction(callback) ? callback : callback[input] || callback[index] || callback[( input.split('/').pop().split('?')[0])]
+    }
 
     // if someone is overriding all normal functionality
     if (instead) {
