@@ -109,7 +109,7 @@
       urlKey == urlKeyChain[0] && executeJS();
     }
 
-    var urlKey        = urls.join(urlSplit),
+    var urlKey        = urls.split(urlSplit),
 	urlCountTotal = urls.length,
 	i             = 0,
 	elem          = strScript,
@@ -161,6 +161,7 @@
 var docHead               = doc.getElementsByTagName("head")[0] || doc.documentElement,
     docFirst              = docHead.firstChild,
     toString              = {}.toString,
+    stack                 = [],
     noop                  = function(){},
     isArray               = Array.isArray || function(obj) {
       return toString.call(obj) == "[object Array]";  
@@ -291,17 +292,15 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
       }
       // Otherwise assume that it's a script
       else {
-        // Don't do a callback if it didn't have one
-        chain = chain.script(inc);
-        
-        // Call the callback if we have one (via the getjs second argument)
-        if (callback || autoCallback) {
-          chain = chain.wait(function(){
-            // pass the callback the unique loaded script
+        stack.push(inc);
+
+        // If we have a callback, we'll start the chain over
+        if (isFunction(callback) || isFunction(autoCallback)) {
+          chain = chain.getJS(stack, function(){
             callback && callback(origInc, testResult, index);
-            // If the autoCallback exists, call it
-            autoCallback && autoCallback(inc, testResult, index);
+            autoCallback && autoCallback(origInc, testResult, index);
           });
+          stack = [];
         }
       }
     
@@ -351,7 +350,8 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
 
         // Fire complete callback
         if (testObject.complete) {
-          chain = chain.wait(testObject.complete);
+          chain = chain.getJS(stack, testObject.complete);
+          stack = [];
         }
   
         return chain;
@@ -359,7 +359,7 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
   
     // Someone just decides to load a single script or css file as a string
     if (isString(needs)) {
-      chain = loadScriptOrStyle(needs, false, chain, 0);
+      chain = loadScriptOrStyle(needs, false, chain, 0, undef);
     }
     // Normal case is likely an array of different types of loading options
     else if (isArray(needs)) {
@@ -369,7 +369,7 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
       
         // if it's a string, just load it
         if (isString(need)) {
-          chain = loadScriptOrStyle(need, false, chain, 0);
+          chain = loadScriptOrStyle(need, false, chain, 0, undef);
         }
         // if it's an array, call our function recursively
         else if (isArray(need)) {
@@ -398,7 +398,7 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
     globalFilters.push(filter);
   };
   
-  yepnope.getjs     = getjs;
+  yepnope.getJS     = getJS;
 
   // Leak me
   window.yepnope    = yepnope;
