@@ -199,11 +199,13 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
     
     // Yepnope Function
     yepnope               = function(needs, currentchain, stack) {
- 
+    
+    // Allow the recursive stack
+    stack = stack || [];
+
     var i,
         need,
         nlen = needs.length,
-        stack = stack || [],
         // start the chain as a plain instance
         chain = currentchain || {getJS:getJS};
 
