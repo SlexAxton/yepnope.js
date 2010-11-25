@@ -261,7 +261,7 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
     
       // Determine callback, if any
       if ( callback ) {
-        callback = test.isFunction(callback) ? callback : callback[input] || callback[index] || callback[( input.split('/').pop().split('?')[0])];
+        callback = isFunction(callback) ? callback : callback[input] || callback[index] || callback[( input.split('/').pop().split('?')[0])];
       }
 
       // if someone is overriding all normal functionality
@@ -314,12 +314,12 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
             l;
       
         // If it's a string
-        if (test.isString(needGroup)) {
+        if (isString(needGroup)) {
           // Just load the script of style
           chain = loadScriptOrStyle(needGroup, callback, chain, 0, testResult);
         }
         // If it's an array
-        else if (test.isArray(needGroup)) {
+        else if (isArray(needGroup)) {
           // Grab each thing out of it
           for (l = 0; l < needGroup.length; l++) {
             // Load each thing
@@ -333,12 +333,12 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
         }
       
         // get anything in the load object as well
-        if (test.isString(testObject.load)) {
+        if (isString(testObject.load)) {
           // Just load the script of style
           chain = loadScriptOrStyle(testObject.load, callback, chain, 0, testResult);
         }
         // If it's an array
-        else if (test.isArray(testObject.load)) {
+        else if (isArray(testObject.load)) {
           // Grab each thing out of it
           for (k = 0; k < testObject.load.length; k++) {
             // Load each thing
@@ -355,31 +355,31 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
     }
   
     // Someone just decides to load a single script or css file as a string
-    if (test.isString(needs)) {
+    if (isString(needs)) {
       chain = loadScriptOrStyle(needs, false, chain, 0);
     }
     // Normal case is likely an array of different types of loading options
-    else if (test.isArray(needs)) {
+    else if (isArray(needs)) {
       // go through the list of needs
       for(i=0; i < nlen; i++) {
         need = needs[i];
       
         // if it's a string, just load it
-        if (test.isString(need)) {
+        if (isString(need)) {
           chain = loadScriptOrStyle(need, false, chain, 0);
         }
         // if it's an array, call our function recursively
-        else if (test.isArray(need)) {
+        else if (isArray(need)) {
           chain = yepnope(need, chain);
         }
         // if it's an object, use our modernizr logic to win
-        else if (test.isObject(need)) {
+        else if (isObject(need)) {
           chain = loadFromTestObject(need, chain);
         }
       }
     }
     // Allow a single object to be passed in
-    else if (test.isObject(needs)) {
+    else if (isObject(needs)) {
       chain = loadFromTestObject(needs, chain);
     }
   
