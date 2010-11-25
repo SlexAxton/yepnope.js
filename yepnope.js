@@ -109,7 +109,7 @@
       urlKey == urlKeyChain[0] && executeJS();
     }
 
-    var urlKey        = urls.split(urlSplit),
+    var urlKey        = urls.join(urlSplit),
 	urlCountTotal = urls.length,
 	i             = 0,
 	elem          = strScript,
@@ -161,7 +161,6 @@
 var docHead               = doc.getElementsByTagName("head")[0] || doc.documentElement,
     docFirst              = docHead.firstChild,
     toString              = {}.toString,
-    stack                 = [],
     noop                  = function(){},
     isArray               = Array.isArray || function(obj) {
       return toString.call(obj) == "[object Array]";  
@@ -199,13 +198,14 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
     isGecko               = ("MozAppearance" in docHead.style),
     
     // Yepnope Function
-    yepnope               = function(needs, currentchain) {
+    yepnope               = function(needs, currentchain, stack) {
  
     var i,
         need,
         nlen = needs.length,
+        stack = stack || [],
         // start the chain as a plain instance
-        chain = currentchain || getjs;
+        chain = currentchain || {getJS:getJS};
 
     function satisfyPrefixes(url) {
       // make sure we have a url
@@ -296,10 +296,13 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
 
         // If we have a callback, we'll start the chain over
         if (isFunction(callback) || isFunction(autoCallback)) {
+          // Call getJS with our current stack of things
           chain = chain.getJS(stack, function(){
+            // Call our callbacks with this set of data
             callback && callback(origInc, testResult, index);
             autoCallback && autoCallback(origInc, testResult, index);
           });
+          // Reset the stack
           stack = [];
         }
       }
@@ -373,7 +376,7 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
         }
         // if it's an array, call our function recursively
         else if (isArray(need)) {
-          chain = yepnope(need, chain);
+          chain = yepnope(need, chain, stack);
         }
         // if it's an object, use our modernizr logic to win
         else if (isObject(need)) {
@@ -384,6 +387,13 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
     // Allow a single object to be passed in
     else if (isObject(needs)) {
       chain = loadFromTestObject(needs, chain);
+    }
+
+    // Since we're queueing up requests between callbacks
+    // if we still have stuff left over at the end
+    // then we'll just call it with straight up
+    if (stack.length) {
+      chain = chain.getJS(stack);
     }
   
     // allow more loading on this chain
