@@ -123,8 +123,8 @@
 
       elem = "object";
 	
-      // Manage callbacks and execution order manually.
     }
+    // Manage callbacks and execution order manually.
     else {
 	
       // We set this to something bogus so browsers do not 
@@ -210,16 +210,19 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
       // make sure we have a url
       if (url) {
         // split all prefixes out
-        var parts = url.split('!'),
-            pLen  = parts.length,
-            gLen  = globalFilters.length,
+        var parts   = url.split('!'),
+            pLen    = parts.length,
+            gLen    = globalFilters.length,
             origUrl = parts[pLen-1],
-            res = {
-              url: origUrl,
-              origUrl: origUrl, // keep this one static for callback variable consistency
-              prefixes: (pLen > 1) ? parts.slice(0, pLen-1) : undef
+            res     = {
+              url      : origUrl,
+              // keep this one static for callback variable consistency
+              origUrl  : origUrl, 
+              prefixes : (pLen > 1) ? parts.slice(0, pLen-1) : undef
             },
-            mFunc, j, z;
+            mFunc,
+            j,
+            z;
 
         // loop through prefixes
         // if there are none, this automatically gets skipped
@@ -271,7 +274,7 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
       // If it's specifically css with the prefix, just inject it (useful for weird extensions and cachebusted urls, etc)
       // Also do this if it ends in a .css extension
       else if (incLen > 4 && (forceCSS || (!forceJS && inc.substr(incLen-4) === '.css'))) {
-        styleElem = doc.createElement('link');
+        styleElem      = doc.createElement('link');
       
         // add our src to it
         styleElem.href = inc;
@@ -395,9 +398,9 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
     globalFilters.push(filter);
   };
   
-  yepnope.getjs = getjs;
+  yepnope.getjs     = getjs;
 
   // Leak me
-  window.yepnope = yepnope;
+  window.yepnope    = yepnope;
   
 })(this, this.document);
