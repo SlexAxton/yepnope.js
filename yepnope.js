@@ -1,28 +1,26 @@
 /**
- * Yepnope JS
- * 
- * Version 0.2.6pre 
- *
+ * yepnope.js 0.5.0pre
  * by Alex Sexton - AlexSexton@gmail.com 
+ *
+ * Major Contributions by:
+ * Ralph Holzmann - @ralphholzmann
  *
  * Tri-Licensed WTFPL, BSD, & MIT
  *
- * BUT THIS IS THE NOTES FOR A.getjs, so don't mess that up
- *
- * A.getJS v1.0
- * http://www.artzstudio.com/A.js/getJS/
- *
- * Developed by: 
- * - Dave Artz http://www.artzstudio.com/
- *
- * Copyright (c) 2010
- * Not yet licensed cuz I lack free time.
- *
- * A.getJS is a script that loads JavaScript asynchronously while
- * preserving execution order via a chaining interface.
- * 
- * @author        Dave Artz
- * @copyright     (c) 2010 Dave Artz
+ * Yepnope relies on modified version of A.getJS
+ * ==========================
+ * | A.getJS v1.0
+ * | http://www.artzstudio.com/A.js/getJS/
+ * |
+ * | Developed by: 
+ * | - Dave Artz http://www.artzstudio.com/
+ * |
+ * | Copyright (c) 2010
+ * | Not yet licensed cuz I lack free time.
+ * |
+ * | A.getJS is a script that loads JavaScript asynchronously while
+ * | preserving execution order via a chaining interface.
+ * ============================
  */
 
 (function(window, doc, undef) {
@@ -364,7 +362,7 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
   
     // Someone just decides to load a single script or css file as a string
     if (isString(needs)) {
-      chain = loadScriptOrStyle(needs, false, chain, 0, undef);
+      chain = loadScriptOrStyle(needs, false, chain, 0);
     }
     // Normal case is likely an array of different types of loading options
     else if (isArray(needs)) {
@@ -374,7 +372,7 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
       
         // if it's a string, just load it
         if (isString(need)) {
-          chain = loadScriptOrStyle(need, false, chain, 0, undef);
+          chain = loadScriptOrStyle(need, false, chain, 0);
         }
         // if it's an array, call our function recursively
         else if (isArray(need)) {
