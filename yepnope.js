@@ -26,26 +26,32 @@
 (function(window, doc, undef) {
   function getObject(elem, url, callback, type) {
     
-    var	object = doc.createElement(elem),
-	done   = 0;
-	
-    object.src  = object.data = url;
-    object.type = type;
-	
+    var object = doc.createElement(elem),
+        done   = 0;
+        
+    object.src   = object.data = url;
+    object.type  = type;
+
+    // Just in case
+    if (type == strScript && isAsyncable) {
+      // Breaks in a few FF4 Betas, but fixed now (via LABjs)
+      object.async = strFalse;
+    }
+        
     // Attach handlers for all browsers
     object[strOnLoad] = object[strOnReadyStateChange] = function() {
-		
+                
       if ( !done && (!object[strReadyState] || object[strReadyState] == "loaded" || object[strReadyState] == "complete") ) {
 
-	// Tell global scripts object this script has loaded.
+        // Tell global scripts object this script has loaded.
         // Set scriptDone to prevent this function from being called twice.
-	done = 1;
-		
-	callback(url);
+        done = 1;
+                
+        callback(url);
 
-	// Handle memory leak in IE
-	object[strOnLoad] = object[strOnReadyStateChange] = null;
-	docHead.removeChild(object);
+        // Handle memory leak in IE
+        object[strOnLoad] = object[strOnReadyStateChange] = null;
+        docHead.removeChild(object);
       }
     };
 
@@ -58,42 +64,42 @@
       
       function executeCallback() {
 
-	// If all scripts have been cached in the set, it's time
-	// to execute the urlKey callback after the script loads.
-	if (++cacheCount == thisUrlsCount) {
+        // If all scripts have been cached in the set, it's time
+        // to execute the urlKey callback after the script loads.
+        if (++cacheCount == thisUrlsCount) {
 
-	  // Execute the callback associated with this urlKey
-	  thisUrlKeyCallback && thisUrlKeyCallback();
+          // Execute the callback associated with this urlKey
+          thisUrlKeyCallback && thisUrlKeyCallback();
 
-	  // Kill the first item in the url chain and redo executeJS
-	  urlKeyChain.shift();
-	  executeJS();
-	}
+          // Kill the first item in the url chain and redo executeJS
+          urlKeyChain.shift();
+          executeJS();
+        }
       }
 
       for (var i = 0,
-	       thisUrlKey = urlKeyChain[0] || "",
-	       thisUrls = thisUrlKey.split( urlSplit ),
-	       thisUrl,
-	       thisUrlsCount = thisUrls.length,
-	       thisUrlKeyCallback = urlKeyCallbacks[ thisUrlKey ],
-	       cacheCount = 0; i < thisUrlsCount; i++ ) {
-			
-	thisUrl = thisUrls[i];
-	if (urlCached[thisUrl]) {
+               thisUrlKey = urlKeyChain[0] || "",
+               thisUrls = thisUrlKey.split( urlSplit ),
+               thisUrl,
+               thisUrlsCount = thisUrls.length,
+               thisUrlKeyCallback = urlKeyCallbacks[ thisUrlKey ],
+               cacheCount = 0; i < thisUrlsCount; i++ ) {
+                        
+        thisUrl = thisUrls[i];
+        if (urlCached[thisUrl]) {
 
-	  if (urlExecuted[thisUrl]) {
-	    // If we already executed, just do the callback.
-	    executeCallback();					
-	  }
+          if (urlExecuted[thisUrl]) {
+            // If we already executed, just do the callback.
+            executeCallback();                                  
+          }
           else {
-	    // Rememeber that this script already executed.
-	    urlExecuted[thisUrl] = 1;
-	    // Clear out the type so we load normally.
+            // Rememeber that this script already executed.
+            urlExecuted[thisUrl] = 1;
+            // Clear out the type so we load normally.
             type = ""; 
-            getObject(strScript, thisUrl, executeCallback, type);	
-	  }
-	}
+            getObject(strScript, thisUrl, executeCallback, type);       
+          }
+        }
       }
     }
 
@@ -108,29 +114,19 @@
     }
 
     var urlKey        = urls.join(urlSplit),
-	urlCountTotal = urls.length,
-	i             = 0,
-	elem          = strScript,
-    	type,
+        urlCountTotal = urls.length,
+        i             = 0,
+        elem          = strScript,
+        type,
         // Contains an arays of urlKeys of this chain, if available.
-	urlKeyChain = this.c;
-		
-    // Gecko no longer does what we want out of the box.
-    // Use object instead.
-    if (isGecko) {
-
-      elem = "object";
-	
-    }
+        urlKeyChain = this.c;
+                
     // Manage callbacks and execution order manually.
-    else {
-	
-      // We set this to something bogus so browsers do not 
-      // execute code on our initial request.
-      // http://ejohn.org/blog/javascript-micro-templating/
-      type = "c";
-    }
-	
+    // We set this to something bogus so browsers do not 
+    // execute code on our initial request.
+    // http://ejohn.org/blog/javascript-micro-templating/
+    type = "c";
+        
     // If this is a new chain, start a new array, otherwise push the new guy in.
     // This is used to preserve execution order for non FF browsers.
     if (urlKeyChain) {
@@ -156,10 +152,12 @@
     };
   }
 
-var docHead               = doc.getElementsByTagName("head")[0] || doc.documentElement,
+var docElement            = doc.documentElement,
+    docHead               = doc.getElementsByTagName("head")[0] || docElement,
     docFirst              = docHead.firstChild,
     toString              = {}.toString,
     noop                  = function(){},
+    preObj                = "[object ",
     isArray               = Array.isArray || function(obj) {
       return toString.call(obj) == "[object Array]";  
     },
@@ -171,7 +169,7 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
       return typeof s == "string";
     },
     isFunction            = function(fn) {
-      return toString.call(fn) == '[object Function]';
+      return toString.call(fn) == preObj + 'Function]';
     },
     globalFilters         = [],
     prefixes              = {
@@ -189,11 +187,12 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
     urlCached             = {},
     urlExecuted           = {},
     urlSplit              = ",",
+    strFalse              = "false",
     strScript             = "script",
     strReadyState         = "readyState",
     strOnReadyStateChange = "onreadystatechange",
     strOnLoad             = "onload",
-    isGecko               = ("MozAppearance" in docHead.style),
+    isOrderSafe           = ("MozAppearance" in docElement.style) || (window.opera && toString.call(window.opera) == (preObj+"Opera]")) || (doc.createElement(strScript).async === true),
     
     // Yepnope Function
     yepnope               = function(needs, currentchain, stack) {
@@ -203,7 +202,7 @@ var docHead               = doc.getElementsByTagName("head")[0] || doc.documentE
 
     var i,
         need,
-        nlen = needs.length,
+        nlen  = needs.length,
         // start the chain as a plain instance
         chain = currentchain || {getJS:getJS};
 
