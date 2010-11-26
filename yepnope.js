@@ -7,7 +7,7 @@
  *
  * Tri-Licensed WTFPL, BSD, & MIT
  *
- * Yepnope relies on modified version of A.getJS
+ * Yepnope relies on a modified version of A.getJS
  * ==========================
  * | A.getJS v1.0
  * | http://www.artzstudio.com/A.js/getJS/
