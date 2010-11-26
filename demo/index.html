@@ -85,13 +85,13 @@ with an :after {content: '' } string that shows which style loaded (may not work
   ]);
   </script>
   
-  <script id="demo4" type="text/democode">  var myLABChain = yepnope([{
+  <script id="demo4" type="text/democode">  var myGetJSChain = yepnope([{
     test : Modernizr.geolocation,
     yep  : ['js/1a.js', 'css/1a.css'],
     nope : ['js/1b.js']
   }]);
   
-  myLABChain.script('js/2b.js').wait(function(){
+  myGetJSChain.getJS('js/2b.js', function(){
     console.log('2b yay!');
   });
   </script>
@@ -100,7 +100,7 @@ with an :after {content: '' } string that shows which style loaded (may not work
     <li><a class="demoLoad" href="#" rel="#demo1">Simple Modernizr Test</a></li>
     <li><a class="demoLoad" href="#" rel="#demo2">Just a String</a></li>
     <li><a class="demoLoad" href="#" rel="#demo3">Mix everything together</a></li>
-    <li><a class="demoLoad" href="#" rel="#demo4">Can I have access to my LABjs chain!?</a></li>
+    <li><a class="demoLoad" href="#" rel="#demo4">Can I have access to my A.getJS chain!?</a></li>
   </ul>
   
   <textarea id="codeDemo" rows="20" cols="80"></textarea>

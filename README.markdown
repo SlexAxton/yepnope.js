@@ -1,8 +1,8 @@
 #Yepnope JS#
 
-Regressive Enhancement With Style.
+A Script Loader For Your Polyfills, or Regressive Enhancement With Style.
 
-A small wrapper around LABjs to help use feature detection to load exactly the scripts that your _user_ needs, not just all the scripts that you _think_ they might need.
+A small script loader to help use feature detection to load exactly the scripts that your _user_ needs, not just all the scripts that you _think_ they might need.
 
 More docs, etc at: http://yepnopejs.com
 
@@ -99,14 +99,16 @@ Any forks and stuff are welcome.
 
 ##Current Version##
 
-0.2.3 (Note LABjs is in a bit of flux with some new browsers, so check the labjs repo for changes there. I'll keep on top of it as well.)
+0.5.0 
 
 ##License##
 
-All of the yepnope specific code is under the WTFPL license. However, LABjs is subject to it's own license (currently BSD or MIT)
+All of the yepnope specific code is under the WTFPL license. Which means it's also MIT and BSD (or anything you want). However, A.getJS is subject to it's own license (currently unlicensed)
 
 ##Thanks##
 
-Kyle Simpson - He is the creator of LABjs of which is fantastic. All of the _actual_ loading in yepnope uses LABjs under the covers, so that's all him.
+Ralph Holzmann - A lot of Yepnope's code is his.
 
-Paul Irish - Thanks or whatever.
+Kyle Simpson   - He is the creator of LABjs of which a lot of this is inspired by.
+
+Paul Irish     - Thanks or whatever.
