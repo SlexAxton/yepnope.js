@@ -12,22 +12,22 @@
 */
 (function(window, doc, undef) {
 
-	/* Loader helper functions */
+  /* Loader helper functions */
   function isScriptReady( script ) {
     return ( ! script[strReadyState] || script[strReadyState] == "loaded" || script[strReadyState] == "complete")
   }
 
-	function getLoader() {
-		return {
-			load: load,
-			i : 0
-		};
-	}
-	function getYepnope() {
-		var y = yepnope;
-		y.loader = getLoader();
-		return y;
-	}
+  function getLoader() {
+    return {
+      load: load,
+      i : 0
+    };
+  }
+  function getYepnope() {
+    var y = yepnope;
+    y.loader = getLoader();
+    return y;
+  }
 
   function callJsWhenReady() {
 
@@ -54,7 +54,7 @@
         loadJs( strScript, i.src, "") 
       } else {
         i.call(getLoader());
-	      started = 0;
+        started = 0;
         callJsWhenReady();
       }
     }
@@ -78,7 +78,7 @@
 
     // Attach handlers for all browsers
     script[strOnLoad] = script[strOnReadyStateChange] = function() {
-			
+      
       // If the script is loaded
       if ( ! done && isScriptReady( script ) ) {
       
@@ -138,7 +138,7 @@
     return this;
 
   }
-	/* End loader helper functions */
+  /* End loader helper functions */
 
 var docElement            = doc.documentElement,
     docHead               = doc.getElementsByTagName("head")[0] || docElement,
@@ -284,7 +284,7 @@ var docElement            = doc.documentElement,
         if (isFunction(callback) || isFunction(autoCallback)) {
           // Call getJS with our current stack of things
           chain.load(function(){
-          	var yepnope = getYepnope();
+            var yepnope = getYepnope();
             // Call our callbacks with this set of data
             callback && callback(origInc, testResult, index, yepnope);
             autoCallback && autoCallback(origInc, testResult, index, yepnope);
