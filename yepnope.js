@@ -7,169 +7,169 @@
  *
  * Tri-Licensed WTFPL, BSD, & MIT
  *
- * Yepnope relies on a modified version of A.getJS
- * ==========================
- * | A.getJS v1.0
- * | http://www.artzstudio.com/A.js/getJS/
- * |
- * | Developed by: 
- * | - Dave Artz http://www.artzstudio.com/
- * |
- * | Copyright (c) 2010
- * | Not yet licensed cuz I lack free time.
- * |
- * | A.getJS is a script that loads JavaScript asynchronously while
- * | preserving execution order via a chaining interface.
- * ============================
- */
-
+ * Yepnope relies on a script loading technique
+ * inspired by A.getJS
+*/
 (function(window, doc, undef) {
-  function getObject(elem, url, callback, type) {
+
+	/* Loader helper functions */
+  function isScriptReady( script ) {
+    return ( ! script[strReadyState] || script[strReadyState] == "loaded" || script[strReadyState] == "complete")
+  }
+
+	function getLoader() {
+		return {
+			load: load,
+			i : 0
+		};
+	}
+	function getYepnope() {
+		var y = yepnope;
+		y.loader = getLoader();
+		return y;
+	}
+
+  function callJsWhenReady() {
+
+    var execStackReady = 1,
+        i;
+
+    for (var i = -1, len = execStack.length; ++i < len;) {
+      if ( execStack[i].src && ! ( execStackReady = isScriptReady( execStack[i] ))) {        
+        break;
+      }
+    }
+    if ( execStackReady ) {
+      execJs();
+    }
+  }
+
+  function execJs() {
     
-    var object = doc.createElement(elem),
-        done   = 0;
-        
-    object.src   = object.data = url;
-    object.type  = type;
+    var i = execStack[strShift]();
+    started = 1;
+
+    if ( i ) {
+      if ( i.src ) {
+        loadJs( strScript, i.src, "") 
+      } else {
+        i.call(getLoader());
+	      started = 0;
+        callJsWhenReady();
+      }
+    }
+  }
+
+  function loadJs( elem, url, type, splicePoint ) {
+
+    // Create script element
+    var script    = doc.createElement( elem ),
+        done      = 0,
+        execArr;
+
+    script.src    = script.data = url;
+    script.type   = type;
 
     // Just in case
-    if (type == strScript && isAsyncable) {
+    if (defaultsToAsync) {
       // Breaks in a few FF4 Betas, but fixed now (via LABjs)
-      object.async = strFalse;
+      script.async = strFalse;
     }
-        
-    // Attach handlers for all browsers
-    object[strOnLoad] = object[strOnReadyStateChange] = function() {
-                
-      if ( !done && (!object[strReadyState] || object[strReadyState] == "loaded" || object[strReadyState] == "complete") ) {
 
-        // Tell global scripts object this script has loaded.
-        // Set scriptDone to prevent this function from being called twice.
+    // Attach handlers for all browsers
+    script[strOnLoad] = script[strOnReadyStateChange] = function() {
+			
+      // If the script is loaded
+      if ( ! done && isScriptReady( script ) ) {
+      
+
+        // Set done to prevent this function from being called twice.
         done = 1;
-                
-        callback(url);
+
+        // If the type is set, that means that we're offloading execution
+        if ( type ) {
+
+          ! started && callJsWhenReady();
+        }
+        // else, the script has executed, execute its corresponding callback
+        else {
+
+          // Continue executing
+          callJsWhenReady();
+        }
 
         // Handle memory leak in IE
-        object[strOnLoad] = object[strOnReadyStateChange] = null;
-        docHead.removeChild(object);
+        script[strOnLoad] = script[strOnReadyStateChange] = null;
+        docHead.removeChild(script);
       }
     };
-
-    docHead.appendChild(object);
-  }
-
-  function getJS(urls, urlKeyCallback) {
     
-    function executeJS() {
-      
-      function executeCallback() {
-
-        // If all scripts have been cached in the set, it's time
-        // to execute the urlKey callback after the script loads.
-        if (++cacheCount == thisUrlsCount) {
-
-          // Execute the callback associated with this urlKey
-          thisUrlKeyCallback && thisUrlKeyCallback();
-
-          // Kill the first item in the url chain and redo executeJS
-          urlKeyChain.shift();
-          executeJS();
+    // Handle 404s
+    if ( type || ( isGecko && elem == strScript )) {
+      script.onerror = function(){
+        if ( ! done ) {
+          done = 1;
+          execJs();      
         }
-      }
-
-      for (var i = 0,
-               thisUrlKey = urlKeyChain[0] || "",
-               thisUrls = thisUrlKey.split( urlSplit ),
-               thisUrl,
-               thisUrlsCount = thisUrls.length,
-               thisUrlKeyCallback = urlKeyCallbacks[ thisUrlKey ],
-               cacheCount = 0; i < thisUrlsCount; i++ ) {
-                        
-        thisUrl = thisUrls[i];
-        if (urlCached[thisUrl]) {
-
-          if (urlExecuted[thisUrl]) {
-            // If we already executed, just do the callback.
-            executeCallback();                                  
-          }
-          else {
-            // Rememeber that this script already executed.
-            urlExecuted[thisUrl] = 1;
-            // Clear out the type so we load normally.
-            type = ""; 
-            getObject(strScript, thisUrl, executeCallback, type);       
-          }
-        }
-      }
+      };
     }
 
-    function getJSCallback(url) {
+    type && execStack.splice( splicePoint, 0, script);
 
-      // Remember that we have this script cached.
-      urlCached[url] = 1;
+    docHead.appendChild(script);
 
-      // If this callback happens to be for the first urlKey
-      // in the chain, we can trigger the execution. 
-      urlKey == urlKeyChain[0] && executeJS();
-    }
-
-    var urlKey        = urls.join(urlSplit),
-        urlCountTotal = urls.length,
-        i             = 0,
-        elem          = strScript,
-        type,
-        // Contains an arays of urlKeys of this chain, if available.
-        urlKeyChain = this.c;
-                
-    // Manage callbacks and execution order manually.
-    // We set this to something bogus so browsers do not 
-    // execute code on our initial request.
-    // http://ejohn.org/blog/javascript-micro-templating/
-    type = "c";
-        
-    // If this is a new chain, start a new array, otherwise push the new guy in.
-    // This is used to preserve execution order for non FF browsers.
-    if (urlKeyChain) {
-      // Push the urlKey into the chain.
-      urlKeyChain.push(urlKey);
-    }
-    else {
-      // Create a new urlKeyChain to pass on to others.
-      urlKeyChain = [urlKey];
-    }
-
-    // Remember the original callback for this key for later.
-    urlKeyCallbacks[urlKey] = urlKeyCallback;
-    // Cache the scripts requested.
-    for (; i < urlCountTotal; i++) {
-      // Fetch the script.
-      getObject(elem, urls[i], getJSCallback, type);
-    }
-
-    return {
-      c     : urlKeyChain,
-      getJS : getJS
-    };
   }
+
+  function load() {
+
+    var a = arguments,
+        count = a.length,
+        i;
+    
+    for (i = 0, q = 0; i < count; i++) {
+      if ( isString( a[i] )) {
+        loadJs( strElem, a[i], 'x', this.i++);
+      } else {
+        execStack.splice(this.i++, 0, a[i]);
+      }
+    }
+
+    // OMG is this jQueries? For chaining...
+    return this;
+
+  }
+	/* End loader helper functions */
 
 var docElement            = doc.documentElement,
     docHead               = doc.getElementsByTagName("head")[0] || docElement,
     docFirst              = docHead.firstChild,
     toString              = {}.toString,
+    strScript             = "script",
+    strFalse              = "false",
+    strShift              = "shift",
+    strReadyState         = "readyState",
+    strOnReadyStateChange = "onreadystatechange",
+    strOnLoad             = "onload",
     noop                  = function(){},
-    preObj                = "[object ",
+    strObject                = "object",
+    execStack             = [],
+    loading               = 0,
+    started               = 0,
+    defaultsToAsync        = (doc.createElement(strScript).async === true),
+    isGecko               = ("MozAppearance" in docElement.style),
+    strElem               = isGecko ? strObject : strScript,
     isArray               = Array.isArray || function(obj) {
-      return toString.call(obj) == "[object Array]";  
+      return toString.call(obj) == "[" + strObject + " Array]";  
     },
     isObject              = function(obj) {
       // Lame object detection, but don't pass it stupid stuff?
-      return typeof obj == "object";
+      return typeof obj == strObject;
     },
     isString              = function(s) {
       return typeof s == "string";
     },
     isFunction            = function(fn) {
-      return toString.call(fn) == preObj + 'Function]';
+      return toString.call(fn) == "[" + strObject + ' Function]';
     },
     globalFilters         = [],
     prefixes              = {
@@ -183,28 +183,15 @@ var docElement            = doc.documentElement,
         return resource;
       }
     },
-    urlKeyCallbacks       = {},
-    urlCached             = {},
-    urlExecuted           = {},
-    urlSplit              = ",",
-    strFalse              = "false",
-    strScript             = "script",
-    strReadyState         = "readyState",
-    strOnReadyStateChange = "onreadystatechange",
-    strOnLoad             = "onload",
-    isOrderSafe           = ("MozAppearance" in docElement.style) || (window.opera && toString.call(window.opera) == (preObj+"Opera]")) || (doc.createElement(strScript).async === true),
     
     // Yepnope Function
-    yepnope               = function(needs, currentchain, stack) {
+    yepnope               = function(needs) {
     
-    // Allow the recursive stack
-    stack = stack || [];
-
     var i,
-        need,
+        needs,
         nlen  = needs.length,
         // start the chain as a plain instance
-        chain = currentchain || {getJS:getJS};
+        chain = this.yepnope.loader || getLoader();
 
     function satisfyPrefixes(url) {
       // make sure we have a url
@@ -291,18 +278,17 @@ var docElement            = doc.documentElement,
       }
       // Otherwise assume that it's a script
       else {
-        stack.push(inc);
+        chain.load(inc);
 
         // If we have a callback, we'll start the chain over
         if (isFunction(callback) || isFunction(autoCallback)) {
           // Call getJS with our current stack of things
-          chain = chain.getJS(stack, function(){
+          chain.load(function(){
+          	var yepnope = getYepnope();
             // Call our callbacks with this set of data
-            callback && callback(origInc, testResult, index);
-            autoCallback && autoCallback(origInc, testResult, index);
+            callback && callback(origInc, testResult, index, yepnope);
+            autoCallback && autoCallback(origInc, testResult, index, yepnope);
           });
-          // Reset the stack
-          stack = [];
         }
       }
     
@@ -352,8 +338,7 @@ var docElement            = doc.documentElement,
 
         // Fire complete callback
         if (testObject.complete) {
-          chain = chain.getJS(stack, testObject.complete);
-          stack = [];
+          chain = chain.load(testObject.complete);
         }
   
         return chain;
@@ -387,13 +372,6 @@ var docElement            = doc.documentElement,
     else if (isObject(needs)) {
       chain = loadFromTestObject(needs, chain);
     }
-
-    // Since we're queueing up requests between callbacks
-    // if we still have stuff left over at the end
-    // then we'll just call it with straight up
-    if (stack.length) {
-      chain = chain.getJS(stack);
-    }
   
     // allow more loading on this chain
     return chain;
@@ -407,8 +385,9 @@ var docElement            = doc.documentElement,
     globalFilters.push(filter);
   };
   
-  yepnope.getJS     = getJS;
-
+  // Attach loader 
+  yepnope = getYepnope();
+  
   // Leak me
   window.yepnope    = yepnope;
   
