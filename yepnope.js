@@ -14,7 +14,7 @@
 
   /* Loader helper functions */
   function isScriptReady( script ) {
-    return ( ! script[strReadyState] || script[strReadyState] == "loaded" || script[strReadyState] == "complete")
+    return ( ! script[strReadyState] || script[strReadyState] == "loaded" || script[strReadyState] == "complete");
   }
 
   function getLoader() {
@@ -44,14 +44,13 @@
     }
   }
 
-  function execJs() {
-    
+  function execJs(a) {
     var i = execStack[strShift]();
     started = 1;
 
     if ( i ) {
       if ( i.src ) {
-        loadJs( strScript, i.src, "") 
+        loadJs(strScript, i.src, "") 
       } else {
         i.call(getLoader());
         started = 0;
@@ -62,13 +61,33 @@
 
   function loadJs( elem, url, type, splicePoint ) {
 
+    function onload() {
+      // If the script is loaded
+      if ( ! done && isScriptReady( script ) ) {
+
+        // Set done to prevent this function from being called twice.
+        done = 1;
+        script.onloadCalled = 1;
+
+        // If the type is set, that means that we're offloading execution
+        if ( ! type || (type && ! started) ) {
+
+          callJsWhenReady();
+        }
+
+        // Handle memory leak in IE
+        script[strOnLoad] = script[strOnReadyStateChange] = null;
+        type && docHead.removeChild(script);
+      }
+    };
+
     // Create script element
     var script    = doc.createElement( elem ),
         done      = 0,
         execArr;
 
     script.src    = script.data = url;
-    script.type   = type;
+    type && (script.type   = type);
 
     // Just in case
     if (defaultsToAsync) {
@@ -77,35 +96,11 @@
     }
 
     // Attach handlers for all browsers
-    script[strOnLoad] = script[strOnReadyStateChange] = function() {
-      
-      // If the script is loaded
-      if ( ! done && isScriptReady( script ) ) {
-      
-
-        // Set done to prevent this function from being called twice.
-        done = 1;
-
-        // If the type is set, that means that we're offloading execution
-        if ( type ) {
-
-          ! started && callJsWhenReady();
-        }
-        // else, the script has executed, execute its corresponding callback
-        else {
-
-          // Continue executing
-          callJsWhenReady();
-        }
-
-        // Handle memory leak in IE
-        script[strOnLoad] = script[strOnReadyStateChange] = null;
-        docHead.removeChild(script);
-      }
-    };
+    script[strOnLoad] = script[strOnReadyStateChange] = onload;
     
-    // Handle 404s
-    if ( type || ( isGecko && elem == strScript )) {
+    if ( isOpera ) {
+      script.onerror = onload;
+    } else if ( type || ( isGecko && elem == strScript )) {
       script.onerror = function(){
         if ( ! done ) {
           done = 1;
@@ -117,7 +112,6 @@
     type && execStack.splice( splicePoint, 0, script);
 
     docHead.appendChild(script);
-
   }
 
   function load() {
@@ -151,13 +145,15 @@ var docElement            = doc.documentElement,
     strOnReadyStateChange = "onreadystatechange",
     strOnLoad             = "onload",
     noop                  = function(){},
-    strObject                = "object",
+    strObject             = "object",
     execStack             = [],
     loading               = 0,
     started               = 0,
-    defaultsToAsync        = (doc.createElement(strScript).async === true),
+    defaultsToAsync       = (doc.createElement(strScript).async === true),
     isGecko               = ("MozAppearance" in docElement.style),
-    strElem               = isGecko ? strObject : strScript,
+    // Thanks to @jdalton for this opera detection 
+    isOpera               = window.opera && toString.call(window.opera) == "[" + strObject + " Opera]"
+    strElem               = isGecko ? strObject : ( isOpera ? 'img' : strScript ),
     isArray               = Array.isArray || function(obj) {
       return toString.call(obj) == "[" + strObject + " Array]";  
     },
@@ -284,10 +280,11 @@ var docElement            = doc.documentElement,
         if (isFunction(callback) || isFunction(autoCallback)) {
           // Call getJS with our current stack of things
           chain.load(function(){
-            var yepnope = getYepnope();
+            // Hijack yepnope and restart index counter
+            yepnope = getYepnope();
             // Call our callbacks with this set of data
-            callback && callback(origInc, testResult, index, yepnope);
-            autoCallback && autoCallback(origInc, testResult, index, yepnope);
+            callback && callback(origInc, testResult, index);
+            autoCallback && autoCallback(origInc, testResult, index);
           });
         }
       }
@@ -390,5 +387,5 @@ var docElement            = doc.documentElement,
   
   // Leak me
   window.yepnope    = yepnope;
-  
+    
 })(this, this.document);
