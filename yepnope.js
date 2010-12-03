@@ -90,7 +90,7 @@
     type && (script.type   = type);
 
     // Just in case
-    if (defaultsToAsync) {
+    if (defaultsToAsync && elem == strScript) {
       // Breaks in a few FF4 Betas, but fixed now (via LABjs)
       script.async = strFalse;
     }
@@ -98,7 +98,7 @@
     // Attach handlers for all browsers
     script[strOnLoad] = script[strOnReadyStateChange] = onload;
     
-    if ( isOpera ) {
+    if ( elem == strImg ) {
       script.onerror = onload;
     } else if ( type || ( isGecko && elem == strScript )) {
       script.onerror = function(){
@@ -144,18 +144,21 @@ var docElement            = doc.documentElement,
     strReadyState         = "readyState",
     strOnReadyStateChange = "onreadystatechange",
     strOnLoad             = "onload",
-    noop                  = function(){},
     strObject             = "object",
+    strImg                = "img",
+    strPreobj             = "[" + strObject + " ",
+    noop                  = function(){},
     execStack             = [],
     loading               = 0,
     started               = 0,
     defaultsToAsync       = (doc.createElement(strScript).async === true),
+    isGecko18             = !! window.Event.prototype.preventBubble,
     isGecko               = ("MozAppearance" in docElement.style),
     // Thanks to @jdalton for this opera detection 
-    isOpera               = window.opera && toString.call(window.opera) == "[" + strObject + " Opera]"
-    strElem               = isGecko ? strObject : ( isOpera ? 'img' : strScript ),
+    isOpera               = window.opera && toString.call(window.opera) == strPreobj + "Opera]"
+    strElem               = isOpera || isGecko18 ? strImg : ( isGecko ? strObject : strScript ),
     isArray               = Array.isArray || function(obj) {
-      return toString.call(obj) == "[" + strObject + " Array]";  
+      return toString.call(obj) == strPreobj + "Array]";  
     },
     isObject              = function(obj) {
       // Lame object detection, but don't pass it stupid stuff?
@@ -165,7 +168,7 @@ var docElement            = doc.documentElement,
       return typeof s == "string";
     },
     isFunction            = function(fn) {
-      return toString.call(fn) == "[" + strObject + ' Function]';
+      return toString.call(fn) == strPreobj + 'Function]';
     },
     globalFilters         = [],
     prefixes              = {
