@@ -105,13 +105,13 @@ NOTE: the code in the github repository is considered in development. Use at you
 
 ##License##
 
-All of the yepnope specific code is under the WTFPL license. Which means it's also MIT and BSD (or anything you want). However, A.getJS is subject to it's own license (currently unlicensed)
+All of the yepnope specific code is under the WTFPL license. Which means it's also MIT and BSD (or anything you want). However, the inspired works are subject to their own licenses.
 
 ##Thanks##
 
-Ralph Holzmann - A lot of Yepnope's code is his.
+Ralph Holzmann - A lot of Yepnope's code and ideas are his.
 
-Dave Artz      - A.getJS is his. It's tiny and fast. Yay.
+Dave Artz      - A.getJS was a huge code-inspiration for our loader. Much of the code is just copied. So he's responsible for a ton of awesome techniques here.
 
 Kyle Simpson   - He is the creator of LABjs of which a lot of this is inspired by.
 
