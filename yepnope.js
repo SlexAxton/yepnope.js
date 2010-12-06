@@ -8,7 +8,7 @@
  * Tri-Licensed WTFPL, BSD, & MIT
  *
  * Yepnope relies on a script loading technique
- * inspired by A.getJS
+ * inspired by A.getJS by Dave Artz
 */
 (function(window, doc, undef) {
 
