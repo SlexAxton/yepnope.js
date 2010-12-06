@@ -97,9 +97,11 @@ In this case, only `polyfill.js` has the `wait!` prefix, so `needs-polyfill.js` 
 
 Any forks and stuff are welcome.
 
-##Current Version##
+##Current Released Version##
 
-0.5.0 
+0.2.3 
+
+NOTE: the code in the github repository is considered in development. Use at your own risk. The download buttons will link to our current release version.
 
 ##License##
 
