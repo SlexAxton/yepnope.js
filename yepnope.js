@@ -48,14 +48,20 @@
     var i = execStack[strShift]();
     started = 1;
 
+		if ( a && i.src ) {
+			i = execStack[strShift]();
+		}
+
     if ( i ) {
       if ( i.src ) {
         loadJs(strScript, i.src, "") 
       } else {
-        i.call(getLoader());
+        i();
         started = 0;
         callJsWhenReady();
       }
+    } else {
+    	started = 0;
     }
   }
 
@@ -100,12 +106,9 @@
     
     if ( elem == strImg ) {
       script.onerror = onload;
-    } else if ( type || ( isGecko && elem == strScript )) {
+    } else if ( elem == strScript ) {
       script.onerror = function(){
-        if ( ! done ) {
-          done = 1;
-          execJs();      
-        }
+          execJs(1);      
       };
     }
 
@@ -152,8 +155,8 @@ var docElement            = doc.documentElement,
     loading               = 0,
     started               = 0,
     defaultsToAsync       = (doc.createElement(strScript).async === true),
-    isGecko18             = !! window.Event.prototype.preventBubble,
     isGecko               = ("MozAppearance" in docElement.style),
+    isGecko18             = isGecko && !! window.Event.prototype.preventBubble,
     // Thanks to @jdalton for this opera detection 
     isOpera               = window.opera && toString.call(window.opera) == strPreobj + "Opera]"
     strElem               = isOpera || isGecko18 ? strImg : ( isGecko ? strObject : strScript ),
@@ -284,7 +287,7 @@ var docElement            = doc.documentElement,
           // Call getJS with our current stack of things
           chain.load(function(){
             // Hijack yepnope and restart index counter
-            yepnope = getYepnope();
+            var yepnope = getYepnope();
             // Call our callbacks with this set of data
             callback && callback(origInc, testResult, index);
             autoCallback && autoCallback(origInc, testResult, index);
