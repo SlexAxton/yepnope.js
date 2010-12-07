@@ -60,6 +60,8 @@
         started = 0;
         callJsWhenReady();
       }
+    } else {
+    	started = 0;
     }
   }
 
@@ -120,8 +122,6 @@
     var a = arguments,
         count = a.length,
         i;
-    console.log(this);
-    console.log(a[0]);
     
     for (i = 0, q = 0; i < count; i++) {
       if ( isString( a[i] )) {
