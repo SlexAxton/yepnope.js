@@ -1,10 +1,12 @@
 (function( w ) {
 
+  var timeout = 5000;
+
   module("Asynchronous Script Loading")
   asyncTest("Non-recursive loading of a &rarr; b &rarr; c", 9, function() {
     yepnope([
       {
-        load : '../js/a.js',
+        load : 'js/a.js',
         callback : function( id ) {
           ok( w.a, "a has loaded");
           ok( ! w.b, "b has not loaded");
@@ -12,7 +14,7 @@
         }
       },
       {
-        load : '../js/b.js',
+        load : 'js/b.js',
         callback : function( id ) {
           ok( w.a, "a has loaded");
           ok( w.b, "b has loaded");
@@ -20,7 +22,7 @@
         }
       },
       {
-        load : '../js/c.js',
+        load : 'js/c.js',
         callback : function( id ) {
           ok( w.a, "a has loaded");
           ok( w.b, "b has loaded");
@@ -31,13 +33,13 @@
         }
       }
     ]);
-
+    stop(timeout);
   });
 
   asyncTest("Recursive loading of d &rarr; e &rarr; f &rarr; g &rarr; h", 25, function() {
     yepnope([
       {
-        load : '../js/d.js',
+        load : 'js/d.js',
         callback : function() {
 
           ok( w.d, "d has loaded");
@@ -47,7 +49,7 @@
           ok( ! w.h, "h has not loaded");
 
           yepnope({
-            load : '../js/e.js',
+            load : 'js/e.js',
             callback : function(){
 
               ok( w.d, "d has loaded");
@@ -58,7 +60,7 @@
 
 
               yepnope({
-                load : '../js/f.js',
+                load : 'js/f.js',
                 callback : function() {
 
                   ok( w.d, "d has loaded");
@@ -68,7 +70,7 @@
                   ok( ! w.h, "h has not loaded");
 
                   yepnope({
-                    load : '../js/g.js',
+                    load : 'js/g.js',
                     callback : function() {
 
                       ok( w.d, "d has loaded");
@@ -86,7 +88,7 @@
         } // d
       },
       {
-        load : '../js/h.js',
+        load : 'js/h.js',
         callback : function() {
           ok( w.d, "d has loaded");
           ok( w.e, "e has loaded");
@@ -99,7 +101,7 @@
         }
       }
     ]);
-
+    stop(timeout);
   });
 
   asyncTest("404 Fallback", 2, function() {
@@ -111,7 +113,7 @@
           ok( ! w.i, "i returned a 404");
 
           yepnope({
-            load : '../js/i.js',
+            load : 'js/i.js',
             callback: function() {
 
               ok( w.i, "i has loaded" );
@@ -124,7 +126,7 @@
         }
       }
     ]);
-    stop(2000);
+    stop(timeout);
   });
 
 })( window )

@@ -48,9 +48,9 @@
     var i = execStack[strShift]();
     started = 1;
 
-		if ( a && i.src ) {
-			i = execStack[strShift]();
-		}
+    if ( a && i.src ) {
+      i = execStack[strShift]();
+    }
 
     if ( i ) {
       if ( i.src ) {
@@ -60,8 +60,6 @@
         started = 0;
         callJsWhenReady();
       }
-    } else {
-    	started = 0;
     }
   }
 
@@ -73,11 +71,9 @@
 
         // Set done to prevent this function from being called twice.
         done = 1;
-        script.onloadCalled = 1;
 
         // If the type is set, that means that we're offloading execution
         if ( ! type || (type && ! started) ) {
-
           callJsWhenReady();
         }
 
@@ -93,7 +89,9 @@
         execArr;
 
     script.src    = script.data = url;
-    type && (script.type   = type);
+    if ( type ) { 
+      script.type = type;
+    }
 
     // Just in case
     if (defaultsToAsync && elem == strScript) {
@@ -108,7 +106,7 @@
       script.onerror = onload;
     } else if ( elem == strScript ) {
       script.onerror = function(){
-          execJs(1);      
+        execJs(1);      
       };
     }
 
@@ -122,6 +120,8 @@
     var a = arguments,
         count = a.length,
         i;
+    console.log(this);
+    console.log(a[0]);
     
     for (i = 0, q = 0; i < count; i++) {
       if ( isString( a[i] )) {
