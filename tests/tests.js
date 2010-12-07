@@ -1,32 +1,33 @@
 (function( w ) {
 
-  var timeout = 5000;
+  var timeout = 5000,
+      u       = (+new Date);
 
   module("Asynchronous Script Loading")
   asyncTest("Non-recursive loading of a &rarr; b &rarr; c", 9, function() {
     yepnope([
       {
-        load : 'js/a.js',
+        load : 'js/a'+u+'.js',
         callback : function( id ) {
-          ok( w.a, "a has loaded");
-          ok( ! w.b, "b has not loaded");
-          ok( ! w.c, "c has not loaded" );
+          ok( w['a'+u], "a has loaded");
+          ok( ! w['b'+u], "b has not loaded");
+          ok( ! w['c'+u], "c has not loaded" );
         }
       },
       {
-        load : 'js/b.js',
+        load : 'js/b'+u+'.js',
         callback : function( id ) {
-          ok( w.a, "a has loaded");
-          ok( w.b, "b has loaded");
-          ok( ! w.c, "c has not loaded" );
+          ok( w['a'+u], "a has loaded");
+          ok( w['b'+u], "b has loaded");
+          ok( ! w['c'+u], "c has not loaded" );
         }
       },
       {
-        load : 'js/c.js',
+        load : 'js/c'+u+'.js',
         callback : function( id ) {
-          ok( w.a, "a has loaded");
-          ok( w.b, "b has loaded");
-          ok( w.c, "c has loaded" );
+          ok( w['a'+u], "a has loaded");
+          ok( w['b'+u], "b has loaded");
+          ok( w['c'+u], "c has loaded" );
         },
         complete: function() {
           start();
@@ -39,45 +40,45 @@
   asyncTest("Recursive loading of d &rarr; e &rarr; f &rarr; g &rarr; h", 25, function() {
     yepnope([
       {
-        load : 'js/d.js',
+        load : 'js/d'+u+'.js',
         callback : function() {
 
-          ok( w.d, "d has loaded");
-          ok( ! w.e, "e has not loaded");
-          ok( ! w.f, "f has not loaded");
-          ok( ! w.g, "g has not loaded");
-          ok( ! w.h, "h has not loaded");
+          ok( w['d'+u], "d has loaded");
+          ok( ! w['e'+u], "e has not loaded");
+          ok( ! w['f'+u], "f has not loaded");
+          ok( ! w['g'+u], "g has not loaded");
+          ok( ! w['h'+u], "h has not loaded");
 
           yepnope({
-            load : 'js/e.js',
+            load : 'js/e'+u+'.js',
             callback : function(){
 
-              ok( w.d, "d has loaded");
-              ok( w.e, "e has loaded");
-              ok( ! w.f, "f has not loaded");
-              ok( ! w.g, "g has not loaded");
-              ok( ! w.h, "h has not loaded");
+              ok( w['d'+u], "d has loaded");
+              ok( w['e'+u], "e has loaded");
+              ok( ! w['f'+u], "f has not loaded");
+              ok( ! w['g'+u], "g has not loaded");
+              ok( ! w['h'+u], "h has not loaded");
 
 
               yepnope({
-                load : 'js/f.js',
+                load : 'js/f'+u+'.js',
                 callback : function() {
 
-                  ok( w.d, "d has loaded");
-                  ok( w.e, "e has loaded");
-                  ok( w.f, "f has loaded");
-                  ok( ! w.g, "g has not loaded");
-                  ok( ! w.h, "h has not loaded");
+                  ok( w['d'+u], "d has loaded");
+                  ok( w['e'+u], "e has loaded");
+                  ok( w['f'+u], "f has loaded");
+                  ok( ! w['g'+u], "g has not loaded");
+                  ok( ! w['h'+u], "h has not loaded");
 
                   yepnope({
-                    load : 'js/g.js',
+                    load : 'js/g'+u+'.js',
                     callback : function() {
 
-                      ok( w.d, "d has loaded");
-                      ok( w.e, "e has loaded");
-                      ok( w.f, "f has loaded");
-                      ok( w.g, "g has loaded");
-                      ok( ! w.h, "h has not loaded");
+                      ok( w['d'+u], "d has loaded");
+                      ok( w['e'+u], "e has loaded");
+                      ok( w['f'+u], "f has loaded");
+                      ok( w['g'+u], "g has loaded");
+                      ok( ! w['h'+u], "h has not loaded");
 
                     } // g
                   });
@@ -88,13 +89,13 @@
         } // d
       },
       {
-        load : 'js/h.js',
+        load : 'js/h'+u+'.js',
         callback : function() {
-          ok( w.d, "d has loaded");
-          ok( w.e, "e has loaded");
-          ok( w.f, "f has loaded");
-          ok( w.g, "g has loaded");
-          ok( w.h, "h has loaded");
+          ok( w['d'+u], "d has loaded");
+          ok( w['e'+u], "e has loaded");
+          ok( w['f'+u], "f has loaded");
+          ok( w['g'+u], "g has loaded");
+          ok( w['h'+u], "h has loaded");
         },
         complete: function(){
           start();
@@ -110,13 +111,13 @@
         load : 'iDoesNotExist',
         callback : function(){
 
-          ok( ! w.i, "i returned a 404");
+          ok( ! w['i'+u], "i returned a 404");
 
           yepnope({
-            load : 'js/i.js',
+            load : 'js/i'+u+'.js',
             callback: function() {
 
-              ok( w.i, "i has loaded" );
+              ok( w['i'+u], "i has loaded" );
 
             },
             complete: function(){
