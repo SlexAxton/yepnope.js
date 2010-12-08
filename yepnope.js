@@ -287,6 +287,7 @@ var docElement            = doc.documentElement,
           // Call getJS with our current stack of things
           chain.load(function(){
             // Hijack yepnope and restart index counter
+            // NOTE:: This can't get minified... perhaps we need to pass it as a param isntead?
             var yepnope = getYepnope();
             // Call our callbacks with this set of data
             callback && callback(origInc, testResult, index);
@@ -300,44 +301,48 @@ var docElement            = doc.documentElement,
   
     function loadFromTestObject(testObject, chain) {
         var testResult = !!(testObject.test),
-            needGroup  = (testResult) ? testObject.yep : testObject.nope,
+            group      = (testResult) ? testObject.yep : testObject.nope,
+            always     = testObject.load || testObject.both,
             // Callback or wait option should cause getjs to block
             callback   = testObject.callback || (testObject.wait ? noop : undef),
-            k,
-            l;
-      
-        // If it's a string
-        if (isString(needGroup)) {
-          // Just load the script of style
-          chain = loadScriptOrStyle(needGroup, callback, chain, 0, testResult);
-        }
-        // If it's an array
-        else if (isArray(needGroup)) {
-          // Grab each thing out of it
-          for (l = 0; l < needGroup.length; l++) {
-            // Load each thing
-            chain = loadScriptOrStyle(needGroup[l], callback, chain, l, testResult);
+            l,
+            p;
+
+        // Reusable function for dealing with the different input types
+            // NOTE:: relies on closures to keep 'chain' up to date, a bit confusing, but
+            // much smaller than the functional equivalent in this case.
+        function handleGroup(needGroup) {
+          // If it's a string
+          if (isString(needGroup)) {
+            // Just load the script of style
+            chain = loadScriptOrStyle(needGroup, callback, chain, 0, testResult);
+          }
+          // If it's an array
+          /*else if (isArray(needGroup)) {
+            // Grab each thing out of it
+            for (l = 0; l < needGroup.length; l++) {
+              // Load each thing
+              chain = loadScriptOrStyle(needGroup[l], callback, chain, l, testResult);
+            }
+          }*/
+          // See if we have an object. Doesn't matter if it's an array or a key/val hash
+          else if (isObject(needGroup)) {
+            for (p in needGroup) {
+              // Safari 2 does not have hasOwnProperty, but not worth the bytes for a shim
+              // patch if needed. Kangax has a nice shim for it. Or just remove the check
+              // and promise not to extend the object prototype.
+              if (needGroup.hasOwnProperty(p)) {
+                chain = loadScriptOrStyle(needGroup[p], callback, chain, p, testResult);
+              }
+            }
           }
         }
-      
-        // Alias 'both' as 'load' so it's more semantic sometimes
-        if (testObject.both && !testObject.load) {
-          testObject.load = testObject.both;
-        }
-      
-        // get anything in the load object as well
-        if (isString(testObject.load)) {
-          // Just load the script of style
-          chain = loadScriptOrStyle(testObject.load, callback, chain, 0, testResult);
-        }
-        // If it's an array
-        else if (isArray(testObject.load)) {
-          // Grab each thing out of it
-          for (k = 0; k < testObject.load.length; k++) {
-            // Load each thing
-            chain = loadScriptOrStyle(testObject.load[k], callback, chain, k, testResult);
-          }
-        }
+
+        // figure out what this group should do
+        handleGroup(group);
+
+        // Run our loader on the load/both group too
+        handleGroup(always);
 
         // Fire complete callback
         if (testObject.complete) {
@@ -388,10 +393,8 @@ var docElement            = doc.documentElement,
     globalFilters.push(filter);
   };
   
-  // Attach loader 
-  yepnope = getYepnope();
-  
-  // Leak me
-  window.yepnope    = yepnope;
+  // Attach loader &
+  // Leak it
+  window.yepnope = yepnope = getYepnope();
     
 })(this, this.document);
