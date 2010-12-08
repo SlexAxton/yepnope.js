@@ -12,29 +12,68 @@
 */
 (function(window, doc, undef) {
 
+var docElement            = doc.documentElement,
+    docHead               = doc.getElementsByTagName("head")[0] || docElement,
+    docFirst              = docHead.firstChild,
+    toString              = {}.toString,
+    strScript             = "script",
+    strFalse              = "false",
+    strShift              = "shift",
+    strReadyState         = "readyState",
+    strOnReadyStateChange = "onreadystatechange",
+    strOnLoad             = "onload",
+    strObject             = "object",
+    strImg                = "img",
+    strPreobj             = "[" + strObject + " ",
+    noop                  = function(){},
+    execStack             = [],
+    started               = 0,
+    defaultsToAsync       = (doc.createElement(strScript).async === true),
+    isGecko               = ("MozAppearance" in docElement.style),
+    isGecko18             = isGecko && !! window.Event.prototype.preventBubble,
+    // Thanks to @jdalton for this opera detection 
+    isOpera               = window.opera && toString.call(window.opera) == strPreobj + "Opera]",
+    strElem               = isOpera || isGecko18 ? strImg : ( isGecko ? strObject : strScript ),
+    isArray               = Array.isArray || function(obj) {
+      return toString.call(obj) == strPreobj + "Array]";  
+    },
+    isObject              = function(obj) {
+      // Lame object detection, but don't pass it stupid stuff?
+      return typeof obj == strObject;
+    },
+    isString              = function(s) {
+      return typeof s == "string";
+    },
+    isFunction            = function(fn) {
+      return toString.call(fn) == strPreobj + 'Function]';
+    },
+    globalFilters         = [],
+    prefixes              = {
+      'css': function(resource) {
+        resource.forceCSS = true;
+        return resource;
+      },
+      'wait': function(resource) {
+        // This just adds an empty callback to force a wait
+        resource.autoCallback = noop;
+        return resource;
+      }
+    },
+    yepnope;
+
+
   /* Loader helper functions */
   function isScriptReady( script ) {
     return ( ! script[strReadyState] || script[strReadyState] == "loaded" || script[strReadyState] == "complete");
   }
 
-  function getLoader() {
-    return {
-      load: load,
-      i : 0
-    };
-  }
-  function getYepnope() {
-    var y = yepnope;
-    y.loader = getLoader();
-    return y;
-  }
-
   function callJsWhenReady() {
 
     var execStackReady = 1,
+        len,
         i;
 
-    for (var i = -1, len = execStack.length; ++i < len;) {
+    for (i = -1, len = execStack.length; ++i < len;) {
       if ( execStack[i].src && ! ( execStackReady = isScriptReady( execStack[i] ))) {        
         break;
       }
@@ -54,18 +93,21 @@
 
     if ( i ) {
       if ( i.src ) {
-        loadJs(strScript, i.src, "") 
+        loadJs(strScript, i.src, ""); 
       } else {
         i();
         started = 0;
         callJsWhenReady();
       }
     } else {
-    	started = 0;
+      started = 0;
     }
   }
 
   function loadJs( elem, url, type, splicePoint ) {
+    // Create script element
+    var script    = doc.createElement( elem ),
+        done      = 0;
 
     function onload() {
       // If the script is loaded
@@ -83,12 +125,7 @@
         script[strOnLoad] = script[strOnReadyStateChange] = null;
         type && docHead.removeChild(script);
       }
-    };
-
-    // Create script element
-    var script    = doc.createElement( elem ),
-        done      = 0,
-        execArr;
+    }
 
     script.src    = script.data = url;
     if ( type ) { 
@@ -121,7 +158,7 @@
 
     var a = arguments,
         count = a.length,
-        i;
+        i,q;
     
     for (i = 0, q = 0; i < count; i++) {
       if ( isString( a[i] )) {
@@ -135,62 +172,30 @@
     return this;
 
   }
+
+  function getLoader() {
+    return {
+      load: load,
+      i : 0
+    };
+  }
+
+  function getYepnope() {
+    var y = yepnope;
+    y.loader = getLoader();
+    return y;
+  }
+
   /* End loader helper functions */
 
-var docElement            = doc.documentElement,
-    docHead               = doc.getElementsByTagName("head")[0] || docElement,
-    docFirst              = docHead.firstChild,
-    toString              = {}.toString,
-    strScript             = "script",
-    strFalse              = "false",
-    strShift              = "shift",
-    strReadyState         = "readyState",
-    strOnReadyStateChange = "onreadystatechange",
-    strOnLoad             = "onload",
-    strObject             = "object",
-    strImg                = "img",
-    strPreobj             = "[" + strObject + " ",
-    noop                  = function(){},
-    execStack             = [],
-    loading               = 0,
-    started               = 0,
-    defaultsToAsync       = (doc.createElement(strScript).async === true),
-    isGecko               = ("MozAppearance" in docElement.style),
-    isGecko18             = isGecko && !! window.Event.prototype.preventBubble,
-    // Thanks to @jdalton for this opera detection 
-    isOpera               = window.opera && toString.call(window.opera) == strPreobj + "Opera]"
-    strElem               = isOpera || isGecko18 ? strImg : ( isGecko ? strObject : strScript ),
-    isArray               = Array.isArray || function(obj) {
-      return toString.call(obj) == strPreobj + "Array]";  
-    },
-    isObject              = function(obj) {
-      // Lame object detection, but don't pass it stupid stuff?
-      return typeof obj == strObject;
-    },
-    isString              = function(s) {
-      return typeof s == "string";
-    },
-    isFunction            = function(fn) {
-      return toString.call(fn) == strPreobj + 'Function]';
-    },
-    globalFilters         = [],
-    prefixes              = {
-      'css': function(resource) {
-        resource.forceCSS = true;
-        return resource;
-      },
-      'wait': function(resource) {
-        // This just adds an empty callback to force a wait
-        resource.autoCallback = noop;
-        return resource;
-      }
-    },
-    
+
+
+
     // Yepnope Function
-    yepnope               = function(needs) {
+    yepnope = function(needs) {
     
     var i,
-        needs,
+        need,
         nlen  = needs.length,
         // start the chain as a plain instance
         chain = this.yepnope.loader || getLoader();
@@ -275,7 +280,7 @@ var docElement            = doc.documentElement,
       
       
         // call the callback
-        callback && callback(origInc, testResult, index)
+        callback && callback(origInc, testResult, index);
         autoCallback && autoCallback(origInc, testResult, index);
       }
       // Otherwise assume that it's a script
@@ -305,8 +310,7 @@ var docElement            = doc.documentElement,
             always     = testObject.load || testObject.both,
             // Callback or wait option should cause getjs to block
             callback   = testObject.callback || (testObject.wait ? noop : undef),
-            l,
-            p;
+            callbackKey;
 
         // Reusable function for dealing with the different input types
             // NOTE:: relies on closures to keep 'chain' up to date, a bit confusing, but
@@ -326,13 +330,15 @@ var docElement            = doc.documentElement,
             }
           }*/
           // See if we have an object. Doesn't matter if it's an array or a key/val hash
+          // Note:: order cannot be guaranteed on an key value object with multiple elements
+          // since the for-in does not preserve order. Arrays _should_ go in order though.
           else if (isObject(needGroup)) {
-            for (p in needGroup) {
+            for (callbackKey in needGroup) {
               // Safari 2 does not have hasOwnProperty, but not worth the bytes for a shim
               // patch if needed. Kangax has a nice shim for it. Or just remove the check
               // and promise not to extend the object prototype.
-              if (needGroup.hasOwnProperty(p)) {
-                chain = loadScriptOrStyle(needGroup[p], callback, chain, p, testResult);
+              if (needGroup.hasOwnProperty(callbackKey)) {
+                chain = loadScriptOrStyle(needGroup[callbackKey], callback, chain, callbackKey, testResult);
               }
             }
           }
@@ -368,7 +374,7 @@ var docElement            = doc.documentElement,
         }
         // if it's an array, call our function recursively
         else if (isArray(need)) {
-          chain = yepnope(need, chain, stack);
+          chain = yepnope(need);
         }
         // if it's an object, use our modernizr logic to win
         else if (isObject(need)) {
@@ -384,6 +390,7 @@ var docElement            = doc.documentElement,
     // allow more loading on this chain
     return chain;
   };
+
 
   yepnope.addPrefix = function(prefix, callback) {
     prefixes[prefix] = callback;
