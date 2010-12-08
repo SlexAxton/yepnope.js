@@ -156,20 +156,21 @@ var docElement            = doc.documentElement,
 
   function load() {
 
-    var a = arguments,
+    var a     = arguments,
+        app   = this,
         count = a.length,
         i,q;
     
     for (i = 0, q = 0; i < count; i++) {
       if ( isString( a[i] )) {
-        loadJs( strElem, a[i], 'x', this.i++);
+        loadJs( strElem, a[i], 'x', app.i++);
       } else {
-        execStack.splice(this.i++, 0, a[i]);
+        execStack.splice(app.i++, 0, a[i]);
       }
     }
 
     // OMG is this jQueries? For chaining...
-    return this;
+    return app;
 
   }
 
