@@ -104,7 +104,29 @@
     ]);
     stop(timeout);
   });
-
+  
+  asyncTest("Key Value Callbacks", 2, function() {
+    yepnope([
+      {
+        load : {
+          'myscript-aa': 'js/aa'+u+'.js',
+          'myscript-bb': 'js/bb'+u+'.js'
+        },
+        callback : {
+          'myscript-aa': function() {
+            ok( w['aa'+u], "aa has loaded");
+          },
+          'myscript-bb': function() {
+            ok( w['bb'+u], "bb has loaded");
+          }
+        },
+        complete: function() {
+          start();
+        }
+      }
+    ]);
+    stop(timeout);
+  });
   asyncTest("404 Fallback", 2, function() {
     yepnope([
       {
