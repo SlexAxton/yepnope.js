@@ -293,10 +293,11 @@ var docElement            = doc.documentElement,
           chain.load(function(){
             // Hijack yepnope and restart index counter
             // NOTE:: This can't get minified... perhaps we need to pass it as a param isntead?
-            var yepnope = getYepnope();
+            var innernope = getYepnope();
             // Call our callbacks with this set of data
-            callback && callback(origInc, testResult, index);
-            autoCallback && autoCallback(origInc, testResult, index);
+            // TODO :: get CSS preloading working so we can use innernope there too
+            callback && callback(origInc, testResult, index, innernope);
+            autoCallback && autoCallback(origInc, testResult, index, innernope);
           });
         }
       }

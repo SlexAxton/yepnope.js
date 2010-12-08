@@ -41,7 +41,7 @@
     yepnope([
       {
         load : 'js/d'+u+'.js',
-        callback : function() {
+        callback : function(url, res, key, yepnope) {
 
           ok( w['d'+u], "d has loaded");
           ok( ! w['e'+u], "e has not loaded");
@@ -51,7 +51,7 @@
 
           yepnope({
             load : 'js/e'+u+'.js',
-            callback : function(){
+            callback : function(url, res, key, yepnope){
 
               ok( w['d'+u], "d has loaded");
               ok( w['e'+u], "e has loaded");
@@ -62,7 +62,7 @@
 
               yepnope({
                 load : 'js/f'+u+'.js',
-                callback : function() {
+                callback : function(url, res, key, yepnope) {
 
                   ok( w['d'+u], "d has loaded");
                   ok( w['e'+u], "e has loaded");
@@ -131,7 +131,7 @@
     yepnope([
       {
         load : 'iDoesNotExist',
-        callback : function(){
+        callback : function(url, res, key, yepnope){
 
           ok( ! w['i'+u], "i returned a 404");
 
