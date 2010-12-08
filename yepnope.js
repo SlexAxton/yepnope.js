@@ -16,6 +16,8 @@ var docElement            = doc.documentElement,
     docHead               = doc.getElementsByTagName("head")[0] || docElement,
     docFirst              = docHead.firstChild,
     toString              = {}.toString,
+    jsType                = 'j',
+    cssType               = 'c',
     strScript             = "script",
     strFalse              = "false",
     strShift              = "shift",
@@ -82,19 +84,30 @@ var docElement            = doc.documentElement,
       execJs();
     }
   }
+  
+  function injectCss(oldObj) {
+    console.log(oldObj);
+  }
 
   function execJs(a) {
-    var i = execStack[strShift]();
+    var i   = execStack[strShift](),
+        src = i ? i.src  : undef,
+        t   = i ? i.type : undef;
+    
     started = 1;
 
-    if ( a && i.src ) {
+    if ( a && src ) {
       i = execStack[strShift]();
     }
 
     if ( i ) {
-      if ( i.src ) {
-        loadJs(strScript, i.src, ""); 
-      } else {
+      if ( src && t == jsType ) {
+        loadFile(strScript, src, ""); 
+      } 
+      else if ( src && t == cssType ) {
+        injectCss(i);
+      }
+      else {
         i();
         started = 0;
         callJsWhenReady();
@@ -104,7 +117,7 @@ var docElement            = doc.documentElement,
     }
   }
 
-  function loadJs( elem, url, type, splicePoint ) {
+  function loadFile( elem, url, type, splicePoint ) {
     // Create script element
     var script    = doc.createElement( elem ),
         done      = 0;
@@ -132,11 +145,11 @@ var docElement            = doc.documentElement,
       script.type = type;
     }
 
-    // Just in case
-    if (defaultsToAsync && elem == strScript) {
+    // This may just be wasted bytes since we're not using any normal script injection
+    //if (defaultsToAsync && elem == strScript) {
       // Breaks in a few FF4 Betas, but fixed now (via LABjs)
-      script.async = strFalse;
-    }
+      //script.async = strFalse;
+    //}
 
     // Attach handlers for all browsers
     script[strOnLoad] = script[strOnReadyStateChange] = onload;
@@ -154,19 +167,19 @@ var docElement            = doc.documentElement,
     docHead.appendChild(script);
   }
 
-  function load() {
+  function load(resource, type) {
 
     var a     = arguments,
         app   = this,
         count = a.length,
         i,q;
     
-    for (i = 0, q = 0; i < count; i++) {
-      if ( isString( a[i] )) {
-        loadJs( strElem, a[i], 'x', app.i++);
-      } else {
-        execStack.splice(app.i++, 0, a[i]);
-      }
+    // We'll do 'j' for js and 'c' for css, yay for unreadable minification tactics
+    type = type || jsType;
+    if ( isString( resource )) {
+      loadFile(strElem, resource, type, app.i++);
+    } else {
+      execStack.splice(app.i++, 0, resource);
     }
 
     // OMG is this jQueries? For chaining...
@@ -268,7 +281,7 @@ var docElement            = doc.documentElement,
       }
       // If it's specifically css with the prefix, just inject it (useful for weird extensions and cachebusted urls, etc)
       // Also do this if it ends in a .css extension
-      else if (incLen > 4 && (forceCSS || (!forceJS && inc.substr(incLen-4) === '.css'))) {
+/*      else if (incLen > 4 && (forceCSS || (!forceJS && inc.substr(incLen-4) === '.css'))) {
         styleElem      = doc.createElement('link');
       
         // add our src to it
@@ -283,10 +296,11 @@ var docElement            = doc.documentElement,
         // call the callback
         callback && callback(origInc, testResult, index);
         autoCallback && autoCallback(origInc, testResult, index);
-      }
+      }*/
       // Otherwise assume that it's a script
       else {
-        chain.load(inc);
+
+        chain.load(inc, (incLen > 4 && (forceCSS || (!forceJS && inc.substr(incLen-4) === '.css'))) ? cssType : undef);
 
         // If we have a callback, we'll start the chain over
         if (isFunction(callback) || isFunction(autoCallback)) {

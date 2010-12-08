@@ -105,6 +105,21 @@
     stop(timeout);
   });
   
+  asyncTest("CSS Callbacks", 1, function() {
+    yepnope([
+      {
+        load : 'css!js/acssfilecss',
+        callback : function() {
+          console.log('this should happen after the load css console.log');
+          ok(true, 'fake test')
+        }, 
+        complete: function() {
+          start();
+        }
+      }
+    ]);
+    stop(timeout);
+  });
   asyncTest("Key Value Callbacks", 2, function() {
     yepnope([
       {
