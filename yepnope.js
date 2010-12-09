@@ -87,6 +87,15 @@ var docElement            = doc.documentElement,
   
   function injectCss(oldObj) {
     console.log(oldObj);
+    var styleElem      = doc.createElement('link');
+
+    // add our src to it
+    styleElem.href = oldObj.src;
+    styleElem.rel  = 'stylesheet';
+    styleElem.type = 'text/css';
+
+    // inject the file
+    docHead.insertBefore(styleElem, docFirst);
   }
 
   function execJs(a) {
@@ -106,6 +115,7 @@ var docElement            = doc.documentElement,
       } 
       else if ( src && t == cssType ) {
         injectCss(i);
+        callJsWhenReady();
       }
       else {
         i();
@@ -267,8 +277,7 @@ var docElement            = doc.documentElement,
           instead      = resource.instead,
           autoCallback = resource.autoCallback,
           forceJS      = resource.forceJS,
-          forceCSS     = resource.forceCSS,
-          styleElem;
+          forceCSS     = resource.forceCSS;
     
       // Determine callback, if any
       if ( callback ) {
@@ -282,7 +291,7 @@ var docElement            = doc.documentElement,
       // If it's specifically css with the prefix, just inject it (useful for weird extensions and cachebusted urls, etc)
       // Also do this if it ends in a .css extension
 /*      else if (incLen > 4 && (forceCSS || (!forceJS && inc.substr(incLen-4) === '.css'))) {
-        styleElem      = doc.createElement('link');
+        var styleElem      = doc.createElement('link');
       
         // add our src to it
         styleElem.href = inc;
