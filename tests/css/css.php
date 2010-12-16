@@ -1,5 +1,5 @@
 <?php
-
+header("Expires: Thu, 31 Dec 2020 20:00:00 GMT");
 header('Content-Type: text/css');
 $qs = '';
 if (isset($_GET['sleep'])) {

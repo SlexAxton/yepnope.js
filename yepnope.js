@@ -86,7 +86,6 @@ var docElement            = doc.documentElement,
   }
   
   function injectCss(oldObj) {
-    console.log(oldObj);
     var styleElem      = doc.createElement('link');
 
     // add our src to it
