@@ -70,7 +70,6 @@ var docElement            = doc.documentElement,
   }
 
   function callJsWhenReady() {
-
     var execStackReady = 1,
         len,
         i;
@@ -86,7 +85,6 @@ var docElement            = doc.documentElement,
   }
   
   function injectCss(oldObj) {
-    console.log(oldObj);
     var styleElem      = doc.createElement('link');
 
     // add our src to it
@@ -102,11 +100,12 @@ var docElement            = doc.documentElement,
     var i   = execStack[strShift](),
         src = i ? i.src  : undef,
         t   = i ? i.type : undef;
-    
+
     started = 1;
 
     if ( a && src ) {
       i = execStack[strShift]();
+      src = undef;
     }
 
     if ( i ) {
@@ -133,9 +132,9 @@ var docElement            = doc.documentElement,
         done      = 0;
 
     function onload() {
+
       // If the script is loaded
       if ( ! done && isScriptReady( script ) ) {
-
         // Set done to prevent this function from being called twice.
         done = 1;
 
@@ -154,6 +153,7 @@ var docElement            = doc.documentElement,
     if ( type ) { 
       script.type = type;
     }
+
 
     // This may just be wasted bytes since we're not using any normal script injection
     //if (defaultsToAsync && elem == strScript) {
@@ -175,6 +175,11 @@ var docElement            = doc.documentElement,
     type && execStack.splice( splicePoint, 0, script);
 
     docHead.appendChild(script);
+
+    if ( isOpera && ! type && elem == strScript ) {
+      setTimeout(function(){ ! done && callJsWhenReady(); }, 400);
+    }
+
   }
 
   function load(resource, type) {

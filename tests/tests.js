@@ -142,11 +142,13 @@
     ]);
     stop(timeout);
   });
+
   asyncTest("404 Fallback", 2, function() {
     yepnope([
       {
         load : 'iDoesNotExist',
         callback : function(url, res, key, yepnope){
+        	console.log('fallback callback called');
 
           ok( ! w['i'+u], "i returned a 404");
 
@@ -158,6 +160,7 @@
 
             },
             complete: function(){
+            	console.log('completed called');
               start();
             }
           })
