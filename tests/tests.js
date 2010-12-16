@@ -1,13 +1,26 @@
 (function( w ) {
 
-  var timeout = 5000,
-      u       = (+new Date);
+  function cssIsLoaded(zindex, cb) {
+    var $elem = $('#item_'+zindex);
+    if (!$elem.length) {
+      $elem = $('<div id="item_'+zindex+'">&nbsp;</div>');
+      $('#cssTests').append($elem);
+    }
+    // Let the reflow occur, or whatever it would be called here. 
+    setTimeout(function(){
+      cb(((zindex+'') === ($elem.css('zIndex')+'')));
+    }, 0);
+  }
+
+  var timeout   = 15000,
+      cssZindex = (+new Date) % (16777271 - 1000), // subtract the max number of css files we might load
+      u         = (+new Date);
 
   module("Asynchronous Script Loading")
   asyncTest("Non-recursive loading of a &rarr; b &rarr; c", 9, function() {
     yepnope([
       {
-        load : 'js/a'+u+'.js',
+        load : 'js/a'+u+'.js?sleep=2',
         callback : function( id ) {
           ok( w['a'+u], "a has loaded");
           ok( ! w['b'+u], "b has not loaded");
@@ -105,19 +118,37 @@
     stop(timeout);
   });
   
-  asyncTest("CSS Callbacks", 1, function() {
+  asyncTest("CSS Callback Timing", 3, function() {
+    var cbZindex = ++cssZindex,
+        startTime = (+new Date);
+
+    // For good measure, make sure this is always true
+    cssIsLoaded(cbZindex, function(result) {
+      ok(!result, 'CSS is not already loaded.');
+    });
+
     yepnope([
       {
-        load : 'css!js/acssfilecss',
+        load : 'css!css/'+cbZindex+'.css?sleep=3',
         callback : function() {
-          console.log('this should happen after the load css console.log');
-          ok(true, 'fake test')
+          console.log('elapsed:', (+new Date)-startTime);
+          cssIsLoaded(cbZindex, function(result) {
+            ok(result, 'CSS is loaded at callback runtime.');
+          });
         }, 
         complete: function() {
           start();
         }
       }
     ]);
+
+    // Since the load is slept for 3 seconds, it should not exist after 1.5 seconds
+    setTimeout(function() {
+      cssIsLoaded(cbZindex, function(result) {
+        ok(!result, 'CSS is not loaded before callback.');
+      });
+    }, 1500);
+
     stop(timeout);
   });
   asyncTest("Key Value Callbacks", 2, function() {
