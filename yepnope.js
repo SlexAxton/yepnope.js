@@ -208,7 +208,7 @@ var docElement            = doc.documentElement,
 
         // Handle memory leak in IE
         script[strOnLoad] = script[strOnReadyStateChange] = null;
-        type && docHead.removeChild(script);
+//        type && docHead.removeChild(script);
       }
     }
 
@@ -226,7 +226,7 @@ var docElement            = doc.documentElement,
       script.onerror = function(){
         executeStack(1);      
       };
-      type && docHead.removeChild(script);
+//      type && docHead.removeChild(script);
     }
 
     type && execStack.splice( splicePoint, 0, script);
