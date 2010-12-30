@@ -185,7 +185,6 @@ var docElement            = doc.documentElement,
 
 
   function preloadFile( elem, url, type, splicePoint, docHead ) {
-
     // Create script element
     var preloadElem = doc.createElement( elem ),
         done        = 0;
@@ -204,7 +203,7 @@ var docElement            = doc.documentElement,
 
         // Handle memory leak in IE
         preloadElem[strOnLoad] = preloadElem[strOnReadyStateChange] = null;
-//        type && docHead.removeChild(preloadElem);
+        type && docHead.removeChild(preloadElem);
       }
     }
 
@@ -222,7 +221,6 @@ var docElement            = doc.documentElement,
       preloadElem.onerror = function(){
         executeStack(1);      
       };
-//      type && docHead.removeChild(preloadElem);
     }
 
     type && execStack.splice( splicePoint, 0, preloadElem);

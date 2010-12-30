@@ -93,8 +93,7 @@ if ( ! window.console ) {
 
     // array of objects
     yepnope([{
-      load: 'js/h'+u+'.js?sleep=1',
-      wait: true // force an in order execution manually (since we're not testing the wait! prefix yet)
+      load: 'js/sleep-1/h'+u+'.js',
     },
     {
       load: 'js/i'+u+'.js',
@@ -105,7 +104,7 @@ if ( ! window.console ) {
 
     // mixed array of strings and objects
     yepnope(['js/j'+u+'.js', {
-      load: 'js/k'+u+'.js?sleep=3', // use the sleep like the crappy timeout hack to test the string
+      load: 'js/sleep-1/k'+u+'.js', // use the sleep like the crappy timeout hack to test the string
       callback: function() {
         ok(w['j'+u] && w['k'+u], "Mixed array of strings and objects*");
       }
@@ -134,7 +133,7 @@ if ( ! window.console ) {
     // In this case we'd want d to wait for c before executing, most user friendly default
     // use 'immediate' flag to avoid
     yepnope([{
-      load: 'js/c'+u+'.js?sleep=3'
+      load: 'js/sleep-3/c'+u+'.js'
     },
     {
       load: 'js/d'+u+'.js',
@@ -153,7 +152,7 @@ if ( ! window.console ) {
 
     yepnope([
       {
-        load : 'js/a'+u+'.js?sleep=2',
+        load : 'js/sleep-2/a'+u+'.js',
         callback : function( id ) {
           ok( w['a'+u] && !w['b'+u] && !w['c'+u], "a has loaded; not b or c");
         }
@@ -236,7 +235,7 @@ if ( ! window.console ) {
 
     yepnope([
       {
-        load : 'css!css/' + rgb.join(',') + '.css?sleep=3',
+        load : 'css!css/sleep-3/' + rgb.join(',') + '.css',
         callback : function() {
           cssIsLoaded(rgb, function(result) {
 
