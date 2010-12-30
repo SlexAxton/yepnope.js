@@ -32,12 +32,13 @@ var docElement            = doc.documentElement,
     noop                  = function(){},
     execStack             = [],
     started               = 0,
+    strAppear             = 'Appearance',
     defaultsToAsync       = (doc.createElement(strScript).async === true),
-    isGecko               = ("MozAppearance" in docElement.style),
+    isGecko               = ("Moz"+strAppear in docElement.style),
     isGecko18             = isGecko && !! window.Event.prototype.preventBubble,
     // Thanks to @jdalton for this opera detection 
     isOpera               = window.opera && toString.call(window.opera) == strPreobj + "Opera]",
-    isWebkit              = ("webkitAppearance" in docElement.style),
+    isWebkit              = ("webkit"+strAppear in docElement.style),
     strJsElem             = isOpera || isGecko18 ? strImg : ( isGecko ? strObject : strScript ),
     strCssElem            = isWebkit ? strImg : strJsElem,
     isArray               = Array.isArray || function(obj) {
@@ -64,7 +65,7 @@ var docElement            = doc.documentElement,
 
 
   /* Loader helper functions */
-  function isScriptReady( script ) {
+  function isFileReady( script ) {
     return ( ! script[strReadyState] || script[strReadyState] == "loaded" || script[strReadyState] == "complete");
   }
 
@@ -74,7 +75,7 @@ var docElement            = doc.documentElement,
         i;
 
     for (i = -1, len = execStack.length; ++i < len;) {
-      if ( execStack[i].src && ! ( execStackReady = isScriptReady( execStack[i] ))) {        
+      if ( execStack[i].src && ! ( execStackReady = isFileReady( execStack[i] ))) {        
         break;
       }
     }
@@ -186,13 +187,13 @@ var docElement            = doc.documentElement,
   function preloadFile( elem, url, type, splicePoint, docHead ) {
 
     // Create script element
-    var script    = doc.createElement( elem ),
-        done      = 0;
+    var preloadElem = doc.createElement( elem ),
+        done        = 0;
 
     function onload() {
 
-      // If the script is loaded
-      if ( ! done && isScriptReady( script ) ) {
+      // If the script/css file is loaded
+      if ( ! done && isFileReady( preloadElem ) ) {
         // Set done to prevent this function from being called twice.
         done = 1;
 
@@ -202,31 +203,31 @@ var docElement            = doc.documentElement,
         }
 
         // Handle memory leak in IE
-        script[strOnLoad] = script[strOnReadyStateChange] = null;
-//        type && docHead.removeChild(script);
+        preloadElem[strOnLoad] = preloadElem[strOnReadyStateChange] = null;
+//        type && docHead.removeChild(preloadElem);
       }
     }
 
-    script.src    = script.data = url;
+    preloadElem.src = preloadElem.data = url;
     if ( type ) { 
-      script.type = type;
+      preloadElem.type = type;
     }
 
     // Attach handlers for all browsers
-    script[strOnLoad] = script[strOnReadyStateChange] = onload;
+    preloadElem[strOnLoad] = preloadElem[strOnReadyStateChange] = onload;
     
     if ( elem == strImg ) {
-      script.onerror = onload;
+      preloadElem.onerror = onload;
     } else if ( elem == strScript ) {
-      script.onerror = function(){
+      preloadElem.onerror = function(){
         executeStack(1);      
       };
-//      type && docHead.removeChild(script);
+//      type && docHead.removeChild(preloadElem);
     }
 
-    type && execStack.splice( splicePoint, 0, script);
+    type && execStack.splice( splicePoint, 0, preloadElem);
 
-    docHead.appendChild(script);
+    docHead.appendChild(preloadElem);
 
     if ( isOpera && ! type && elem == strScript ) {
       setTimeout(function(){
