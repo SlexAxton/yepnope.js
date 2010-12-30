@@ -16,8 +16,11 @@
 
         <div id="cssTests"></div>
 	<script type="text/javascript" src="../yepnope.js"></script>
-  <script type="text/javascript" src="qunit.js"></script>
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
+        <script type="text/javascript" src="qunit.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
 	<script type="text/javascript" src="tests.js"></script>
+        <!-- The testswarm inject.js will come at the end of the body, now. Currently, with the object hack, yepnope needs to inject
+        objects into a body element, not a head element. TODO:: make it to where it doesn't matter if yepnope is in the head. IDEA:: 
+        Maybe object tags can't be in the <head> but they can be in the <html> element. TODO:: test this idea. -->
 </body>
 </html>
