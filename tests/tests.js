@@ -1,19 +1,51 @@
+if ( ! window.console ) {
+	window.console = {
+		log : function( msg ) {
+		}
+	};
+	
+};
 (function( w ) {
 
-  function cssIsLoaded(zindex, cb) {
-    var $elem = $('#item_'+zindex);
+	var rgbRegex = /rgb\((\d+),\s?(\d+),\s?(\d+)\)/;
+
+  function cssIsLoaded(rgb, cb) {
+    var $elem = $('#item_' + rgb.join(''));
+
     if (!$elem.length) {
-      $elem = $('<div id="item_'+zindex+'">&nbsp;</div>');
+      $elem = $('<div id="item_' + rgb.join('') + '">&nbsp;</div>');
       $('#cssTests').append($elem);
     }
+
     // Let the reflow occur, or whatever it would be called here. 
     setTimeout(function(){
-      cb(((zindex+'') === ($elem.css('zIndex')+'')));
+      
+      var color = $elem.css('color'),
+      		matches = rgbRegex.exec( color ),
+      		result = true;
+      if ( matches ) {
+      	matches.shift();
+      	$.each(matches, function( i, v ) {
+      		if ( result ) {
+      			result = rgb[i] == matches[i];
+      		}
+      	});
+	      cb(result);
+      } else if (/#(\w+)/.test( color )) {
+      	cb( color.toLowerCase() == '#' + ($.map(rgb, function( v, i ) { return  v.toString(16); }).join('').toLowerCase()) );
+      
+      } else {
+	      cb(false);      
+      }
     }, 0);
   }
 
   var timeout   = 15000,
-      cssZindex = (+new Date) % (16777271 - 1000), // subtract the max number of css files we might load
+  		rgb				= (function( i ){  			
+  			var a = [];
+  			while ( i-- ) a.push( Math.floor( Math.random() * 255 ) );
+  			return a;
+  		})(3),
       u         = (+new Date);
 
   module("Asynchronous Script Loading")
@@ -119,22 +151,23 @@
   });
   
   asyncTest("CSS Callback Timing", 3, function() {
-    var cbZindex = ++cssZindex,
-        startTime = (+new Date);
+    var startTime = (+new Date);
 
     // For good measure, make sure this is always true
-    cssIsLoaded(cbZindex, function(result) {
+    cssIsLoaded(rgb, function(result) {
       ok(!result, 'CSS is not already loaded.');
     });
 
     yepnope([
       {
-        load : 'css!css/'+cbZindex+'.css?sleep=3',
+        load : 'css!css/' + rgb.join(',') + '.css?sleep=3',
         callback : function() {
-          console.log('elapsed:', (+new Date)-startTime);
-          cssIsLoaded(cbZindex, function(result) {
+          cssIsLoaded(rgb, function(result) {
+
             ok(result, 'CSS is loaded at callback runtime.');
+
           });
+
         }, 
         complete: function() {
           start();
@@ -144,7 +177,7 @@
 
     // Since the load is slept for 3 seconds, it should not exist after 1.5 seconds
     setTimeout(function() {
-      cssIsLoaded(cbZindex, function(result) {
+      cssIsLoaded(rgb, function(result) {
         ok(!result, 'CSS is not loaded before callback.');
       });
     }, 1500);
@@ -179,7 +212,6 @@
       {
         load : 'iDoesNotExist',
         callback : function(url, res, key, yepnope){
-        	console.log('fallback callback called');
 
           ok( ! w['i'+u], "i returned a 404");
 
@@ -191,7 +223,6 @@
 
             },
             complete: function(){
-            	console.log('completed called');
               start();
             }
           })

@@ -14,7 +14,9 @@
 
 var docElement            = doc.documentElement,
     docHead               = doc.getElementsByTagName("head")[0] || docElement,
+    docBody               = doc.getElementsByTagName("body")[0] || doc.body,
     docFirst              = docHead.firstChild,
+    errorTimeout          = 5000,
     toString              = {}.toString,
     jsType                = 'j',
     cssType               = 'c',
@@ -35,7 +37,9 @@ var docElement            = doc.documentElement,
     isGecko18             = isGecko && !! window.Event.prototype.preventBubble,
     // Thanks to @jdalton for this opera detection 
     isOpera               = window.opera && toString.call(window.opera) == strPreobj + "Opera]",
-    strElem               = isOpera || isGecko18 ? strImg : ( isGecko ? strObject : strScript ),
+    isWebkit              = ("webkitAppearance" in docElement.style),
+    strJsElem             = isOpera || isGecko18 ? strImg : ( isGecko ? strObject : strScript ),
+    strCssElem            = isWebkit ? strImg : strJsElem,
     isArray               = Array.isArray || function(obj) {
       return toString.call(obj) == strPreobj + "Array]";  
     },
@@ -69,7 +73,7 @@ var docElement            = doc.documentElement,
     return ( ! script[strReadyState] || script[strReadyState] == "loaded" || script[strReadyState] == "complete");
   }
 
-  function callJsWhenReady() {
+  function execWhenReady() {
     var execStackReady = 1,
         len,
         i;
@@ -80,23 +84,81 @@ var docElement            = doc.documentElement,
       }
     }
     if ( execStackReady ) {
-      execJs();
+      executeStack();
     }
   }
   
   function injectCss(oldObj) {
-    var styleElem      = doc.createElement('link');
+    
+    // Create stylesheet link
+    var link      = doc.createElement('link'),
+        done;
 
-    // add our src to it
-    styleElem.href = oldObj.src;
-    styleElem.rel  = 'stylesheet';
-    styleElem.type = 'text/css';
+    // Add attributes
+    link.href = oldObj.src;
+    link.rel  = 'stylesheet';
+    link.type = 'text/css';
 
-    // inject the file
-    docHead.insertBefore(styleElem, docFirst);
+
+    // Poll for changes in webkit and gecko
+    if ( isWebkit || isGecko ) {
+
+      (function poll( link ) {
+        var args = arguments;
+        setTimeout(function(){
+          if ( ! done ) {            
+            try {
+              if ( link.sheet && link.sheet.cssRules && link.sheet.cssRules.length ) {
+                done = true;
+                execWhenReady();              
+              } else {
+                poll(link);
+              }
+            } catch (ex) {
+
+              if ( (ex.code == 1000) || (ex.message.match(/security|denied/i)) ) {
+                done = true;
+                setTimeout(function(){
+                  execWhenReady();
+                }, 0 );
+              } else {
+                poll(link);              
+              }
+            }
+             
+          }
+        }, 13);
+      })( link );
+
+    }
+    // Onload handler for IE and Opera
+    else {
+
+      link.onload = function() {
+        if ( ! done ) {
+          done = true;
+          setTimeout(function(){
+            execWhenReady();
+          }, 0);
+        }
+      }
+
+    }
+
+    // 404 Fallback
+    setTimeout(function(){
+      if ( ! done ) {
+        done = true;
+        execWhenReady();
+      }
+    }, errorTimeout);
+
+    // Inject CSS
+    docHead.insertBefore(link, docFirst);
+
   }
 
-  function execJs(a) {
+  function executeStack(a) {
     var i   = execStack[strShift](),
         src = i ? i.src  : undef,
         t   = i ? i.type : undef;
@@ -110,23 +172,24 @@ var docElement            = doc.documentElement,
 
     if ( i ) {
       if ( src && t == jsType ) {
-        loadFile(strScript, src, ""); 
+        preloadFile(strScript, src, "", null, docHead); 
       } 
       else if ( src && t == cssType ) {
         injectCss(i);
-        callJsWhenReady();
       }
       else {
         i();
         started = 0;
-        callJsWhenReady();
+        execWhenReady();
       }
     } else {
       started = 0;
     }
   }
 
-  function loadFile( elem, url, type, splicePoint ) {
+
+  function preloadFile( elem, url, type, splicePoint, docHead ) {
+
     // Create script element
     var script    = doc.createElement( elem ),
         done      = 0;
@@ -140,7 +203,7 @@ var docElement            = doc.documentElement,
 
         // If the type is set, that means that we're offloading execution
         if ( ! type || (type && ! started) ) {
-          callJsWhenReady();
+          execWhenReady();
         }
 
         // Handle memory leak in IE
@@ -154,13 +217,6 @@ var docElement            = doc.documentElement,
       script.type = type;
     }
 
-
-    // This may just be wasted bytes since we're not using any normal script injection
-    //if (defaultsToAsync && elem == strScript) {
-      // Breaks in a few FF4 Betas, but fixed now (via LABjs)
-      //script.async = strFalse;
-    //}
-
     // Attach handlers for all browsers
     script[strOnLoad] = script[strOnReadyStateChange] = onload;
     
@@ -168,8 +224,9 @@ var docElement            = doc.documentElement,
       script.onerror = onload;
     } else if ( elem == strScript ) {
       script.onerror = function(){
-        execJs(1);      
+        executeStack(1);      
       };
+      type && docHead.removeChild(script);
     }
 
     type && execStack.splice( splicePoint, 0, script);
@@ -177,7 +234,12 @@ var docElement            = doc.documentElement,
     docHead.appendChild(script);
 
     if ( isOpera && ! type && elem == strScript ) {
-      setTimeout(function(){ ! done && callJsWhenReady(); }, 400);
+      setTimeout(function(){
+        if ( ! done ) {
+          done = 1;
+          execWhenReady();
+        }
+      }, errorTimeout);
     }
 
   }
@@ -187,12 +249,13 @@ var docElement            = doc.documentElement,
     var a     = arguments,
         app   = this,
         count = a.length,
+        elem  = ( type == 'c' ? strCssElem : strJsElem ),
         i,q;
     
     // We'll do 'j' for js and 'c' for css, yay for unreadable minification tactics
     type = type || jsType;
     if ( isString( resource )) {
-      loadFile(strElem, resource, type, app.i++);
+      preloadFile(elem, resource, type, app.i++, (elem == strObject ? docBody : docHead) );
     } else {
       execStack.splice(app.i++, 0, resource);
     }
