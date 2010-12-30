@@ -58,11 +58,6 @@ var docElement            = doc.documentElement,
       'css': function(resource) {
         resource.forceCSS = true;
         return resource;
-      },
-      'wait': function(resource) {
-        // This just adds an empty callback to force a wait
-        resource.autoCallback = noop;
-        return resource;
       }
     },
     yepnope;
@@ -401,8 +396,7 @@ var docElement            = doc.documentElement,
         var testResult = !!(testObject.test),
             group      = (testResult) ? testObject.yep : testObject.nope,
             always     = testObject.load || testObject.both,
-            // Callback or wait option should cause getjs to block
-            callback   = testObject.callback || (testObject.wait ? noop : undef),
+            callback   = testObject.callback || undef,  // || (testObject.wait ? noop : undef),
             callbackKey;
 
         // Reusable function for dealing with the different input types
