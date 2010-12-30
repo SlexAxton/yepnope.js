@@ -128,28 +128,13 @@ if ( ! window.console ) {
   });
 
   module("Asynchronous Script Loading")
-  asyncTest("Execution Order", 2, function() {
+  asyncTest("Execution Order", 1, function() {
     ++u;
 
-    var b_was_first = false,
-        count = 0;
-
-    // In this case, we'd want b to load and execute before a since there is no explicit/implicit wait
-    // on the `a` file
+    // In this case we'd want d to wait for c before executing, most user friendly default
+    // use 'immediate' flag to avoid
     yepnope([{
-      load: 'js/a'+u+'.js?sleep=2'
-    },
-    {
-      load: 'js/b'+u+'.js',
-      callback: function() {
-        ok(!w['a'+u], "b loaded before a, no order forced");
-      }
-    }]);
-   
-    // In this case we'd want d to wait for c before executing
-    yepnope([{
-      load: 'js/c'+u+'.js?sleep=3',
-      wait: true
+      load: 'js/c'+u+'.js?sleep=3'
     },
     {
       load: 'js/d'+u+'.js',
