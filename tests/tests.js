@@ -128,7 +128,7 @@ if ( ! window.console ) {
   });
 
   module("Asynchronous Script Loading")
-  asyncTest("Non-recursive loading of a &rarr; b &rarr; c", 9, function() {
+  asyncTest("Non-recursive loading of a &rarr; b &rarr; c", 3, function() {
     // Increment the unique value per test, so caching doesn't occur between tests
     ++u;
 
@@ -136,25 +136,19 @@ if ( ! window.console ) {
       {
         load : 'js/a'+u+'.js?sleep=2',
         callback : function( id ) {
-          ok( w['a'+u], "a has loaded");
-          ok( ! w['b'+u], "b has not loaded");
-          ok( ! w['c'+u], "c has not loaded" );
+          ok( w['a'+u] && !w['b'+u] && !w['c'+u], "a has loaded; not b or c");
         }
       },
       {
         load : 'js/b'+u+'.js',
         callback : function( id ) {
-          ok( w['a'+u], "a has loaded");
-          ok( w['b'+u], "b has loaded");
-          ok( ! w['c'+u], "c has not loaded" );
+          ok( w['a'+u] && w['b'+u] && !w['c'+u], "a & b have loaded; not c");
         }
       },
       {
         load : 'js/c'+u+'.js',
         callback : function( id ) {
-          ok( w['a'+u], "a has loaded");
-          ok( w['b'+u], "b has loaded");
-          ok( w['c'+u], "c has loaded" );
+          ok( w['a'+u] && w['b'+u] && w['c'+u], "a, b, and c have loaded");
         },
         complete: function() {
           start();
@@ -164,7 +158,7 @@ if ( ! window.console ) {
     stop(timeout);
   });
 
-  asyncTest("Recursive loading of d &rarr; e &rarr; f &rarr; g &rarr; h", 25, function() {
+  asyncTest("Recursive loading of d &rarr; e &rarr; f &rarr; g &rarr; h", 5, function() {
     ++u;
 
     yepnope([
@@ -172,42 +166,25 @@ if ( ! window.console ) {
         load : 'js/d'+u+'.js',
         callback : function(url, res, key, yepnope) {
 
-          ok( w['d'+u], "d has loaded");
-          ok( ! w['e'+u], "e has not loaded");
-          ok( ! w['f'+u], "f has not loaded");
-          ok( ! w['g'+u], "g has not loaded");
-          ok( ! w['h'+u], "h has not loaded");
+          ok( w['d'+u] && !w['e'+u] && !w['f'+u] && !w['g'+u] && !w['h'+u], "d has loaded; e,f,g,h have not.");
 
           yepnope({
             load : 'js/e'+u+'.js',
             callback : function(url, res, key, yepnope){
 
-              ok( w['d'+u], "d has loaded");
-              ok( w['e'+u], "e has loaded");
-              ok( ! w['f'+u], "f has not loaded");
-              ok( ! w['g'+u], "g has not loaded");
-              ok( ! w['h'+u], "h has not loaded");
-
+              ok( w['d'+u] && w['e'+u] && !w['f'+u] && !w['g'+u] && !w['h'+u], "d,e have loaded; f,g,h have not.");
 
               yepnope({
                 load : 'js/f'+u+'.js',
                 callback : function(url, res, key, yepnope) {
 
-                  ok( w['d'+u], "d has loaded");
-                  ok( w['e'+u], "e has loaded");
-                  ok( w['f'+u], "f has loaded");
-                  ok( ! w['g'+u], "g has not loaded");
-                  ok( ! w['h'+u], "h has not loaded");
+                  ok( w['d'+u] && w['e'+u] && w['f'+u] && !w['g'+u] && !w['h'+u], "d,e,f have loaded; g,h have not.");
 
                   yepnope({
                     load : 'js/g'+u+'.js',
                     callback : function() {
 
-                      ok( w['d'+u], "d has loaded");
-                      ok( w['e'+u], "e has loaded");
-                      ok( w['f'+u], "f has loaded");
-                      ok( w['g'+u], "g has loaded");
-                      ok( ! w['h'+u], "h has not loaded");
+                      ok( w['d'+u] && w['e'+u] && w['f'+u] && w['g'+u] && !w['h'+u], "d,e,f,g have loaded; h has not.");
 
                     } // g
                   });
@@ -220,11 +197,7 @@ if ( ! window.console ) {
       {
         load : 'js/h'+u+'.js',
         callback : function() {
-          ok( w['d'+u], "d has loaded");
-          ok( w['e'+u], "e has loaded");
-          ok( w['f'+u], "f has loaded");
-          ok( w['g'+u], "g has loaded");
-          ok( w['h'+u], "h has loaded");
+          ok( w['d'+u] && w['e'+u] && w['f'+u] && w['g'+u] && w['h'+u], "d,e,f,g,h have all loaded");
         },
         complete: function(){
           start();
