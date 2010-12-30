@@ -128,6 +128,40 @@ if ( ! window.console ) {
   });
 
   module("Asynchronous Script Loading")
+  asyncTest("Execution Order", 2, function() {
+    ++u;
+
+    var b_was_first = false,
+        count = 0;
+
+    // In this case, we'd want b to load and execute before a since there is no explicit/implicit wait
+    // on the `a` file
+    yepnope([{
+      load: 'js/a'+u+'.js?sleep=2'
+    },
+    {
+      load: 'js/b'+u+'.js',
+      callback: function() {
+        ok(!w['a'+u], "b loaded before a, no order forced");
+      }
+    }]);
+   
+    // In this case we'd want d to wait for c before executing
+    yepnope([{
+      load: 'js/c'+u+'.js?sleep=3',
+      wait: true
+    },
+    {
+      load: 'js/d'+u+'.js',
+      callback: function() {
+        ok(w['c'+u] && w['d'+u], "d waited for c to complete.");
+      },
+      complete: function() {
+        start();
+      }
+    }]);
+  });
+
   asyncTest("Non-recursive loading of a &rarr; b &rarr; c", 3, function() {
     // Increment the unique value per test, so caching doesn't occur between tests
     ++u;
