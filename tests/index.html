@@ -15,7 +15,11 @@
         <div id="qunit-fixture">test markup</div>
 
         <div id="cssTests"></div>
-	<script type="text/javascript" src="../yepnope.js"></script>
+        <script type="text/javascript" src="../yepnope.js"></script>
+        <!-- load the supported plugins so they can be tested as well. Will break them out when it makes sense -->
+        <script type="text/javascript" src="../prefixes/yepnope.ie-prefix.js"></script>
+        <script type="text/javascript" src="../filters/yepnope.autoprotocol.js"></script>
+        
         <script type="text/javascript" src="qunit.js"></script>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
 	<script type="text/javascript" src="tests.js"></script>
