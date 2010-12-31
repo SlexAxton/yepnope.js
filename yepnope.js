@@ -1,18 +1,15 @@
 /**
- * yepnope.js 0.5.0pre
+ * yepnope.js 1.0pre
  * by Alex Sexton - AlexSexton@gmail.com 
- *
- * Major Contributions by:
- * Ralph Holzmann - @ralphholzmann
+ * &
+ * Ralph Holzmann - ralphholzmann@gmail.com
  *
  * Tri-Licensed WTFPL, BSD, & MIT
- *
- * Yepnope relies on a script loading technique
- * inspired by A.getJS by Dave Artz
 */
 (function(window, doc, undef) {
 
 var docElement            = doc.documentElement,
+    sTimeout              = window.setTimeout,
     docHead               = doc.getElementsByTagName("head")[0] || docElement,
     docBody               = doc.getElementsByTagName("body")[0] || doc.body,
     docFirst              = docHead.firstChild,
@@ -21,7 +18,6 @@ var docElement            = doc.documentElement,
     jsType                = 'j',
     cssType               = 'c',
     strScript             = "script",
-    strFalse              = "false",
     strShift              = "shift",
     strReadyState         = "readyState",
     strOnReadyStateChange = "onreadystatechange",
@@ -29,11 +25,9 @@ var docElement            = doc.documentElement,
     strObject             = "object",
     strImg                = "img",
     strPreobj             = "[" + strObject + " ",
-    noop                  = function(){},
     execStack             = [],
     started               = 0,
     strAppear             = 'Appearance',
-    defaultsToAsync       = (doc.createElement(strScript).async === true),
     isGecko               = ("Moz"+strAppear in docElement.style),
     isGecko18             = isGecko && !! window.Event.prototype.preventBubble,
     // Thanks to @jdalton for this opera detection 
@@ -65,8 +59,9 @@ var docElement            = doc.documentElement,
 
 
   /* Loader helper functions */
-  function isFileReady( script ) {
-    return ( ! script[strReadyState] || script[strReadyState] == "loaded" || script[strReadyState] == "complete");
+  function isFileReady( injectedElem ) {
+    // Check to see if any of the ways a file can be ready are available as properties on the file's element
+    return ( ! injectedElem[strReadyState] || injectedElem[strReadyState] == "loaded" || injectedElem[strReadyState] == "complete");
   }
 
   function execWhenReady() {
@@ -74,16 +69,21 @@ var docElement            = doc.documentElement,
         len,
         i;
 
+    // Loop through the stack of scripts in the cue and execute them when all scripts in a group are ready
     for (i = -1, len = execStack.length; ++i < len;) {
-      if ( execStack[i].src && ! ( execStackReady = isFileReady( execStack[i] ))) {        
+      if ( execStack[i].src && ! ( execStackReady = isFileReady( execStack[i] ))) {     
+        // As soon as we encounter a script that isn't ready, stop looking for more
         break;
       }
     }
+    // If we've set the stack as ready in the loop, make it happen here
     if ( execStackReady ) {
       executeStack();
     }
   }
   
+  // Takes a preloaded css obj (changes in different browsers) and injects it into the head
+  // in the appropriate order
   function injectCss(oldObj) {
     
     // Create stylesheet link
@@ -99,25 +99,35 @@ var docElement            = doc.documentElement,
     // Poll for changes in webkit and gecko
     if ( isWebkit || isGecko ) {
 
+      // A self executing function with a sTimeout poll to call itself
+      // again until the css file is added successfully
       (function poll( link ) {
-        var args = arguments;
-        setTimeout(function(){
+        sTimeout(function(){
+          // Don't run again if we're already done
           if ( ! done ) {            
             try {
+              // In supporting browsers, we can see the length of the cssRules of the file go up
               if ( link.sheet && link.sheet.cssRules && link.sheet.cssRules.length ) {
+                // Then turn off the poll
                 done = true;
+                // And execute a function to execute callbacks when all dependencies are met
                 execWhenReady();              
               } else {
+                // otherwise, wait another interval and try again
                 poll(link);
               }
             } catch (ex) {
-
+              // In the case that the browser does not support the cssRules array (cross domain)
+              // just check the error message to see if it's a security error
               if ( (ex.code == 1000) || (ex.message.match(/security|denied/i)) ) {
+                // if it's a security error, that means it loaded a cross domain file, so stop the timeout loop
                 done = true;
-                setTimeout(function(){
+                // and execute a check to see if we can run the callback(s) immediately after this function ends
+                sTimeout(function(){
                   execWhenReady();
                 }, 0 );
               } else {
+                // otherwise, continue to poll
                 poll(link);              
               }
             }
@@ -130,19 +140,22 @@ var docElement            = doc.documentElement,
     // Onload handler for IE and Opera
     else {
 
+      // In browsers that allow the onload event on link tags, just use it
       link.onload = function() {
         if ( ! done ) {
+          // Set our flag to complete
           done = true;
-          setTimeout(function(){
+          // Check to see if we can call the callback
+          sTimeout(function(){
             execWhenReady();
           }, 0);
         }
-      }
+      };
 
     }
 
     // 404 Fallback
-    setTimeout(function(){
+    sTimeout(function(){
       if ( ! done ) {
         done = true;
         execWhenReady();
@@ -155,42 +168,53 @@ var docElement            = doc.documentElement,
   }
 
   function executeStack(a) {
+    // shift an element off of the stack
     var i   = execStack[strShift](),
         src = i ? i.src  : undef,
         t   = i ? i.type : undef;
 
     started = 1;
 
+    // if a exists and has a src
     if ( a && src ) {
+      // Pop another off the stack
       i = execStack[strShift]();
+      // unset the src
       src = undef;
     }
 
     if ( i ) {
+      // if it's a script, inject it into the head with no type attribute
       if ( src && t == jsType ) {
         preloadFile(strScript, src, "", null, docHead); 
       } 
+      // If it's a css file, fun the css injection function
       else if ( src && t == cssType ) {
         injectCss(i);
       }
+      // Otherwise, just call the function and potentially run the stack
+      // reset the started flag for the recursive handling
       else {
         i();
         started = 0;
         execWhenReady();
       }
     } else {
+      // just reset out of recursive mode
       started = 0;
     }
   }
 
 
   function preloadFile( elem, url, type, splicePoint, docHead ) {
-    // Create script element
+    // Create appropriate element for browser and type
     var preloadElem = doc.createElement( elem ),
         done        = 0;
 
+    // var startTime = (+new Date);
+    // console.log('inject', (type ? 'preload' : ''), url);
     function onload() {
-
+      // console.log('onload', (type ? 'preload': ''), url, (+new Date)-startTime);
       // If the script/css file is loaded
       if ( ! done && isFileReady( preloadElem ) ) {
         // Set done to prevent this function from being called twice.
@@ -207,7 +231,10 @@ var docElement            = doc.documentElement,
       }
     }
 
+    // Just set the src and the data attributes so we don't have differentiate between elem types
     preloadElem.src = preloadElem.data = url;
+
+    // Only if we have a type to add should we set the type attribute (a real script has no type)
     if ( type ) { 
       preloadElem.type = type;
     }
@@ -215,20 +242,32 @@ var docElement            = doc.documentElement,
     // Attach handlers for all browsers
     preloadElem[strOnLoad] = preloadElem[strOnReadyStateChange] = onload;
     
+    // If it's an image
     if ( elem == strImg ) {
+      // Use the onerror callback as the 'completed' indicator
       preloadElem.onerror = onload;
-    } else if ( elem == strScript ) {
+    } 
+    // Otherwise, if it's a script element
+    else if ( elem == strScript ) {
+      // handle errors on script elements when we can
       preloadElem.onerror = function(){
         executeStack(1);      
       };
     }
 
+    // inject the element into the stack depending on if it's
+    // in the middle of other scripts or not
     type && execStack.splice( splicePoint, 0, preloadElem);
 
+    // append the element to the appropriate parent element (scripts go in the head, usually, and objects go in the body usually)
     docHead.appendChild(preloadElem);
 
+    // Special case for opera, since error handling is how we detect onload
+    // (with images) - we can't have a real error handler. So in opera, we 
+    // have a timeout in order to throw an error if something never loads.
+    // Better solutions welcomed.
     if ( isOpera && ! type && elem == strScript ) {
-      setTimeout(function(){
+      sTimeout(function(){
         if ( ! done ) {
           done = 1;
           execWhenReady();
@@ -240,17 +279,18 @@ var docElement            = doc.documentElement,
 
   function load(resource, type) {
 
-    var a     = arguments,
-        app   = this,
-        count = a.length,
-        elem  = ( type == 'c' ? strCssElem : strJsElem ),
-        i,q;
+    var app   = this,
+        elem  = ( type == 'c' ? strCssElem : strJsElem ); 
     
     // We'll do 'j' for js and 'c' for css, yay for unreadable minification tactics
     type = type || jsType;
     if ( isString( resource )) {
+      // if the resource passed in here is a string, preload the file
+      // use the head when we can (which is the documentElement when the head element doesn't exist)
+      // and use the body element for objects. Images seem fine in the head, for some odd reason.
       preloadFile(elem, resource, type, app.i++, (elem == strObject ? docBody : docHead) );
     } else {
+      // Otherwise it's a resource object and we can splice it into the app at the current location
       execStack.splice(app.i++, 0, resource);
     }
 
@@ -260,12 +300,14 @@ var docElement            = doc.documentElement,
   }
 
   function getLoader() {
+    // this is a function to maintain state and return a fresh loader
     return {
       load: load,
       i : 0
     };
   }
 
+  // return the yepnope object with a fresh loader attached
   function getYepnope() {
     var y = yepnope;
     y.loader = getLoader();
@@ -350,25 +392,6 @@ var docElement            = doc.documentElement,
       if (instead) {
         return instead(input, callback, chain, index, testResult);
       }
-      // If it's specifically css with the prefix, just inject it (useful for weird extensions and cachebusted urls, etc)
-      // Also do this if it ends in a .css extension
-/*      else if (incLen > 4 && (forceCSS || (!forceJS && inc.substr(incLen-4) === '.css'))) {
-        var styleElem      = doc.createElement('link');
-      
-        // add our src to it
-        styleElem.href = inc;
-        styleElem.rel  = 'stylesheet';
-        styleElem.type = 'text/css';
-      
-        // inject the file
-        docHead.insertBefore(styleElem, docFirst);
-      
-      
-        // call the callback
-        callback && callback(origInc, testResult, index);
-        autoCallback && autoCallback(origInc, testResult, index);
-      }*/
-      // Otherwise assume that it's a script
       else {
 
         chain.load(inc, (incLen > 4 && (forceCSS || (!forceJS && inc.substr(incLen-4) === '.css'))) ? cssType : undef);
@@ -407,14 +430,6 @@ var docElement            = doc.documentElement,
             // Just load the script of style
             chain = loadScriptOrStyle(needGroup, callback, chain, 0, testResult);
           }
-          // If it's an array
-          /*else if (isArray(needGroup)) {
-            // Grab each thing out of it
-            for (l = 0; l < needGroup.length; l++) {
-              // Load each thing
-              chain = loadScriptOrStyle(needGroup[l], callback, chain, l, testResult);
-            }
-          }*/
           // See if we have an object. Doesn't matter if it's an array or a key/val hash
           // Note:: order cannot be guaranteed on an key value object with multiple elements
           // since the for-in does not preserve order. Arrays _should_ go in order though.
@@ -477,11 +492,28 @@ var docElement            = doc.documentElement,
     return chain;
   };
 
-
+  // This publicly exposed function is for allowing
+  // you to add functionality based on prefixes on the
+  // string files you add. 'css!' is a builtin prefix
+  //
+  // The arguments are the prefix (not including the !) as a string
+  // and
+  // A callback function. This function is passed a resource object
+  // that can be manipulated and then returned. (like middleware. har.)
+  //
+  // Examples of this can be seen in the officially supported ie prefix
   yepnope.addPrefix = function(prefix, callback) {
     prefixes[prefix] = callback;
   };
   
+  // A filter is a global function that every resource
+  // object that passes through yepnope will see. You can
+  // of course conditionally choose to modify the resource objects
+  // or just pass them along. The filter function takes the resource
+  // object and is expected to return one.
+  //
+  // The best example of a filter is the 'autoprotocol' officially
+  // supported filter
   yepnope.addFilter = function(filter) {
     globalFilters.push(filter);
   };
