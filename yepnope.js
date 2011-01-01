@@ -212,9 +212,9 @@ var docElement            = doc.documentElement,
         done        = 0;
 
     // var startTime = (+new Date);
-    // console.log('inject', (type ? 'preload' : ''), url);
+    // console.log('inject', (type ? 'preload ' : 'reinject'), url);
     function onload() {
-      // console.log('onload', (type ? 'preload': ''), url, (+new Date)-startTime);
+      // console.log('onload', (type ? 'preload ': 'reinject'), url, (+new Date)-startTime);
       // If the script/css file is loaded
       if ( ! done && isFileReady( preloadElem ) ) {
         // Set done to prevent this function from being called twice.
