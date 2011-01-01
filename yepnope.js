@@ -89,8 +89,7 @@ var docElement            = doc.documentElement,
     var script    = doc.createElement(strScript),
         done;
 
-    script.type   = 'text/javascript';
-    script.src    = oldObj.src
+    script.src    = oldObj.src;
     
     // Bind to load events
     script[strOnReadyStateChange] = script[strOnLoad] = function() {
