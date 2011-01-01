@@ -259,6 +259,21 @@ if ( ! window.console ) {
 
     stop(timeout);
   });
+
+  module("Caching");
+  asyncTest("Don't Load Twice", 1, function(){
+    ++u;
+
+    yepnope('js/sleep-3/a'+u+'.js');
+
+    // If it caches, it will take 3 seconds and change, if not, it'll take 6 seconds
+    setTimeout(function(){
+      ok(w['a'+u], "a exists already");
+      start();
+    }, 4000);
+  });
+
+  module("Inner api");
   asyncTest("Key Value Callbacks", 2, function() {
     ++u;
 
