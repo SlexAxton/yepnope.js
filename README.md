@@ -1,4 +1,4 @@
-#Yepnope JS#
+#yepnope.js#
 
 A Script Loader For Your Polyfills, or Regressive Enhancement With Style.
 
