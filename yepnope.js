@@ -10,10 +10,14 @@
 
 var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
+    NULL                  = null,
+    FALSE                 = !!0,
+    TRUE                  = !!1,
     docFirst              = docElement.firstChild,
     toString              = {}.toString,
     jsType                = 'j',
     cssType               = 'c',
+    strComplete           = "complete",
     strScript             = "script",
     strShift              = "shift",
     strReadyState         = "readyState",
@@ -48,7 +52,7 @@ var docElement            = doc.documentElement,
     globalFilters         = [],
     prefixes              = {
       'css': function ( resource ) {
-        resource.forceCSS = true;
+        resource.forceCSS = TRUE;
         return resource;
       }
     },
@@ -57,7 +61,7 @@ var docElement            = doc.documentElement,
   /* Loader helper functions */
   function isFileReady ( injectedElem ) {
     // Check to see if any of the ways a file can be ready are available as properties on the file's element
-    return ( ! injectedElem[ strReadyState ] || injectedElem[ strReadyState ] == "loaded" || injectedElem[ strReadyState ] == "complete" );
+    return ( ! injectedElem[ strReadyState ] || injectedElem[ strReadyState ] == "loaded" || injectedElem[ strReadyState ] == strComplete );
   }
 
   function execWhenReady () {
@@ -97,7 +101,7 @@ var docElement            = doc.documentElement,
         execWhenReady();
 
         // Handle memory leak in IE
-        script[ strOnLoad ] = script[ strOnReadyStateChange ] = null;
+        script[ strOnLoad ] = script[ strOnReadyStateChange ] = NULL;
         docElement.removeChild( script );
       }
     };
@@ -108,7 +112,7 @@ var docElement            = doc.documentElement,
         done = 1;
         execWhenReady();
       }
-    }, window.yepnope.errorTimeout );
+    }, yepnope.errorTimeout );
 
     // Inject script into to document
     docElement.appendChild( script );
@@ -140,7 +144,7 @@ var docElement            = doc.documentElement,
               // In supporting browsers, we can see the length of the cssRules of the file go up
               if ( link.sheet && link.sheet.cssRules && link.sheet.cssRules.length ) {
                 // Then turn off the poll
-                done = true;
+                done = TRUE;
                 // And execute a function to execute callbacks when all dependencies are met
                 execWhenReady();
               }
@@ -154,7 +158,7 @@ var docElement            = doc.documentElement,
               // just check the error message to see if it's a security error
               if ( ( ex.code == 1000 ) || ( ex.message.match( /security|denied/i ) ) ) {
                 // if it's a security error, that means it loaded a cross domain file, so stop the timeout loop
-                done = true;
+                done = TRUE;
                 // and execute a check to see if we can run the callback(s) immediately after this function ends
                 sTimeout( function () {
                   execWhenReady();
@@ -176,7 +180,7 @@ var docElement            = doc.documentElement,
       link.onload = function () {
         if ( ! done ) {
           // Set our flag to complete
-          done = true;
+          done = TRUE;
           // Check to see if we can call the callback
           sTimeout( function () {
             execWhenReady();
@@ -188,10 +192,10 @@ var docElement            = doc.documentElement,
     // 404 Fallback
     sTimeout( function () {
       if ( ! done ) {
-        done = true;
+        done = TRUE;
         execWhenReady();
       }
-    }, window.yepnope.errorTimeout );
+    }, yepnope.errorTimeout );
 
     // Inject CSS
     docElement.insertBefore( link, docFirst );
@@ -246,7 +250,7 @@ var docElement            = doc.documentElement,
         stackObject = {
           type: type,
           src: url,
-          ready: false
+          ready: FALSE 
         };
 
     function onload () {
@@ -263,7 +267,7 @@ var docElement            = doc.documentElement,
         }
 
         // Handle memory leak in IE
-        preloadElem[ strOnLoad ] = preloadElem[ strOnReadyStateChange ] = null;
+        preloadElem[ strOnLoad ] = preloadElem[ strOnReadyStateChange ] = NULL;
         type && docElement.removeChild( preloadElem );
       }
     }
@@ -313,7 +317,7 @@ var docElement            = doc.documentElement,
         stackObject.ready = done = 1;
           execWhenReady();
         }
-      }, window.yepnope.errorTimeout );
+      }, yepnope.errorTimeout );
     }
   }
 
@@ -398,7 +402,7 @@ var docElement            = doc.documentElement,
         // return the final url
         return res;
       }
-      return false;
+      return FALSE;
     }
 
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
@@ -487,8 +491,8 @@ var docElement            = doc.documentElement,
         handleGroup( always );
 
         // Fire complete callback
-        if ( testObject.complete ) {
-          chain = chain.load( testObject.complete );
+        if ( testObject[ strComplete ] ) {
+          chain = chain.load( testObject[ strComplete ] );
         }
 
         return chain;
@@ -496,7 +500,7 @@ var docElement            = doc.documentElement,
 
     // Someone just decides to load a single script or css file as a string
     if ( isString( needs ) ) {
-      chain = loadScriptOrStyle( needs, false, chain, 0 );
+      chain = loadScriptOrStyle( needs, FALSE, chain, 0 );
     }
     // Normal case is likely an array of different types of loading options
     else if ( isArray( needs ) ) {
@@ -506,7 +510,7 @@ var docElement            = doc.documentElement,
 
         // if it's a string, just load it
         if ( isString( need ) ) {
-          chain = loadScriptOrStyle( need, false, chain, 0 );
+          chain = loadScriptOrStyle( need, FALSE, chain, 0 );
         }
         // if it's an array, call our function recursively
         else if ( isArray( need ) ) {
@@ -560,16 +564,16 @@ var docElement            = doc.documentElement,
   // safe for jQuery 1.4+ ( i.e. don't use yepnope with jQuery 1.3.2 )
   ( function ( addEvent, domLoaded, handler ) {
     // if the readyState is null and we have a listener
-    if ( doc[ strReadyState ] == null && doc[ addEvent ] ) {
+    if ( doc[ strReadyState ] == NULL && doc[ addEvent ] ) {
       // set the ready state to loading
       doc[ strReadyState ] = "loading";
       // call the listener
       doc[ addEvent ]( domLoaded, handler = function () {
         // Remove the listener
-        doc.removeEventListener( domLoaded, handler, false );
+        doc.removeEventListener( domLoaded, handler, FALSE );
         // Set it to ready
-        doc[ strReadyState ] = "complete";
-      }, false );
+        doc[ strReadyState ] = strComplete;
+      }, FALSE );
     }
   } )( "addEventListener", "DOMContentLoaded" );
 
