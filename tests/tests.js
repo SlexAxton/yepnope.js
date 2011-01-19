@@ -93,7 +93,7 @@ if ( ! window.console ) {
 
     // array of objects
     yepnope([{
-      load: 'js/sleep-1/h'+u+'.js',
+      load: 'js/sleep-1/h'+u+'.js'
     },
     {
       load: 'js/i'+u+'.js',
