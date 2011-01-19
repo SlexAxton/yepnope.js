@@ -40,7 +40,7 @@ if ( ! window.console ) {
     }, 0);
   }
 
-  var timeout   = 20000,
+  var timeout   = 25000,
       rgb       = (function( i ){
         var a = [];
         while ( i-- ) a.push( Math.floor( Math.random() * 255 ) );
@@ -270,7 +270,7 @@ if ( ! window.console ) {
     setTimeout(function(){
       ok(w['a'+u], "a exists already");
       start();
-    }, 5900);
+    }, 5500);
   });
 
   module("Inner api");
