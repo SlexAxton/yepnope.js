@@ -1,13 +1,13 @@
 if ( ! window.console ) {
-	window.console = {
-		log : function( msg ) {
-		}
-	};
-	
+  window.console = {
+    log : function( msg ) {
+    }
+  };
+
 };
 (function( w ) {
 
-	var rgbRegex = /rgb\((\d+),\s?(\d+),\s?(\d+)\)/;
+  var rgbRegex = /rgb\((\d+),\s?(\d+),\s?(\d+)\)/;
 
   function cssIsLoaded(rgb, cb) {
     var $elem = $('#item_' + rgb.join(''));
@@ -17,35 +17,35 @@ if ( ! window.console ) {
       $('#cssTests').append($elem);
     }
 
-    // Let the reflow occur, or whatever it would be called here. 
+    // Let the reflow occur, or whatever it would be called here.
     setTimeout(function(){
-      
+
       var color = $elem.css('color'),
-      		matches = rgbRegex.exec( color ),
-      		result = true;
+          matches = rgbRegex.exec( color ),
+          result = true;
       if ( matches ) {
-      	matches.shift();
-      	$.each(matches, function( i, v ) {
-      		if ( result ) {
-      			result = rgb[i] == matches[i];
-      		}
-      	});
-	      cb(result);
+        matches.shift();
+        $.each(matches, function( i, v ) {
+          if ( result ) {
+            result = rgb[i] == matches[i];
+          }
+        });
+        cb(result);
       } else if (/#(\w+)/.test( color )) {
-      	cb( color.toLowerCase() == '#' + ($.map(rgb, function( v, i ) { return  v.toString(16); }).join('').toLowerCase()) );
-      
+        cb( color.toLowerCase() == '#' + ($.map(rgb, function( v, i ) { return  v.toString(16); }).join('').toLowerCase()) );
+
       } else {
-	      cb(false);      
+        cb(false);
       }
     }, 0);
   }
 
   var timeout   = 20000,
-  		rgb				= (function( i ){  			
-  			var a = [];
-  			while ( i-- ) a.push( Math.floor( Math.random() * 255 ) );
-  			return a;
-  		})(3),
+      rgb       = (function( i ){
+        var a = [];
+        while ( i-- ) a.push( Math.floor( Math.random() * 255 ) );
+        return a;
+      })(3),
       u         = (+new Date);
 
   module("Input Support")
@@ -54,7 +54,7 @@ if ( ! window.console ) {
 
     // single string
     yepnope("js/a"+u+".js");
-    // since we'd like to test just single string input, give the test for the existence of this one a long 
+    // since we'd like to test just single string input, give the test for the existence of this one a long
     // wait time and then a check. This isn't foolproof (could show false-positives), but worthwhile for making
     // sure that a common practice is well-supported. Increase the timeout if you have slow internet connection, etc.
     setTimeout(function(){
@@ -117,9 +117,9 @@ if ( ! window.console ) {
         ok(w['l'+u] && w['m'+u], "Array of objects with array of strings inside");
       }
     }]);
-    
+
     // We do not intentionally support any deeper nesting than this of arrays and objects, but won't actively prevent it.
-    
+
     // Since we're using crappy logic to test the single string loads, we have to start the tests crappily as well
     setTimeout(function(){
       start();
@@ -224,7 +224,7 @@ if ( ! window.console ) {
     ]);
     stop(timeout);
   });
-  
+
   asyncTest("CSS Callback Timing", 3, function() {
     var startTime = (+new Date);
 
@@ -243,7 +243,7 @@ if ( ! window.console ) {
 
           });
 
-        }, 
+        },
         complete: function() {
           start();
         }
@@ -270,7 +270,7 @@ if ( ! window.console ) {
     setTimeout(function(){
       ok(w['a'+u], "a exists already");
       start();
-    }, 4000);
+    }, 5000);
   });
 
   module("Inner api");

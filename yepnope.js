@@ -33,7 +33,7 @@ var docElement            = doc.documentElement,
     // Thanks to @jdalton for this opera detection
     isOpera               = window.opera && toString.call(window.opera) == strPreobj + "Opera]",
     isWebkit              = ("webkit"+strAppear in docElement.style),
-    strJsElem             = isOpera || isGecko18 ? strImg : ( isGecko ? strObject : strScript ),
+    strJsElem             = isOpera || (isGecko && ! isGecko18) ? strImg : ( isGecko ? strObject : strScript ),
     strCssElem            = isWebkit ? strImg : strJsElem,
     isArray               = Array.isArray || function(obj) {
       return toString.call(obj) == strPreobj + "Array]";
@@ -56,6 +56,17 @@ var docElement            = doc.documentElement,
       }
     },
     yepnope;
+
+    /**/
+		console.log({
+			isGecko : isGecko,
+			isGecko18 : isGecko18,
+			isOpera : isOpera,
+			isWebkit: isWebkit,
+			strJsElem : strJsElem,
+			strCssElem : strCssElem
+		});
+		/**/
 
 
   /* Loader helper functions */
@@ -251,9 +262,7 @@ var docElement            = doc.documentElement,
         done        = 0;
 
     // var startTime = (+new Date);
-    // console.log('inject', (type ? 'preload ' : 'reinject'), url);
     function onload() {
-      // console.log('onload', (type ? 'preload ': 'reinject'), url, (+new Date)-startTime);
       // If the script/css file is loaded
       if ( ! done && isFileReady( preloadElem ) ) {
         // Set done to prevent this function from being called twice.
@@ -305,7 +314,7 @@ var docElement            = doc.documentElement,
     // (with images) - we can't have a real error handler. So in opera, we
     // have a timeout in order to throw an error if something never loads.
     // Better solutions welcomed.
-    if ( isOpera && ! type && elem == strScript ) {
+    if (( isOpera && elem == strScript ) || elem == strObject ) {
       sTimeout(function(){
         if ( ! done ) {
           done = 1;
