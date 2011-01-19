@@ -277,6 +277,9 @@ var docElement            = doc.documentElement,
     // Just set the src and the data attributes so we don't have differentiate between elem types
     preloadElem.src = preloadElem.data = url;
 
+    // Don't let it show up visually
+    preloadElem.width = preloadElem.height = '0';
+
     // Only if we have a type to add should we set the type attribute (a real script has no type)
     if ( type && elem != strObject ) {
       preloadElem.type = type;
