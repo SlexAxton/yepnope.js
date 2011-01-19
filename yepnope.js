@@ -10,9 +10,7 @@
 
 var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
-    docHead               = doc.getElementsByTagName("head")[0] || docElement,
-    docBody               = doc.getElementsByTagName("body")[0] || doc.body,
-    docFirst              = docHead.firstChild,
+    docFirst              = docElement.firstChild,
     errorTimeout          = 5000,
     toString              = {}.toString,
     jsType                = 'j',
@@ -113,7 +111,7 @@ var docElement            = doc.documentElement,
 
         // Handle memory leak in IE
         script[strOnLoad] = script[strOnReadyStateChange] = null;
-        docHead.removeChild(script);
+        docElement.removeChild(script);
       }
     }
 
@@ -127,7 +125,7 @@ var docElement            = doc.documentElement,
 
 
     // Inject script into to document
-    docHead.appendChild(script);
+    docElement.appendChild(script);
   }
 
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
@@ -213,7 +211,7 @@ var docElement            = doc.documentElement,
     }, errorTimeout);
 
     // Inject CSS
-    docHead.insertBefore(link, docFirst);
+    docElement.insertBefore(link, docFirst);
 
   }
 
@@ -256,7 +254,7 @@ var docElement            = doc.documentElement,
   }
 
 
-  function preloadFile( elem, url, type, splicePoint, docHead ) {
+  function preloadFile( elem, url, type, splicePoint, docElement ) {
 
     // Create appropriate element for browser and type
     var preloadElem = doc.createElement( elem ),
@@ -282,7 +280,7 @@ var docElement            = doc.documentElement,
 
         // Handle memory leak in IE
         preloadElem[strOnLoad] = preloadElem[strOnReadyStateChange] = null;
-        type && docHead.removeChild(preloadElem);
+        type && docElement.removeChild(preloadElem);
       }
     }
 
@@ -316,7 +314,7 @@ var docElement            = doc.documentElement,
     execStack.splice( splicePoint, 0, stackObject);
 
     // append the element to the appropriate parent element (scripts go in the head, usually, and objects go in the body usually)
-    docHead.appendChild(preloadElem);
+    docElement.appendChild(preloadElem);
 
     // Special case for opera, since error handling is how we detect onload
     // (with images) - we can't have a real error handler. So in opera, we
@@ -344,7 +342,7 @@ var docElement            = doc.documentElement,
       // if the resource passed in here is a string, preload the file
       // use the head when we can (which is the documentElement when the head element doesn't exist)
       // and use the body element for objects. Images seem fine in the head, for some odd reason.
-      preloadFile(elem, resource, type, app.i++, (elem == strObject ? docBody : docHead) );
+      preloadFile(elem, resource, type, app.i++, docElement );
     } else {
       // Otherwise it's a resource object and we can splice it into the app at the current location
       execStack.splice(app.i++, 0, resource);

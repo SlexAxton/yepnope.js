@@ -270,7 +270,7 @@ if ( ! window.console ) {
     setTimeout(function(){
       ok(w['a'+u], "a exists already");
       start();
-    }, 5000);
+    }, 5900);
   });
 
   module("Inner api");
