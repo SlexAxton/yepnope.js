@@ -556,6 +556,24 @@ var docElement            = doc.documentElement,
   // Default error timeout to 10sec - modify to alter
   yepnope.errorTimeout = 10000;
 
+  // Webreflection readystate hack
+  // safe for jQuery 1.4+ ( i.e. don't use yepnope with jQuery 1.3.2 )
+  ( function ( addEvent, domLoaded, handler ) {
+    // if the readyState is null and we have a listener
+    if ( doc[ strReadyState ] == null && doc[ addEvent ] ) {
+      // set the ready state to loading
+      doc[ strReadyState ] = "loading";
+      // call the listener
+      doc[ addEvent ]( domLoaded, handler = function () {
+        // Remove the listener
+        doc.removeEventListener( domLoaded, handler, false );
+        // Set it to ready
+        doc[ strReadyState ] = "complete";
+      }, false );
+    }
+  } )( "addEventListener", "DOMContentLoaded" );
+
+
   // Attach loader &
   // Leak it
   window.yepnope = yepnope = getYepnope();
