@@ -57,16 +57,16 @@ var docElement            = doc.documentElement,
     },
     yepnope;
 
+    /** /
+    console.log({
+      isGecko : isGecko,
+      isGecko18 : isGecko18,
+      isOpera : isOpera,
+      isWebkit: isWebkit,
+      strJsElem : strJsElem,
+      strCssElem : strCssElem
+    });
     /**/
-		console.log({
-			isGecko : isGecko,
-			isGecko18 : isGecko18,
-			isOpera : isOpera,
-			isWebkit: isWebkit,
-			strJsElem : strJsElem,
-			strCssElem : strCssElem
-		});
-		/**/
 
 
   /* Loader helper functions */
@@ -82,7 +82,7 @@ var docElement            = doc.documentElement,
 
     // Loop through the stack of scripts in the cue and execute them when all scripts in a group are ready
     for (i = -1, len = execStack.length; ++i < len;) {
-      if ( execStack[i].src && ! ( execStackReady = isFileReady( execStack[i] ))) {
+      if ( execStack[i].src && ! ( execStackReady = execStack[i].ready )) {
         // As soon as we encounter a script that isn't ready, stop looking for more
         break;
       }
@@ -101,7 +101,7 @@ var docElement            = doc.documentElement,
         done;
 
     script.src    = oldObj.src;
-    
+
     // Bind to load events
     script[strOnReadyStateChange] = script[strOnLoad] = function() {
 
@@ -236,7 +236,7 @@ var docElement            = doc.documentElement,
     if ( i ) {
       // if it's a script, inject it into the head with no type attribute
       if ( src && t == jsType ) {
-        injectJs(i);
+        sTimeout(function() { injectJs(i); }, 0);
       }
       // If it's a css file, fun the css injection function
       else if ( src && t == cssType ) {
@@ -257,16 +257,23 @@ var docElement            = doc.documentElement,
 
 
   function preloadFile( elem, url, type, splicePoint, docHead ) {
+
     // Create appropriate element for browser and type
     var preloadElem = doc.createElement( elem ),
-        done        = 0;
+        done        = 0,
+        stackObject = {
+          type: type,
+          src: url,
+          ready: false
+        };
 
     // var startTime = (+new Date);
     function onload() {
       // If the script/css file is loaded
       if ( ! done && isFileReady( preloadElem ) ) {
+
         // Set done to prevent this function from being called twice.
-        done = 1;
+        stackObject.ready = done = 1;
 
         // If the type is set, that means that we're offloading execution
         if ( ! type || (type && ! started) ) {
@@ -283,7 +290,7 @@ var docElement            = doc.documentElement,
     preloadElem.src = preloadElem.data = url;
 
     // Only if we have a type to add should we set the type attribute (a real script has no type)
-    if ( type ) {
+    if ( type && elem != strObject ) {
       preloadElem.type = type;
     }
 
@@ -299,13 +306,14 @@ var docElement            = doc.documentElement,
     else if ( elem == strScript ) {
       // handle errors on script elements when we can
       preloadElem.onerror = function(){
+        stackObject.ready = 1;
         executeStack(1);
       };
     }
 
     // inject the element into the stack depending on if it's
     // in the middle of other scripts or not
-    type && execStack.splice( splicePoint, 0, preloadElem);
+    execStack.splice( splicePoint, 0, stackObject);
 
     // append the element to the appropriate parent element (scripts go in the head, usually, and objects go in the body usually)
     docHead.appendChild(preloadElem);
@@ -317,7 +325,7 @@ var docElement            = doc.documentElement,
     if (( isOpera && elem == strScript ) || elem == strObject ) {
       sTimeout(function(){
         if ( ! done ) {
-          done = 1;
+        stackObject.ready = done = 1;
           execWhenReady();
         }
       }, errorTimeout);
