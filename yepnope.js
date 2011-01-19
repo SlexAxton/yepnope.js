@@ -110,7 +110,6 @@ var docElement            = doc.documentElement,
       }
     }, window.yepnope.errorTimeout );
 
-
     // Inject script into to document
     docElement.appendChild( script );
   }
@@ -127,7 +126,6 @@ var docElement            = doc.documentElement,
     link.href = oldObj.src;
     link.rel  = 'stylesheet';
     link.type = 'text/css';
-
 
     // Poll for changes in webkit and gecko
     if ( isWebkit || isGecko ) {
@@ -167,7 +165,6 @@ var docElement            = doc.documentElement,
                 poll( link );
               }
             }
-
           }
         }, 13 );
       } )( link );
@@ -175,7 +172,6 @@ var docElement            = doc.documentElement,
     }
     // Onload handler for IE and Opera
     else {
-
       // In browsers that allow the onload event on link tags, just use it
       link.onload = function () {
         if ( ! done ) {
@@ -199,7 +195,6 @@ var docElement            = doc.documentElement,
 
     // Inject CSS
     docElement.insertBefore( link, docFirst );
-
   }
 
   function executeStack ( a ) {
@@ -242,7 +237,6 @@ var docElement            = doc.documentElement,
       started = 0;
     }
   }
-
 
   function preloadFile ( elem, url, type, splicePoint, docElement ) {
 
@@ -321,7 +315,6 @@ var docElement            = doc.documentElement,
         }
       }, window.yepnope.errorTimeout );
     }
-
   }
 
   function load ( resource, type ) {
@@ -343,7 +336,6 @@ var docElement            = doc.documentElement,
 
     // OMG is this jQueries? For chaining...
     return app;
-
   }
 
   function getLoader () {
