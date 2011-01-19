@@ -66,7 +66,7 @@ var docElement            = doc.documentElement,
         i;
 
     // Loop through the stack of scripts in the cue and execute them when all scripts in a group are ready
-    for ( i = -1, len = execStack.length; ++i < len ) {
+    for ( i = -1, len = execStack.length; ++i < len; ) {
       if ( execStack[ i ].src && ! ( execStackReady = execStack[ i ].ready ) ) {
         // As soon as we encounter a script that isn't ready, stop looking for more
         break;
