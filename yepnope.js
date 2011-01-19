@@ -11,7 +11,6 @@
 var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
     docFirst              = docElement.firstChild,
-    errorTimeout          = 5000,
     toString              = {}.toString,
     jsType                = 'j',
     cssType               = 'c',
@@ -54,18 +53,6 @@ var docElement            = doc.documentElement,
       }
     },
     yepnope;
-
-    /** /
-    console.log({
-      isGecko : isGecko,
-      isGecko18 : isGecko18,
-      isOpera : isOpera,
-      isWebkit: isWebkit,
-      strJsElem : strJsElem,
-      strCssElem : strCssElem
-    });
-    /**/
-
 
   /* Loader helper functions */
   function isFileReady( injectedElem ) {
@@ -113,7 +100,7 @@ var docElement            = doc.documentElement,
         script[strOnLoad] = script[strOnReadyStateChange] = null;
         docElement.removeChild(script);
       }
-    }
+    };
 
     // 404 Fallback
     sTimeout(function(){
@@ -121,7 +108,7 @@ var docElement            = doc.documentElement,
         done = 1;
         execWhenReady();
       }
-    }, errorTimeout);
+    }, window.yepnope.errorTimeout);
 
 
     // Inject script into to document
@@ -208,7 +195,7 @@ var docElement            = doc.documentElement,
         done = true;
         execWhenReady();
       }
-    }, errorTimeout);
+    }, window.yepnope.errorTimeout);
 
     // Inject CSS
     docElement.insertBefore(link, docFirst);
@@ -326,7 +313,7 @@ var docElement            = doc.documentElement,
         stackObject.ready = done = 1;
           execWhenReady();
         }
-      }, errorTimeout);
+      }, window.yepnope.errorTimeout);
     }
 
   }
@@ -571,6 +558,9 @@ var docElement            = doc.documentElement,
   yepnope.addFilter = function(filter) {
     globalFilters.push(filter);
   };
+
+  // Default error timeout to 10sec - modify to alter
+  yepnope.errorTimeout = 10000;
 
   // Attach loader &
   // Leak it
