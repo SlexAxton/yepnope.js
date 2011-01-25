@@ -31,7 +31,7 @@ var docElement            = doc.documentElement,
     strAppear             = 'Appearance',
     isGecko               = ( 'Moz' + strAppear in docElement.style ),
     isGecko18             = isGecko && !! window.Event.prototype.preventBubble,
-    // Thanks to @jdalton for this opera detection
+    // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
     isOpera               = window.opera && toString.call( window.opera ) == strPreobj + 'Opera]',
     isWebkit              = ( 'webkit' + strAppear in docElement.style ),
     strJsElem             = isOpera || ( isGecko && ! isGecko18 ) ? strImg : ( isGecko ? strObject : strScript ),
