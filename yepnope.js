@@ -11,40 +11,40 @@
 var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
     NULL                  = null,
-    FALSE                 = !!0,
-    TRUE                  = !!1,
+    FALSE                 = !1,
+    TRUE                  = !0,
     docFirst              = docElement.firstChild,
     toString              = {}.toString,
     jsType                = 'j',
     cssType               = 'c',
-    strComplete           = "complete",
-    strScript             = "script",
-    strShift              = "shift",
-    strReadyState         = "readyState",
-    strOnReadyStateChange = "onreadystatechange",
-    strOnLoad             = "onload",
-    strObject             = "object",
-    strImg                = "img",
-    strPreobj             = "[" + strObject + " ",
+    strComplete           = 'complete',
+    strScript             = 'script',
+    strShift              = 'shift',
+    strReadyState         = 'readyState',
+    strOnReadyStateChange = 'onreadystatechange',
+    strOnLoad             = 'onload',
+    strObject             = 'object',
+    strImg                = 'img',
+    strPreobj             = '[' + strObject + ' ',
     execStack             = [],
     started               = 0,
     strAppear             = 'Appearance',
-    isGecko               = ( "Moz" + strAppear in docElement.style ),
+    isGecko               = ( 'Moz' + strAppear in docElement.style ),
     isGecko18             = isGecko && !! window.Event.prototype.preventBubble,
     // Thanks to @jdalton for this opera detection
-    isOpera               = window.opera && toString.call( window.opera ) == strPreobj + "Opera]",
-    isWebkit              = ( "webkit" + strAppear in docElement.style ),
+    isOpera               = window.opera && toString.call( window.opera ) == strPreobj + 'Opera]',
+    isWebkit              = ( 'webkit' + strAppear in docElement.style ),
     strJsElem             = isOpera || ( isGecko && ! isGecko18 ) ? strImg : ( isGecko ? strObject : strScript ),
     strCssElem            = isWebkit ? strImg : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
-      return toString.call( obj ) == strPreobj + "Array]";
+      return toString.call( obj ) == strPreobj + 'Array]';
     },
     isObject              = function ( obj ) {
       // Lame object detection, but don't pass it stupid stuff?
       return typeof obj == strObject;
     },
     isString              = function ( s ) {
-      return typeof s == "string";
+      return typeof s == 'string';
     },
     isFunction            = function ( fn ) {
       return toString.call( fn ) == strPreobj + 'Function]';
@@ -61,7 +61,7 @@ var docElement            = doc.documentElement,
   /* Loader helper functions */
   function isFileReady ( injectedElem ) {
     // Check to see if any of the ways a file can be ready are available as properties on the file's element
-    return ( ! injectedElem[ strReadyState ] || injectedElem[ strReadyState ] == "loaded" || injectedElem[ strReadyState ] == strComplete );
+    return ( ! injectedElem[ strReadyState ] || injectedElem[ strReadyState ] == 'loaded' || injectedElem[ strReadyState ] == strComplete );
   }
 
   function execWhenReady () {
@@ -566,7 +566,7 @@ var docElement            = doc.documentElement,
     // if the readyState is null and we have a listener
     if ( doc[ strReadyState ] == NULL && doc[ addEvent ] ) {
       // set the ready state to loading
-      doc[ strReadyState ] = "loading";
+      doc[ strReadyState ] = 'loading';
       // call the listener
       doc[ addEvent ]( domLoaded, handler = function () {
         // Remove the listener
@@ -575,7 +575,7 @@ var docElement            = doc.documentElement,
         doc[ strReadyState ] = strComplete;
       }, FALSE );
     }
-  } )( "addEventListener", "DOMContentLoaded" );
+  } )( 'addEventListener', 'DOMContentLoaded' );
 
 
   // Attach loader &
