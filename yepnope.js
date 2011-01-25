@@ -433,7 +433,7 @@ var docElement            = doc.documentElement,
       }
       else {
 
-        chain.load( inc, ( incLen > 4 && ( forceCSS || ( ! forceJS && inc.substr( incLen - 4 ) === '.css' ) ) ) ? cssType : undef );
+        chain.load( inc, ( incLen > 4 && ( forceCSS || ( ! forceJS && inc.substr( incLen - 4 ) == '.css' ) ) ) ? cssType : undef );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
