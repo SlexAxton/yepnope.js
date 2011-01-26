@@ -17,9 +17,7 @@ var docElement            = doc.documentElement,
     strReadyState         = 'readyState',
     strOnReadyStateChange = 'onreadystatechange',
     strOnLoad             = 'onload',
-    strObject             = 'object',
     strImg                = 'img',
-    strPreobj             = '[' + strObject + ' ',
     execStack             = [],
     started               = 0,
     strAppear             = 'Appearance',
@@ -29,22 +27,22 @@ var docElement            = doc.documentElement,
     isGecko               = ( 'Moz' + strAppear in docElement.style ),
     isGecko18             = isGecko && !! window.Event.prototype.preventBubble,
     // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
-    isOpera               = window.opera && toString.call( window.opera ) == strPreobj + 'Opera]',
+    isOpera               = window.opera && toString.call( window.opera ) == '[object Opera]',
     isWebkit              = ( 'webkit' + strAppear in docElement.style ),
-    strJsElem             = isOpera || ( isGecko && ! isGecko18 ) ? strImg : ( isGecko ? strObject : 'script' ),
+    strJsElem             = isOpera || ( isGecko && ! isGecko18 ) ? strImg : ( isGecko ? 'object' : 'script' ),
     strCssElem            = isWebkit ? strImg : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
-      return toString.call( obj ) == strPreobj + 'Array]';
+      return toString.call( obj ) == '[object Array]';
     },
     isObject              = function ( obj ) {
       // Lame object detection, but don't pass it stupid stuff?
-      return typeof obj == strObject;
+      return typeof obj == 'object';
     },
     isString              = function ( s ) {
       return typeof s == 'string';
     },
     isFunction            = function ( fn ) {
-      return toString.call( fn ) == strPreobj + 'Function]';
+      return toString.call( fn ) == '[object Function]';
     },
     globalFilters         = [],
     prefixes              = {
@@ -276,7 +274,7 @@ var docElement            = doc.documentElement,
     preloadElem.width = preloadElem.height = '0';
 
     // Only if we have a type to add should we set the type attribute (a real script has no type)
-    if ( type && elem != strObject ) {
+    if ( type && elem != 'object' ) {
       preloadElem.type = type;
     }
 
@@ -308,7 +306,7 @@ var docElement            = doc.documentElement,
     // (with images) - we can't have a real error handler. So in opera, we
     // have a timeout in order to throw an error if something never loads.
     // Better solutions welcomed.
-    if ( ( isOpera && elem == 'script' ) || elem == strObject ) {
+    if ( ( isOpera && elem == 'script' ) || elem == 'object' ) {
       sTimeout( function () {
         if ( ! done ) {
         stackObject.ready = done = 1;
