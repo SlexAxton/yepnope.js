@@ -10,7 +10,7 @@
 
 var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
-    docFirst              = docElement.children[0],
+    docFirst              = docElement.children[ 0 ],
     toString              = {}.toString,
     execStack             = [],
     started               = false,
@@ -73,7 +73,6 @@ var docElement            = doc.documentElement,
   // Takes a preloaded js obj (changes in different browsers) and injects it into the head
   // in the appropriate order
   function injectJs ( oldObj ) {
-
     var script = doc.createElement( 'script' ),
         done;
 
@@ -90,7 +89,8 @@ var docElement            = doc.documentElement,
 
         // Handle memory leak in IE
         script.onload = script.onreadystatechange = null;
-        docElement.removeChild( script );
+        // Only remove it if we appended it to begin with
+        ! oldObj.error && docElement.removeChild( script );
       }
     };
 
@@ -98,12 +98,20 @@ var docElement            = doc.documentElement,
     sTimeout( function () {
       if ( ! done ) {
         done = 1;
+        docElement.removeChild( script );
         execWhenReady();
       }
     }, yepnope.errorTimeout );
 
     // Inject script into to document
-    docElement.appendChild( script );
+    // or immediately callback if we know there
+    // was previously a timeout error
+    if ( oldObj.error ) {
+      script.onload();
+    }
+    else {
+      docElement.appendChild( script );
+    }
   }
 
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
@@ -118,7 +126,7 @@ var docElement            = doc.documentElement,
     // Add attributes
     link.href = oldObj.src;
     link.rel  = 'stylesheet';
-    link.type = 'text/css';
+    //link.type = 'text/css';
 
     // Poll for changes in webkit and gecko
     if ( isWebkit || isGecko ) {
@@ -198,7 +206,7 @@ var docElement            = doc.documentElement,
 
     started = true;
 
-    // if a exists and has a src
+    // if a is truthy and the first item in the stack has an src
     if ( a && src ) {
       // Pop another off the stack
       i = execStack.shift();
@@ -209,6 +217,8 @@ var docElement            = doc.documentElement,
     if ( i ) {
       // if it's a script, inject it into the head with no type attribute
       if ( src && t == 'j' ) {
+        // Inject after a timeout so FF has time to be a jerk about it and
+        // not double load (ignore the cache)
         sTimeout( function () {
           injectJs( i );
         }, 0 );
@@ -297,13 +307,19 @@ var docElement            = doc.documentElement,
     docElement.appendChild( preloadElem );
 
     // Special case for opera, since error handling is how we detect onload
-    // (with images) - we can't have a real error handler. So in opera, we
+    // we can't have a real error handler. So in opera, we
     // have a timeout in order to throw an error if something never loads.
     // Better solutions welcomed.
     if ( ( isOpera && elem == 'script' ) || elem == 'object' ) {
       sTimeout( function () {
         if ( ! done ) {
-        stackObject.ready = done = 1;
+          // indicate that this had a timeout error on our stack object
+          stackObject.error = 1;
+          // Remove the node from the dom
+          docElement.removeChild( preloadElem );
+          // Set it to ready to move on
+          stackObject.ready = done = 1;
+          // Continue on
           execWhenReady();
         }
       }, yepnope.errorTimeout );
