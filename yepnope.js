@@ -12,8 +12,6 @@ var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
     docFirst              = docElement.children[0],
     toString              = {}.toString,
-    jsType                = 'j',
-    cssType               = 'c',
     strComplete           = 'complete',
     strShift              = 'shift',
     strReadyState         = 'readyState',
@@ -218,13 +216,13 @@ var docElement            = doc.documentElement,
 
     if ( i ) {
       // if it's a script, inject it into the head with no type attribute
-      if ( src && t == jsType ) {
+      if ( src && t == 'j' ) {
         sTimeout( function () {
           injectJs( i );
         }, 0 );
       }
       // If it's a css file, fun the css injection function
-      else if ( src && t == cssType ) {
+      else if ( src && t == 'c' ) {
         injectCss( i );
       }
       // Otherwise, just call the function and potentially run the stack
@@ -326,7 +324,7 @@ var docElement            = doc.documentElement,
         elem  = ( type == 'c' ? strCssElem : strJsElem );
 
     // We'll do 'j' for js and 'c' for css, yay for unreadable minification tactics
-    type = type || jsType;
+    type = type || 'j';
     if ( isString( resource ) ) {
       // if the resource passed in here is a string, preload the file
       // use the head when we can (which is the documentElement when the head element doesn't exist)
@@ -432,7 +430,7 @@ var docElement            = doc.documentElement,
       }
       else {
 
-        chain.load( inc, ( incLen > 4 && ( forceCSS || ( ! forceJS && inc.substr( incLen - 4 ) == '.css' ) ) ) ? cssType : undef );
+        chain.load( inc, ( incLen > 4 && ( forceCSS || ( ! forceJS && inc.substr( incLen - 4 ) == '.css' ) ) ) ? 'c' : undef );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
