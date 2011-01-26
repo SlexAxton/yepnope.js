@@ -19,8 +19,7 @@ var docElement            = doc.documentElement,
     strOnLoad             = 'onload',
     strImg                = 'img',
     execStack             = [],
-    started               = 0,
-    //strAppear             = 'Appearance',
+    started               = false,
     // Before you get mad about browser sniffs, please read:
     // https://github.com/Modernizr/Modernizr/wiki/Undetectables
     // If you have a better solution, we are actively looking to solve the problem
@@ -202,7 +201,7 @@ var docElement            = doc.documentElement,
         src = i ? i.src  : undef,
         t   = i ? i.type : undef;
 
-    started = 1;
+    started = true;
 
     // if a exists and has a src
     if ( a && src ) {
@@ -227,13 +226,13 @@ var docElement            = doc.documentElement,
       // reset the started flag for the recursive handling
       else {
         i();
-        started = 0;
+        started = false;
         execWhenReady();
       }
     }
     else {
       // just reset out of recursive mode
-      started = 0;
+      started = false;
     }
   }
 
