@@ -10,15 +10,11 @@
 
 var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
-    NULL                  = null,
-    FALSE                 = !1,
-    TRUE                  = !0,
     docFirst              = docElement.children[0],
     toString              = {}.toString,
     jsType                = 'j',
     cssType               = 'c',
     strComplete           = 'complete',
-    strScript             = 'script',
     strShift              = 'shift',
     strReadyState         = 'readyState',
     strOnReadyStateChange = 'onreadystatechange',
@@ -34,7 +30,7 @@ var docElement            = doc.documentElement,
     // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
     isOpera               = window.opera && toString.call( window.opera ) == strPreobj + 'Opera]',
     isWebkit              = ( 'webkit' + strAppear in docElement.style ),
-    strJsElem             = isOpera || ( isGecko && ! isGecko18 ) ? strImg : ( isGecko ? strObject : strScript ),
+    strJsElem             = isOpera || ( isGecko && ! isGecko18 ) ? strImg : ( isGecko ? strObject : 'script' ),
     strCssElem            = isWebkit ? strImg : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
       return toString.call( obj ) == strPreobj + 'Array]';
@@ -52,7 +48,7 @@ var docElement            = doc.documentElement,
     globalFilters         = [],
     prefixes              = {
       'css': function ( resource ) {
-        resource.forceCSS = TRUE;
+        resource.forceCSS = true;
         return resource;
       }
     },
@@ -86,7 +82,7 @@ var docElement            = doc.documentElement,
   // in the appropriate order
   function injectJs ( oldObj ) {
 
-    var script = doc.createElement( strScript ),
+    var script = doc.createElement( 'script' ),
         done;
 
     script.src = oldObj.src;
@@ -101,7 +97,7 @@ var docElement            = doc.documentElement,
         execWhenReady();
 
         // Handle memory leak in IE
-        script[ strOnLoad ] = script[ strOnReadyStateChange ] = NULL;
+        script[ strOnLoad ] = script[ strOnReadyStateChange ] = null;
         docElement.removeChild( script );
       }
     };
@@ -144,7 +140,7 @@ var docElement            = doc.documentElement,
               // In supporting browsers, we can see the length of the cssRules of the file go up
               if ( link.sheet && link.sheet.cssRules && link.sheet.cssRules.length ) {
                 // Then turn off the poll
-                done = TRUE;
+                done = true;
                 // And execute a function to execute callbacks when all dependencies are met
                 execWhenReady();
               }
@@ -158,7 +154,7 @@ var docElement            = doc.documentElement,
               // just check the error message to see if it's a security error
               if ( ( ex.code == 1000 ) || ( ex.message.match( /security|denied/i ) ) ) {
                 // if it's a security error, that means it loaded a cross domain file, so stop the timeout loop
-                done = TRUE;
+                done = true;
                 // and execute a check to see if we can run the callback(s) immediately after this function ends
                 sTimeout( function () {
                   execWhenReady();
@@ -180,7 +176,7 @@ var docElement            = doc.documentElement,
       link.onload = function () {
         if ( ! done ) {
           // Set our flag to complete
-          done = TRUE;
+          done = true;
           // Check to see if we can call the callback
           sTimeout( function () {
             execWhenReady();
@@ -192,7 +188,7 @@ var docElement            = doc.documentElement,
     // 404 Fallback
     sTimeout( function () {
       if ( ! done ) {
-        done = TRUE;
+        done = true;
         execWhenReady();
       }
     }, yepnope.errorTimeout );
@@ -250,7 +246,7 @@ var docElement            = doc.documentElement,
         stackObject = {
           type: type,
           src: url,
-          ready: FALSE 
+          ready: false 
         };
 
     function onload () {
@@ -267,7 +263,7 @@ var docElement            = doc.documentElement,
         }
 
         // Handle memory leak in IE
-        preloadElem[ strOnLoad ] = preloadElem[ strOnReadyStateChange ] = NULL;
+        preloadElem[ strOnLoad ] = preloadElem[ strOnReadyStateChange ] = null;
         type && docElement.removeChild( preloadElem );
       }
     }
@@ -292,7 +288,7 @@ var docElement            = doc.documentElement,
       preloadElem.onerror = onload;
     }
     // Otherwise, if it's a script element
-    else if ( elem == strScript ) {
+    else if ( elem == 'script' ) {
       // handle errors on script elements when we can
       preloadElem.onerror = function () {
         stackObject.ready = 1;
@@ -311,7 +307,7 @@ var docElement            = doc.documentElement,
     // (with images) - we can't have a real error handler. So in opera, we
     // have a timeout in order to throw an error if something never loads.
     // Better solutions welcomed.
-    if ( ( isOpera && elem == strScript ) || elem == strObject ) {
+    if ( ( isOpera && elem == 'script' ) || elem == strObject ) {
       sTimeout( function () {
         if ( ! done ) {
         stackObject.ready = done = 1;
@@ -402,7 +398,7 @@ var docElement            = doc.documentElement,
         // return the final url
         return res;
       }
-      return FALSE;
+      return false;
     }
 
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
@@ -500,7 +496,7 @@ var docElement            = doc.documentElement,
 
     // Someone just decides to load a single script or css file as a string
     if ( isString( needs ) ) {
-      chain = loadScriptOrStyle( needs, FALSE, chain, 0 );
+      chain = loadScriptOrStyle( needs, false, chain, 0 );
     }
     // Normal case is likely an array of different types of loading options
     else if ( isArray( needs ) ) {
@@ -510,7 +506,7 @@ var docElement            = doc.documentElement,
 
         // if it's a string, just load it
         if ( isString( need ) ) {
-          chain = loadScriptOrStyle( need, FALSE, chain, 0 );
+          chain = loadScriptOrStyle( need, false, chain, 0 );
         }
         // if it's an array, call our function recursively
         else if ( isArray( need ) ) {
@@ -564,16 +560,16 @@ var docElement            = doc.documentElement,
   // safe for jQuery 1.4+ ( i.e. don't use yepnope with jQuery 1.3.2 )
   ( function ( addEvent, domLoaded, handler ) {
     // if the readyState is null and we have a listener
-    if ( doc[ strReadyState ] == NULL && doc[ addEvent ] ) {
+    if ( doc[ strReadyState ] == null && doc[ addEvent ] ) {
       // set the ready state to loading
       doc[ strReadyState ] = 'loading';
       // call the listener
       doc[ addEvent ]( domLoaded, handler = function () {
         // Remove the listener
-        doc.removeEventListener( domLoaded, handler, FALSE );
+        doc.removeEventListener( domLoaded, handler, false );
         // Set it to ready
         doc[ strReadyState ] = strComplete;
-      }, FALSE );
+      }, false );
     }
   } )( 'addEventListener', 'DOMContentLoaded' );
 
