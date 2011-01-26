@@ -126,7 +126,7 @@ var docElement            = doc.documentElement,
     // Add attributes
     link.href = oldObj.src;
     link.rel  = 'stylesheet';
-    //link.type = 'text/css';
+    link.type = 'text/css';
 
     // Poll for changes in webkit and gecko
     if ( isWebkit || isGecko ) {
