@@ -12,12 +12,6 @@ var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
     docFirst              = docElement.children[0],
     toString              = {}.toString,
-    strComplete           = 'complete',
-    strShift              = 'shift',
-    strReadyState         = 'readyState',
-    strOnReadyStateChange = 'onreadystatechange',
-    strOnLoad             = 'onload',
-    strImg                = 'img',
     execStack             = [],
     started               = false,
     // Before you get mad about browser sniffs, please read:
@@ -28,8 +22,8 @@ var docElement            = doc.documentElement,
     // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
     isOpera               = window.opera && toString.call( window.opera ) == '[object Opera]',
     isWebkit              = ( 'webkitAppearance' in docElement.style ),
-    strJsElem             = isOpera || ( isGecko && ! isGecko18 ) ? strImg : ( isGecko ? 'object' : 'script' ),
-    strCssElem            = isWebkit ? strImg : strJsElem,
+    strJsElem             = isOpera || ( isGecko && ! isGecko18 ) ? 'img' : ( isGecko ? 'object' : 'script' ),
+    strCssElem            = isWebkit ? 'img' : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
       return toString.call( obj ) == '[object Array]';
     },
@@ -55,7 +49,7 @@ var docElement            = doc.documentElement,
   /* Loader helper functions */
   function isFileReady ( injectedElem ) {
     // Check to see if any of the ways a file can be ready are available as properties on the file's element
-    return ( ! injectedElem[ strReadyState ] || injectedElem[ strReadyState ] == 'loaded' || injectedElem[ strReadyState ] == strComplete );
+    return ( ! injectedElem[ 'readyState' ] || injectedElem[ 'readyState' ] == 'loaded' || injectedElem[ 'readyState' ] == 'complete' );
   }
 
   function execWhenReady () {
@@ -86,7 +80,7 @@ var docElement            = doc.documentElement,
     script.src = oldObj.src;
 
     // Bind to load events
-    script[ strOnReadyStateChange ] = script[ strOnLoad ] = function () {
+    script[ 'onreadystatechange' ] = script[ 'onload' ] = function () {
 
       if ( ! done && isFileReady( script ) ) {
 
@@ -95,7 +89,7 @@ var docElement            = doc.documentElement,
         execWhenReady();
 
         // Handle memory leak in IE
-        script[ strOnLoad ] = script[ strOnReadyStateChange ] = null;
+        script[ 'onload' ] = script[ 'onreadystatechange' ] = null;
         docElement.removeChild( script );
       }
     };
@@ -197,7 +191,7 @@ var docElement            = doc.documentElement,
 
   function executeStack ( a ) {
     // shift an element off of the stack
-    var i   = execStack[ strShift ](),
+    var i   = execStack[ 'shift' ](),
         src = i ? i.src  : undef,
         t   = i ? i.type : undef;
 
@@ -206,7 +200,7 @@ var docElement            = doc.documentElement,
     // if a exists and has a src
     if ( a && src ) {
       // Pop another off the stack
-      i = execStack[ strShift ]();
+      i = execStack[ 'shift' ]();
       // unset the src
       src = undef;
     }
@@ -261,7 +255,7 @@ var docElement            = doc.documentElement,
         }
 
         // Handle memory leak in IE
-        preloadElem[ strOnLoad ] = preloadElem[ strOnReadyStateChange ] = null;
+        preloadElem[ 'onload' ] = preloadElem[ 'onreadystatechange' ] = null;
         type && docElement.removeChild( preloadElem );
       }
     }
@@ -278,10 +272,10 @@ var docElement            = doc.documentElement,
     }
 
     // Attach handlers for all browsers
-    preloadElem[ strOnLoad ] = preloadElem[ strOnReadyStateChange ] = onload;
+    preloadElem[ 'onload' ] = preloadElem[ 'onreadystatechange' ] = onload;
 
     // If it's an image
-    if ( elem == strImg ) {
+    if ( elem == 'img' ) {
       // Use the onerror callback as the 'completed' indicator
       preloadElem.onerror = onload;
     }
@@ -485,8 +479,8 @@ var docElement            = doc.documentElement,
         handleGroup( always );
 
         // Fire complete callback
-        if ( testObject[ strComplete ] ) {
-          chain = chain.load( testObject[ strComplete ] );
+        if ( testObject[ 'complete' ] ) {
+          chain = chain.load( testObject[ 'complete' ] );
         }
 
         return chain;
@@ -558,15 +552,15 @@ var docElement            = doc.documentElement,
   // safe for jQuery 1.4+ ( i.e. don't use yepnope with jQuery 1.3.2 )
   ( function ( addEvent, domLoaded, handler ) {
     // if the readyState is null and we have a listener
-    if ( doc[ strReadyState ] == null && doc[ addEvent ] ) {
+    if ( doc[ 'readyState' ] == null && doc[ addEvent ] ) {
       // set the ready state to loading
-      doc[ strReadyState ] = 'loading';
+      doc[ 'readyState' ] = 'loading';
       // call the listener
       doc[ addEvent ]( domLoaded, handler = function () {
         // Remove the listener
         doc.removeEventListener( domLoaded, handler, false );
         // Set it to ready
-        doc[ strReadyState ] = strComplete;
+        doc[ 'readyState' ] = 'complete';
       }, false );
     }
   } )( 'addEventListener', 'DOMContentLoaded' );
