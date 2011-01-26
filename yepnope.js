@@ -445,7 +445,7 @@ var docElement            = doc.documentElement,
         var testResult = !! testObject.test,
             group      = testResult ? testObject.yep : testObject.nope,
             always     = testObject.load || testObject.both,
-            callback   = testObject.callback || undef,
+            callback   = testObject.callback,
             callbackKey;
 
         // Reusable function for dealing with the different input types
