@@ -25,6 +25,9 @@ var docElement            = doc.documentElement,
     execStack             = [],
     started               = 0,
     strAppear             = 'Appearance',
+    // Before you get mad about browser sniffs, please read:
+    // https://github.com/Modernizr/Modernizr/wiki/Undetectables
+    // If you have a better solution, we are actively looking to solve the problem
     isGecko               = ( 'Moz' + strAppear in docElement.style ),
     isGecko18             = isGecko && !! window.Event.prototype.preventBubble,
     // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
