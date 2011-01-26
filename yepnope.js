@@ -39,7 +39,7 @@ var docElement            = doc.documentElement,
     },
     globalFilters         = [],
     prefixes              = {
-      'css': function ( resource ) {
+      css: function ( resource ) {
         resource.forceCSS = true;
         return resource;
       }
@@ -49,7 +49,7 @@ var docElement            = doc.documentElement,
   /* Loader helper functions */
   function isFileReady ( injectedElem ) {
     // Check to see if any of the ways a file can be ready are available as properties on the file's element
-    return ( ! injectedElem[ 'readyState' ] || injectedElem[ 'readyState' ] == 'loaded' || injectedElem[ 'readyState' ] == 'complete' );
+    return ( ! injectedElem.readyState || injectedElem.readyState == 'loaded' || injectedElem.readyState == 'complete' );
   }
 
   function execWhenReady () {
@@ -80,7 +80,7 @@ var docElement            = doc.documentElement,
     script.src = oldObj.src;
 
     // Bind to load events
-    script[ 'onreadystatechange' ] = script[ 'onload' ] = function () {
+    script.onreadystatechange = script.onload = function () {
 
       if ( ! done && isFileReady( script ) ) {
 
@@ -89,7 +89,7 @@ var docElement            = doc.documentElement,
         execWhenReady();
 
         // Handle memory leak in IE
-        script[ 'onload' ] = script[ 'onreadystatechange' ] = null;
+        script.onload = script.onreadystatechange = null;
         docElement.removeChild( script );
       }
     };
@@ -108,6 +108,7 @@ var docElement            = doc.documentElement,
 
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
   // in the appropriate order
+  // Many credits to John Hann (@unscriptable) for a lot of the ideas here - found in the css! plugin for RequireJS
   function injectCss ( oldObj ) {
 
     // Create stylesheet link
@@ -191,7 +192,7 @@ var docElement            = doc.documentElement,
 
   function executeStack ( a ) {
     // shift an element off of the stack
-    var i   = execStack[ 'shift' ](),
+    var i   = execStack.shift(),
         src = i ? i.src  : undef,
         t   = i ? i.type : undef;
 
@@ -200,7 +201,7 @@ var docElement            = doc.documentElement,
     // if a exists and has a src
     if ( a && src ) {
       // Pop another off the stack
-      i = execStack[ 'shift' ]();
+      i = execStack.shift();
       // unset the src
       src = undef;
     }
@@ -255,7 +256,7 @@ var docElement            = doc.documentElement,
         }
 
         // Handle memory leak in IE
-        preloadElem[ 'onload' ] = preloadElem[ 'onreadystatechange' ] = null;
+        preloadElem.onload = preloadElem.onreadystatechange = null;
         type && docElement.removeChild( preloadElem );
       }
     }
@@ -272,7 +273,7 @@ var docElement            = doc.documentElement,
     }
 
     // Attach handlers for all browsers
-    preloadElem[ 'onload' ] = preloadElem[ 'onreadystatechange' ] = onload;
+    preloadElem.onload = preloadElem.onreadystatechange = onload;
 
     // If it's an image
     if ( elem == 'img' ) {
@@ -431,7 +432,6 @@ var docElement            = doc.documentElement,
             // NOTE:: This can't get minified... perhaps we need to pass it as a param isntead?
             var innernope = getYepnope();
             // Call our callbacks with this set of data
-            // TODO :: get CSS preloading working so we can use innernope there too
             callback && callback( origInc, testResult, index, innernope );
             autoCallback && autoCallback( origInc, testResult, index, innernope );
           } );
@@ -442,8 +442,8 @@ var docElement            = doc.documentElement,
     }
 
     function loadFromTestObject ( testObject, chain) {
-        var testResult = !! ( testObject.test ),
-            group      = ( testResult ) ? testObject.yep : testObject.nope,
+        var testResult = !! testObject.test,
+            group      = testResult ? testObject.yep : testObject.nope,
             always     = testObject.load || testObject.both,
             callback   = testObject.callback || undef,
             callbackKey;
@@ -479,8 +479,8 @@ var docElement            = doc.documentElement,
         handleGroup( always );
 
         // Fire complete callback
-        if ( testObject[ 'complete' ] ) {
-          chain = chain.load( testObject[ 'complete' ] );
+        if ( testObject.complete ) {
+          chain = chain.load( testObject.complete );
         }
 
         return chain;
@@ -552,15 +552,15 @@ var docElement            = doc.documentElement,
   // safe for jQuery 1.4+ ( i.e. don't use yepnope with jQuery 1.3.2 )
   ( function ( addEvent, domLoaded, handler ) {
     // if the readyState is null and we have a listener
-    if ( doc[ 'readyState' ] == null && doc[ addEvent ] ) {
+    if ( doc.readyState == null && doc[ addEvent ] ) {
       // set the ready state to loading
-      doc[ 'readyState' ] = 'loading';
+      doc.readyState = 'loading';
       // call the listener
       doc[ addEvent ]( domLoaded, handler = function () {
         // Remove the listener
         doc.removeEventListener( domLoaded, handler, false );
         // Set it to ready
-        doc[ 'readyState' ] = 'complete';
+        doc.readyState = 'complete';
       }, false );
     }
   } )( 'addEventListener', 'DOMContentLoaded' );
