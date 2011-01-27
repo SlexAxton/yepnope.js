@@ -42,10 +42,11 @@ var docElement            = doc.documentElement,
     yepnope;
 
   /* Loader helper functions */
-  function isFileReady ( injectedElem ) {
+  function isFileReady ( readyState ) {
     // Check to see if any of the ways a file can be ready are available as properties on the file's element
-    return ( ! injectedElem.readyState || injectedElem.readyState == 'loaded' || injectedElem.readyState == 'complete' );
+    return ( ! readyState || readyState == 'loaded' || readyState == 'complete' );
   }
+
 
   function execWhenReady () {
     var execStackReady = true,
@@ -53,7 +54,7 @@ var docElement            = doc.documentElement,
 
     // Loop through the stack of scripts in the cue and execute them when all scripts in a group are ready
     while ( execStack.length - ++i ) {
-      if ( execStack[ i ].src && ! ( execStackReady = execStack[ i ].ready ) ) {
+      if ( execStack[ i ].s && ! ( execStackReady = execStack[ i ].r ) ) {
         // As soon as we encounter a script that isn't ready, stop looking for more
         break;
       }
@@ -70,12 +71,12 @@ var docElement            = doc.documentElement,
     var script = doc.createElement( 'script' ),
         done;
 
-    script.src = oldObj.src;
+    script.src = oldObj.s;
 
     // Bind to load events
     script.onreadystatechange = script.onload = function () {
 
-      if ( ! done && isFileReady( script ) ) {
+      if ( ! done && isFileReady( script.readyState ) ) {
 
         // Set done to prevent this function from being called twice.
         done = true;
@@ -84,7 +85,7 @@ var docElement            = doc.documentElement,
         // Handle memory leak in IE
         script.onload = script.onreadystatechange = null;
         // Only remove it if we appended it to begin with
-        ! oldObj.error && docElement.removeChild( script );
+        ! oldObj.e && docElement.removeChild( script );
       }
     };
 
@@ -118,7 +119,7 @@ var docElement            = doc.documentElement,
         done;
 
     // Add attributes
-    link.href = oldObj.src;
+    link.href = oldObj.s;
     link.rel  = 'stylesheet';
     link.type = 'text/css';
 
@@ -147,7 +148,7 @@ var docElement            = doc.documentElement,
             catch ( ex ) {
               // In the case that the browser does not support the cssRules array (cross domain)
               // just check the error message to see if it's a security error
-              if ( ( ex.code == 1000 ) || ( ex.message.match( /security|denied/i ) ) ) {
+              if ( ( ex.code == 1e3 ) || ( ex.message.match( /security|denied/i ) ) ) {
                 // if it's a security error, that means it loaded a cross domain file, so stop the timeout loop
                 done = true;
                 // and execute a check to see if we can run the callback(s) immediately after this function ends
@@ -184,6 +185,7 @@ var docElement            = doc.documentElement,
     sTimeout( function () {
       if ( ! done ) {
         done = true;
+        docElement.removeChild( link );
         execWhenReady();
       }
     }, yepnope.errorTimeout );
@@ -195,8 +197,8 @@ var docElement            = doc.documentElement,
   function executeStack ( a ) {
     // shift an element off of the stack
     var i   = execStack.shift(),
-        src = i ? i.src  : undef,
-        t   = i ? i.type : undef;
+        src = i ? i.s  : undef,
+        t   = i ? i.t : undef;
 
     started = true;
 
@@ -241,18 +243,19 @@ var docElement            = doc.documentElement,
     var preloadElem = doc.createElement( elem ),
         done        = false,
         stackObject = {
-          type: type,
-          src: url,
-          ready: false 
+          t: type,  // type
+          s: url,   // src
+          r: false  // ready
+        //e:        // error
         };
 
     function onload () {
 
       // If the script/css file is loaded
-      if ( ! done && isFileReady( preloadElem ) ) {
+      if ( ! done && isFileReady( preloadElem.readyState ) ) {
 
         // Set done to prevent this function from being called twice.
-        stackObject.ready = done = true;
+        stackObject.r = done = true;
 
         // If the type is set, that means that we're offloading execution
         if ( ! type || ( type && ! started ) ) {
@@ -288,7 +291,7 @@ var docElement            = doc.documentElement,
     else if ( elem == 'script' ) {
       // handle errors on script elements when we can
       preloadElem.onerror = function () {
-        stackObject.ready = true;
+        stackObject.r = true;
         executeStack( true );
       };
     }
@@ -308,11 +311,11 @@ var docElement            = doc.documentElement,
       sTimeout( function () {
         if ( ! done ) {
           // indicate that this had a timeout error on our stack object
-          stackObject.error = true;
+          stackObject.e = true;
           // Remove the node from the dom
           docElement.removeChild( preloadElem );
           // Set it to ready to move on
-          stackObject.ready = done = true;
+          stackObject.r = done = true;
           // Continue on
           execWhenReady();
         }
@@ -341,18 +344,13 @@ var docElement            = doc.documentElement,
     return app;
   }
 
-  function getLoader () {
-    // this is a function to maintain state and return a fresh loader
-    return {
-      load: load,
-      i : 0
-    };
-  }
-
   // return the yepnope object with a fresh loader attached
   function getYepnope () {
     var y = yepnope;
-    y.loader = getLoader();
+    y.loader = {
+      load: load,
+      i : 0
+    };
     return y;
   }
 
@@ -364,21 +362,21 @@ var docElement            = doc.documentElement,
         need,
         nlen  = needs.length,
         // start the chain as a plain instance
-        chain = this.yepnope.loader || getLoader();
+        chain = this.yepnope.loader;
 
     function satisfyPrefixes ( url ) {
       // make sure we have a url
       if ( url ) {
         // split all prefixes out
         var parts   = url.split( '!' ),
-            pLen    = parts.length,
             gLen    = globalFilters.length,
-            origUrl = parts[ pLen - 1 ],
+            origUrl = parts.pop(),
+            pLen    = parts.length,
             res     = {
               url      : origUrl,
               // keep this one static for callback variable consistency
               origUrl  : origUrl,
-              prefixes : ( pLen > 1 ) ? parts.slice( 0, pLen - 1 ) : undef
+              prefixes : parts
             },
             mFunc,
             j,
@@ -386,7 +384,7 @@ var docElement            = doc.documentElement,
 
         // loop through prefixes
         // if there are none, this automatically gets skipped
-        for ( j = 0; j < pLen - 1; j++ ) {
+        for ( j = 0; j < pLen; j++ ) {
           mFunc = prefixes[ parts[ j ] ];
           if ( mFunc ) {
             res = mFunc( res );
@@ -465,7 +463,7 @@ var docElement            = doc.documentElement,
           // If it's a string
           if ( isString( needGroup ) ) {
             // Just load the script of style
-            chain = loadScriptOrStyle( needGroup, callback, chain, 0, testResult );
+            loadScriptOrStyle( needGroup, callback, chain, 0, testResult );
           }
           // See if we have an object. Doesn't matter if it's an array or a key/val hash
           // Note:: order cannot be guaranteed on an key value object with multiple elements
@@ -476,7 +474,7 @@ var docElement            = doc.documentElement,
               // patch if needed. Kangax has a nice shim for it. Or just remove the check
               // and promise not to extend the object prototype.
               if ( needGroup.hasOwnProperty( callbackKey ) ) {
-                chain = loadScriptOrStyle( needGroup[ callbackKey ], callback, chain, callbackKey, testResult );
+                loadScriptOrStyle( needGroup[ callbackKey ], callback, chain, callbackKey, testResult );
               }
             }
           }
@@ -490,7 +488,7 @@ var docElement            = doc.documentElement,
 
         // Fire complete callback
         if ( testObject.complete ) {
-          chain = chain.load( testObject.complete );
+          chain.load( testObject.complete );
         }
 
         return chain;
@@ -498,7 +496,7 @@ var docElement            = doc.documentElement,
 
     // Someone just decides to load a single script or css file as a string
     if ( isString( needs ) ) {
-      chain = loadScriptOrStyle( needs, false, chain, 0 );
+      loadScriptOrStyle( needs, false, chain, 0 );
     }
     // Normal case is likely an array of different types of loading options
     else if ( isArray( needs ) ) {
@@ -508,21 +506,21 @@ var docElement            = doc.documentElement,
 
         // if it's a string, just load it
         if ( isString( need ) ) {
-          chain = loadScriptOrStyle( need, false, chain, 0 );
+          loadScriptOrStyle( need, false, chain, 0 );
         }
         // if it's an array, call our function recursively
         else if ( isArray( need ) ) {
-          chain = yepnope( need );
+          yepnope( need );
         }
         // if it's an object, use our modernizr logic to win
         else if ( isObject( need ) ) {
-          chain = loadFromTestObject( need, chain );
+          loadFromTestObject( need, chain );
         }
       }
     }
     // Allow a single object to be passed in
     else if ( isObject( needs ) ) {
-      chain = loadFromTestObject( needs, chain );
+      loadFromTestObject( needs, chain );
     }
 
     // allow more loading on this chain
