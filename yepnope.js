@@ -408,7 +408,7 @@ var docElement            = doc.documentElement,
 
       // if no object is returned or the url is empty/false just exit the load
       if ( ! resource || !resource.url || resource.bypass ) {
-        return chain;
+        return;
       }
 
       var inc          = resource.url,
@@ -446,7 +446,7 @@ var docElement            = doc.documentElement,
         }
       }
 
-      return chain;
+      ;
     }
 
     function loadFromTestObject ( testObject, chain) {
@@ -491,7 +491,7 @@ var docElement            = doc.documentElement,
           chain.load( testObject.complete );
         }
 
-        return chain;
+        ;
     }
 
     // Someone just decides to load a single script or css file as a string
@@ -524,7 +524,7 @@ var docElement            = doc.documentElement,
     }
 
     // allow more loading on this chain
-    return chain;
+    ;
   };
 
   // This publicly exposed function is for allowing

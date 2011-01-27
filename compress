@@ -5,3 +5,6 @@ gzip -nfc --best yepnope.min.js > yepnope.min.js.gz
 g=$(ls -la yepnope.min.js.gz | awk '{ print $5}')
 echo "$m bytes minified, $g bytes gzipped"
 rm yepnope.min.js.gz
+if [ "--test" == "$1" ]; then
+  rm yepnope.min.js
+fi
