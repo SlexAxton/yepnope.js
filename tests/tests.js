@@ -235,7 +235,7 @@ if ( ! window.console ) {
 
     yepnope([
       {
-        load : 'css!css/sleep-3/' + rgb.join(',') + '.css',
+        load : 'css/sleep-3/' + rgb.join(',') + '.css',
         callback : function() {
           cssIsLoaded(rgb, function(result) {
 
