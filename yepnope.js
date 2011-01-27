@@ -13,7 +13,7 @@ var docElement            = doc.documentElement,
     docFirst              = docElement.children[ 0 ],
     toString              = {}.toString,
     execStack             = [],
-    started               = false,
+    started               = 0,
     // Before you get mad about browser sniffs, please read:
     // https://github.com/Modernizr/Modernizr/wiki/Undetectables
     // If you have a better solution, we are actively looking to solve the problem
@@ -49,7 +49,7 @@ var docElement            = doc.documentElement,
 
 
   function execWhenReady () {
-    var execStackReady = true,
+    var execStackReady = 1,
         i              = -1;
 
     // Loop through the stack of scripts in the cue and execute them when all scripts in a group are ready
@@ -79,7 +79,7 @@ var docElement            = doc.documentElement,
       if ( ! done && isFileReady( script.readyState ) ) {
 
         // Set done to prevent this function from being called twice.
-        done = true;
+        done = 1;
         execWhenReady();
 
         // Handle memory leak in IE
@@ -92,7 +92,7 @@ var docElement            = doc.documentElement,
     // 404 Fallback
     sTimeout( function () {
       if ( ! done ) {
-        done = true;
+        done = 1;
         docElement.removeChild( script );
         execWhenReady();
       }
@@ -101,7 +101,7 @@ var docElement            = doc.documentElement,
     // Inject script into to document
     // or immediately callback if we know there
     // was previously a timeout error
-    if ( oldObj.error ) {
+    if ( oldObj.e ) {
       script.onload();
     }
     else {
@@ -136,7 +136,7 @@ var docElement            = doc.documentElement,
               // In supporting browsers, we can see the length of the cssRules of the file go up
               if ( link.sheet && link.sheet.cssRules && link.sheet.cssRules.length ) {
                 // Then turn off the poll
-                done = true;
+                done = 1;
                 // And execute a function to execute callbacks when all dependencies are met
                 execWhenReady();
               }
@@ -150,7 +150,7 @@ var docElement            = doc.documentElement,
               // just check the error message to see if it's a security error
               if ( ( ex.code == 1e3 ) || ( ex.message.match( /security|denied/i ) ) ) {
                 // if it's a security error, that means it loaded a cross domain file, so stop the timeout loop
-                done = true;
+                done = 1;
                 // and execute a check to see if we can run the callback(s) immediately after this function ends
                 sTimeout( function () {
                   execWhenReady();
@@ -172,7 +172,7 @@ var docElement            = doc.documentElement,
       link.onload = function () {
         if ( ! done ) {
           // Set our flag to complete
-          done = true;
+          done = 1;
           // Check to see if we can call the callback
           sTimeout( function () {
             execWhenReady();
@@ -184,7 +184,7 @@ var docElement            = doc.documentElement,
     // 404 Fallback
     sTimeout( function () {
       if ( ! done ) {
-        done = true;
+        done = 1;
         docElement.removeChild( link );
         execWhenReady();
       }
@@ -200,7 +200,7 @@ var docElement            = doc.documentElement,
         src = i ? i.s  : undef,
         t   = i ? i.t : undef;
 
-    started = true;
+    started = 1;
 
     // if a is truthy and the first item in the stack has an src
     if ( a && src ) {
@@ -227,13 +227,13 @@ var docElement            = doc.documentElement,
       // reset the started flag for the recursive handling
       else {
         i();
-        started = false;
+        started = 0;
         execWhenReady();
       }
     }
     else {
       // just reset out of recursive mode
-      started = false;
+      started = 0;
     }
   }
 
@@ -241,11 +241,11 @@ var docElement            = doc.documentElement,
 
     // Create appropriate element for browser and type
     var preloadElem = doc.createElement( elem ),
-        done        = false,
+        done        = 0,
         stackObject = {
           t: type,  // type
           s: url,   // src
-        //r: false  // ready
+        //r: 0  // ready
         //e:        // error
         };
 
@@ -255,7 +255,7 @@ var docElement            = doc.documentElement,
       if ( ! done && isFileReady( preloadElem.readyState ) ) {
 
         // Set done to prevent this function from being called twice.
-        stackObject.r = done = true;
+        stackObject.r = done = 1;
 
         // If the type is set, that means that we're offloading execution
         if ( ! type || ( type && ! started ) ) {
@@ -291,8 +291,8 @@ var docElement            = doc.documentElement,
     else if ( elem == 'script' ) {
       // handle errors on script elements when we can
       preloadElem.onerror = function () {
-        stackObject.r = true;
-        executeStack( true );
+        stackObject.r = 1;
+        executeStack( 1 );
       };
     }
 
@@ -311,11 +311,11 @@ var docElement            = doc.documentElement,
       sTimeout( function () {
         if ( ! done ) {
           // indicate that this had a timeout error on our stack object
-          stackObject.e = true;
+          stackObject.e = 1;
           // Remove the node from the dom
           docElement.removeChild( preloadElem );
           // Set it to ready to move on
-          stackObject.r = done = true;
+          stackObject.r = done = 1;
           // Continue on
           execWhenReady();
         }
@@ -399,21 +399,20 @@ var docElement            = doc.documentElement,
         // return the final url
         return res;
       }
-      return false;
+      return 0;
     }
 
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
       // run through our set of prefixes
       var resource = satisfyPrefixes( input );
 
-      // if no object is returned or the url is empty/false just exit the load
+      // if no object is returned or the url is empty/0 just exit the load
       if ( ! resource || !resource.url || resource.bypass ) {
         return;
       }
 
       var inc          = resource.url,
           origInc      = resource.origUrl,
-          incLen       = inc.length,
           instead      = resource.instead,
           autoCallback = resource.autoCallback,
           forceJS      = resource.forceJS,
@@ -430,7 +429,7 @@ var docElement            = doc.documentElement,
       }
       else {
 
-        chain.load( inc, ( incLen > 4 && ( forceCSS || ( ! forceJS && inc.substr( incLen - 4 ) == '.css' ) ) ) ? 'c' : undef );
+        chain.load( inc, ( ( forceCSS || ( ! forceJS && /css$/.test(inc) ) ) ) ? 'c' : undef );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
@@ -491,12 +490,11 @@ var docElement            = doc.documentElement,
           chain.load( testObject.complete );
         }
 
-        ;
     }
 
     // Someone just decides to load a single script or css file as a string
     if ( isString( needs ) ) {
-      loadScriptOrStyle( needs, false, chain, 0 );
+      loadScriptOrStyle( needs, 0, chain, 0 );
     }
     // Normal case is likely an array of different types of loading options
     else if ( isArray( needs ) ) {
@@ -506,7 +504,7 @@ var docElement            = doc.documentElement,
 
         // if it's a string, just load it
         if ( isString( need ) ) {
-          loadScriptOrStyle( need, false, chain, 0 );
+          loadScriptOrStyle( need, 0, chain, 0 );
         }
         // if it's an array, call our function recursively
         else if ( isArray( need ) ) {
@@ -566,10 +564,10 @@ var docElement            = doc.documentElement,
       // call the listener
       doc[ addEvent ]( domLoaded, handler = function () {
         // Remove the listener
-        doc.removeEventListener( domLoaded, handler, false );
+        doc.removeEventListener( domLoaded, handler, 0 );
         // Set it to ready
         doc.readyState = 'complete';
-      }, false );
+      }, 0 );
     }
   } )( 'addEventListener', 'DOMContentLoaded' );
 
