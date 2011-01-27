@@ -508,9 +508,6 @@ var docElement            = doc.documentElement,
     else if ( isObject( needs ) ) {
       loadFromTestObject( needs, chain );
     }
-
-    // allow more loading on this chain
-    ;
   };
 
   // This publicly exposed function is for allowing
