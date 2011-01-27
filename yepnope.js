@@ -49,7 +49,7 @@ var docElement            = doc.documentElement,
 
 
   function execWhenReady () {
-    var execStackReady = 1,
+    var execStackReady = true,
         i              = -1;
 
     // Loop through the stack of scripts in the cue and execute them when all scripts in a group are ready
@@ -79,7 +79,7 @@ var docElement            = doc.documentElement,
       if ( ! done && isFileReady( script.readyState ) ) {
 
         // Set done to prevent this function from being called twice.
-        done = 1;
+        done = true;
         execWhenReady();
 
         // Handle memory leak in IE
@@ -92,7 +92,7 @@ var docElement            = doc.documentElement,
     // 404 Fallback
     sTimeout( function () {
       if ( ! done ) {
-        done = 1;
+        done = true;
         docElement.removeChild( script );
         execWhenReady();
       }
@@ -136,7 +136,7 @@ var docElement            = doc.documentElement,
               // In supporting browsers, we can see the length of the cssRules of the file go up
               if ( link.sheet && link.sheet.cssRules && link.sheet.cssRules.length ) {
                 // Then turn off the poll
-                done = 1;
+                done = true;
                 // And execute a function to execute callbacks when all dependencies are met
                 execWhenReady();
               }
@@ -150,7 +150,7 @@ var docElement            = doc.documentElement,
               // just check the error message to see if it's a security error
               if ( ( ex.code == 1e3 ) || ( ex.message.match( /security|denied/i ) ) ) {
                 // if it's a security error, that means it loaded a cross domain file, so stop the timeout loop
-                done = 1;
+                done = true;
                 // and execute a check to see if we can run the callback(s) immediately after this function ends
                 sTimeout( function () {
                   execWhenReady();
@@ -172,7 +172,7 @@ var docElement            = doc.documentElement,
       link.onload = function () {
         if ( ! done ) {
           // Set our flag to complete
-          done = 1;
+          done = true;
           // Check to see if we can call the callback
           sTimeout( function () {
             execWhenReady();
@@ -184,7 +184,7 @@ var docElement            = doc.documentElement,
     // 404 Fallback
     sTimeout( function () {
       if ( ! done ) {
-        done = 1;
+        done = true;
         docElement.removeChild( link );
         execWhenReady();
       }
@@ -200,7 +200,7 @@ var docElement            = doc.documentElement,
         src = i ? i.s  : undef,
         t   = i ? i.t : undef;
 
-    started = 1;
+    started = true;
 
     // if a is truthy and the first item in the stack has an src
     if ( a && src ) {
@@ -255,7 +255,7 @@ var docElement            = doc.documentElement,
       if ( ! done && isFileReady( preloadElem.readyState ) ) {
 
         // Set done to prevent this function from being called twice.
-        stackObject.r = done = 1;
+        stackObject.r = done = true;
 
         // If the type is set, that means that we're offloading execution
         if ( ! type || ( type && ! started ) ) {
@@ -291,8 +291,8 @@ var docElement            = doc.documentElement,
     else if ( elem == 'script' ) {
       // handle errors on script elements when we can
       preloadElem.onerror = function () {
-        stackObject.r = 1;
-        executeStack( 1 );
+        stackObject.r = true;
+        executeStack( true );
       };
     }
 
@@ -311,11 +311,11 @@ var docElement            = doc.documentElement,
       sTimeout( function () {
         if ( ! done ) {
           // indicate that this had a timeout error on our stack object
-          stackObject.e = 1;
+          stackObject.e = true;
           // Remove the node from the dom
           docElement.removeChild( preloadElem );
           // Set it to ready to move on
-          stackObject.r = done = 1;
+          stackObject.r = done = true;
           // Continue on
           execWhenReady();
         }
