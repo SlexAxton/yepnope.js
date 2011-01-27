@@ -245,7 +245,7 @@ var docElement            = doc.documentElement,
         stackObject = {
           t: type,  // type
           s: url,   // src
-          r: false  // ready
+        //r: false  // ready
         //e:        // error
         };
 
