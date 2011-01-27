@@ -38,12 +38,7 @@ var docElement            = doc.documentElement,
       return toString.call( fn ) == '[object Function]';
     },
     globalFilters         = [],
-    prefixes              = {
-      css: function ( resource ) {
-        resource.forceCSS = true;
-        return resource;
-      }
-    },
+    prefixes              = {},
     yepnope;
 
   /* Loader helper functions */
@@ -53,12 +48,11 @@ var docElement            = doc.documentElement,
   }
 
   function execWhenReady () {
-    var execStackReady = 1,
-        len,
-        i;
+    var execStackReady = true,
+        i              = -1;
 
     // Loop through the stack of scripts in the cue and execute them when all scripts in a group are ready
-    for ( i = -1, len = execStack.length; ++i < len; ) {
+    while ( execStack.length - ++i ) {
       if ( execStack[ i ].src && ! ( execStackReady = execStack[ i ].ready ) ) {
         // As soon as we encounter a script that isn't ready, stop looking for more
         break;
@@ -84,7 +78,7 @@ var docElement            = doc.documentElement,
       if ( ! done && isFileReady( script ) ) {
 
         // Set done to prevent this function from being called twice.
-        done = 1;
+        done = true;
         execWhenReady();
 
         // Handle memory leak in IE
@@ -97,7 +91,7 @@ var docElement            = doc.documentElement,
     // 404 Fallback
     sTimeout( function () {
       if ( ! done ) {
-        done = 1;
+        done = true;
         docElement.removeChild( script );
         execWhenReady();
       }
@@ -167,7 +161,7 @@ var docElement            = doc.documentElement,
               }
             }
           }
-        }, 13 );
+        }, 0 );
       } )( link );
 
     }
@@ -245,7 +239,7 @@ var docElement            = doc.documentElement,
 
     // Create appropriate element for browser and type
     var preloadElem = doc.createElement( elem ),
-        done        = 0,
+        done        = false,
         stackObject = {
           type: type,
           src: url,
@@ -258,7 +252,7 @@ var docElement            = doc.documentElement,
       if ( ! done && isFileReady( preloadElem ) ) {
 
         // Set done to prevent this function from being called twice.
-        stackObject.ready = done = 1;
+        stackObject.ready = done = true;
 
         // If the type is set, that means that we're offloading execution
         if ( ! type || ( type && ! started ) ) {
@@ -294,8 +288,8 @@ var docElement            = doc.documentElement,
     else if ( elem == 'script' ) {
       // handle errors on script elements when we can
       preloadElem.onerror = function () {
-        stackObject.ready = 1;
-        executeStack( 1 );
+        stackObject.ready = true;
+        executeStack( true );
       };
     }
 
@@ -314,11 +308,11 @@ var docElement            = doc.documentElement,
       sTimeout( function () {
         if ( ! done ) {
           // indicate that this had a timeout error on our stack object
-          stackObject.error = 1;
+          stackObject.error = true;
           // Remove the node from the dom
           docElement.removeChild( preloadElem );
           // Set it to ready to move on
-          stackObject.ready = done = 1;
+          stackObject.ready = done = true;
           // Continue on
           execWhenReady();
         }
