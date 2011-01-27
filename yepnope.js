@@ -366,41 +366,37 @@ var docElement            = doc.documentElement,
         chain = this.yepnope.loader;
 
     function satisfyPrefixes ( url ) {
-      // make sure we have a url
-      if ( url ) {
-        // split all prefixes out
-        var parts   = url.split( '!' ),
-            gLen    = globalFilters.length,
-            origUrl = parts.pop(),
-            pLen    = parts.length,
-            res     = {
-              url      : origUrl,
-              // keep this one static for callback variable consistency
-              origUrl  : origUrl,
-              prefixes : parts
-            },
-            mFunc,
-            j,
-            z;
+      // split all prefixes out
+      var parts   = url.split( '!' ),
+      gLen    = globalFilters.length,
+      origUrl = parts.pop(),
+      pLen    = parts.length,
+      res     = {
+        url      : origUrl,
+        // keep this one static for callback variable consistency
+        origUrl  : origUrl,
+        prefixes : parts
+      },
+      mFunc,
+      j,
+      z;
 
-        // loop through prefixes
-        // if there are none, this automatically gets skipped
-        for ( j = 0; j < pLen; j++ ) {
-          mFunc = prefixes[ parts[ j ] ];
-          if ( mFunc ) {
-            res = mFunc( res );
-          }
+      // loop through prefixes
+      // if there are none, this automatically gets skipped
+      for ( j = 0; j < pLen; j++ ) {
+        mFunc = prefixes[ parts[ j ] ];
+        if ( mFunc ) {
+          res = mFunc( res );
         }
-
-        // Go through our global filters
-        for ( z = 0; z < gLen; z++ ) {
-          res = globalFilters[ z ]( res );
-        }
-
-        // return the final url
-        return res;
       }
-      return 0;
+
+      // Go through our global filters
+      for ( z = 0; z < gLen; z++ ) {
+        res = globalFilters[ z ]( res );
+      }
+
+      // return the final url
+      return res;
     }
 
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
@@ -408,7 +404,7 @@ var docElement            = doc.documentElement,
       var resource = satisfyPrefixes( input );
 
       // if no object is returned or the url is empty/0 just exit the load
-      if ( ! resource || !resource.url || resource.bypass ) {
+      if ( resource.bypass ) {
         return;
       }
 
