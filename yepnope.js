@@ -245,9 +245,9 @@ var docElement            = doc.documentElement,
         done        = 0,
         stackObject = {
           t: type,  // type
-          s: url,   // src
-        //r: 0  // ready
-        //e:        // error
+          s: url    // src
+        //r: 0      // ready
+        //e: 0      // error
         };
 
     function onload () {
