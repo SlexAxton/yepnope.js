@@ -39,6 +39,7 @@ var docElement            = doc.documentElement,
     },
     globalFilters         = [],
     prefixes              = {},
+    handler,
     yepnope;
 
   /* Loader helper functions */
@@ -556,21 +557,18 @@ var docElement            = doc.documentElement,
 
   // Webreflection readystate hack
   // safe for jQuery 1.4+ ( i.e. don't use yepnope with jQuery 1.3.2 )
-  ( function ( addEvent, domLoaded, handler ) {
-    // if the readyState is null and we have a listener
-    if ( doc.readyState == null && doc[ addEvent ] ) {
-      // set the ready state to loading
-      doc.readyState = 'loading';
-      // call the listener
-      doc[ addEvent ]( domLoaded, handler = function () {
-        // Remove the listener
-        doc.removeEventListener( domLoaded, handler, 0 );
-        // Set it to ready
-        doc.readyState = 'complete';
-      }, 0 );
-    }
-  } )( 'addEventListener', 'DOMContentLoaded' );
-
+  // if the readyState is null and we have a listener
+  if ( doc.readyState == null && doc.addEventListener ) {
+    // set the ready state to loading
+    doc.readyState = 'loading';
+    // call the listener
+    doc.addEventListener( 'DOMContentLoaded', handler = function () {
+      // Remove the listener
+      doc.removeEventListener( 'DOMContentLoaded', handler, 0 );
+      // Set it to ready
+      doc.readyState = 'complete';
+    }, 0 );
+  }
 
   // Attach loader &
   // Leak it
