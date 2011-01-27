@@ -401,19 +401,13 @@ var docElement            = doc.documentElement,
 
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
       // run through our set of prefixes
-      var resource = satisfyPrefixes( input );
+      var resource     = satisfyPrefixes( input ),
+          autoCallback = resource.autoCallback;
 
       // if no object is returned or the url is empty/0 just exit the load
       if ( resource.bypass ) {
         return;
       }
-
-      var inc          = resource.url,
-          origInc      = resource.origUrl,
-          instead      = resource.instead,
-          autoCallback = resource.autoCallback,
-          forceJS      = resource.forceJS,
-          forceCSS     = resource.forceCSS;
 
       // Determine callback, if any
       if ( callback ) {
@@ -421,12 +415,12 @@ var docElement            = doc.documentElement,
       }
 
       // if someone is overriding all normal functionality
-      if ( instead ) {
-        return instead( input, callback, chain, index, testResult );
+      if ( resource.instead ) {
+        return resource.instead( input, callback, chain, index, testResult );
       }
       else {
 
-        chain.load( inc, ( ( forceCSS || ( ! forceJS && /css$/.test(inc) ) ) ) ? 'c' : undef );
+        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? 'c' : undef );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
@@ -436,13 +430,11 @@ var docElement            = doc.documentElement,
             // NOTE:: This can't get minified... perhaps we need to pass it as a param isntead?
             var innernope = getYepnope();
             // Call our callbacks with this set of data
-            callback && callback( origInc, testResult, index, innernope );
-            autoCallback && autoCallback( origInc, testResult, index, innernope );
+            callback && callback( resource.origUrl, testResult, index, innernope );
+            autoCallback && autoCallback( resource.origUrl, testResult, index, innernope );
           } );
         }
       }
-
-      ;
     }
 
     function loadFromTestObject ( testObject, chain) {
