@@ -321,8 +321,7 @@ var docElement            = doc.documentElement,
 
   function load ( resource, type ) {
 
-    var app   = this,
-        elem  = ( type == 'c' ? strCssElem : strJsElem );
+    var elem  = ( type == 'c' ? strCssElem : strJsElem );
 
     // We'll do 'j' for js and 'c' for css, yay for unreadable minification tactics
     type = type || 'j';
@@ -330,14 +329,14 @@ var docElement            = doc.documentElement,
       // if the resource passed in here is a string, preload the file
       // use the head when we can (which is the documentElement when the head element doesn't exist)
       // and use the body element for objects. Images seem fine in the head, for some odd reason.
-      preloadFile( elem, resource, type, app.i++, docElement );
+      preloadFile( elem, resource, type, this.i++, docElement );
     } else {
       // Otherwise it's a resource object and we can splice it into the app at the current location
-      execStack.splice( app.i++, 0, resource );
+      execStack.splice( this.i++, 0, resource );
     }
 
     // OMG is this jQueries? For chaining...
-    return app;
+    return this;
   }
 
   // return the yepnope object with a fresh loader attached
