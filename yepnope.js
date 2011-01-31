@@ -371,8 +371,7 @@ var docElement            = doc.documentElement,
         prefixes : parts
       },
       mFunc,
-      j,
-      z;
+      j;
 
       // loop through prefixes
       // if there are none, this automatically gets skipped
@@ -384,8 +383,8 @@ var docElement            = doc.documentElement,
       }
 
       // Go through our global filters
-      for ( z = 0; z < gLen; z++ ) {
-        res = globalFilters[ z ]( res );
+      for ( j = 0; j < gLen; j++ ) {
+        res = globalFilters[ j ]( res );
       }
 
       // return the final url
