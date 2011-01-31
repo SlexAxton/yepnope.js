@@ -355,7 +355,6 @@ var docElement            = doc.documentElement,
 
     var i,
         need,
-        nlen  = needs.length,
         // start the chain as a plain instance
         chain = this.yepnope.loader;
 
@@ -482,7 +481,7 @@ var docElement            = doc.documentElement,
     // Normal case is likely an array of different types of loading options
     else if ( isArray( needs ) ) {
       // go through the list of needs
-      for( i = 0; i < nlen; i++ ) {
+      for( i = 0; i < needs.length; i++ ) {
         need = needs[ i ];
 
         // if it's a string, just load it
