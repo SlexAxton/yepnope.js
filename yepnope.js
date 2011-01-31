@@ -48,7 +48,6 @@ var docElement            = doc.documentElement,
     return ( ! readyState || readyState == 'loaded' || readyState == 'complete' );
   }
 
-
   function execWhenReady () {
     var execStackReady = 1,
         i              = -1;
@@ -258,14 +257,11 @@ var docElement            = doc.documentElement,
         // Set done to prevent this function from being called twice.
         stackObject.r = done = 1;
 
-        // If the type is set, that means that we're offloading execution
-        if ( ! type || ( type && ! started ) ) {
-          execWhenReady();
-        }
+        ! started && execWhenReady();
 
         // Handle memory leak in IE
         preloadElem.onload = preloadElem.onreadystatechange = null;
-        type && docElement.removeChild( preloadElem );
+        docElement.removeChild( preloadElem );
       }
     }
 
@@ -276,7 +272,7 @@ var docElement            = doc.documentElement,
     preloadElem.width = preloadElem.height = '0';
 
     // Only if we have a type to add should we set the type attribute (a real script has no type)
-    if ( type && elem != 'object' ) {
+    if ( elem != 'object' ) {
       preloadElem.type = type;
     }
 
