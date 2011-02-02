@@ -10,7 +10,7 @@
 
 var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
-    docFirst              = docElement.children[ 0 ],
+    docFirst              = docElement.children && docElement.children[ 0 ] || doc.getElementsByTagName( 'head' )[ 0 ],
     toString              = {}.toString,
     execStack             = [],
     started               = 0,
