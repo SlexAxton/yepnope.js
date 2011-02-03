@@ -182,19 +182,19 @@ if ( ! window.console ) {
     yepnope([
       {
         load : 'js/d'+u+'.js',
-        callback : function(url, res, key, yepnope) {
+        callback : function(url, res, key) {
 
           ok( w['d'+u] && !w['e'+u] && !w['f'+u] && !w['g'+u] && !w['h'+u], "d has loaded; e,f,g,h have not.");
 
           yepnope({
-            load : 'js/e'+u+'.js',
-            callback : function(url, res, key, yepnope){
+            load : 'js/sleep-3/e'+u+'.js',
+            callback : function(url, res, key){
 
               ok( w['d'+u] && w['e'+u] && !w['f'+u] && !w['g'+u] && !w['h'+u], "d,e have loaded; f,g,h have not.");
 
               yepnope({
                 load : 'js/f'+u+'.js',
-                callback : function(url, res, key, yepnope) {
+                callback : function(url, res, key) {
 
                   ok( w['d'+u] && w['e'+u] && w['f'+u] && !w['g'+u] && !w['h'+u], "d,e,f have loaded; g,h have not.");
 
@@ -215,6 +215,7 @@ if ( ! window.console ) {
       {
         load : 'js/h'+u+'.js',
         callback : function() {
+          // if there was a problem, e would likely not exist yet here, if it does, this likely waited for it.
           ok( w['d'+u] && w['e'+u] && w['f'+u] && w['g'+u] && w['h'+u], "d,e,f,g,h have all loaded");
         },
         complete: function(){
@@ -304,7 +305,7 @@ if ( ! window.console ) {
     yepnope([
       {
         load : 'iDoesNotExist',
-        callback : function(url, res, key, yepnope){
+        callback : function(url, res, key){
 
           ok( ! w['i'+u], "i returned a 404");
 

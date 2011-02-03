@@ -419,11 +419,10 @@ var docElement            = doc.documentElement,
           // Call getJS with our current stack of things
           chain.load( function () {
             // Hijack yepnope and restart index counter
-            // NOTE:: This can't get minified... perhaps we need to pass it as a param isntead?
-            var innernope = getYepnope();
+            getYepnope();
             // Call our callbacks with this set of data
-            callback && callback( resource.origUrl, testResult, index, innernope );
-            autoCallback && autoCallback( resource.origUrl, testResult, index, innernope );
+            callback && callback( resource.origUrl, testResult, index );
+            autoCallback && autoCallback( resource.origUrl, testResult, index );
           } );
         }
       }
