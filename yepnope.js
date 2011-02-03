@@ -1,10 +1,7 @@
 /**
- * yepnope.js 1.0pre
- * by Alex Sexton - AlexSexton@gmail.com
- * &
- * Ralph Holzmann - ralphholzmann@gmail.com
- *
- * Tri-Licensed WTFPL, BSD, & MIT
+ * yepnope.js 1.0 RC1
+ * Alex Sexton & Ralph Holzmann
+ * WTFPL BSD & MIT
 */
 ( function ( window, doc, undef ) {
 
