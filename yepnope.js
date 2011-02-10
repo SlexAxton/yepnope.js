@@ -1,7 +1,7 @@
-/**
- * yepnope.js 1.0 RC1
- * Alex Sexton & Ralph Holzmann
- * WTFPL BSD & MIT
+/*
+yepnope.js 1.0 RC2
+Alex Sexton & Ralph Holzmann
+WTFPL
 */
 ( function ( window, doc, undef ) {
 
