@@ -227,10 +227,8 @@ var docElement            = doc.documentElement,
         injectCss( i );
       }
       // Otherwise, just call the function and potentially run the stack
-      // reset the started flag for the recursive handling
       else {
         i();
-        started = 0;
         execWhenReady();
       }
     }
@@ -325,7 +323,11 @@ var docElement            = doc.documentElement,
   function load ( resource, type, dontExec ) {
 
     var elem  = ( type == 'c' ? strCssElem : strJsElem );
-
+    
+    // If this method gets hit multiple times, we should flag
+    // that the execution of other threads should halt.
+    started = 0;
+    
     // We'll do 'j' for js and 'c' for css, yay for unreadable minification tactics
     type = type || 'j';
     if ( isString( resource ) ) {
@@ -530,7 +532,7 @@ var docElement            = doc.documentElement,
   };
 
   // Default error timeout to 10sec - modify to alter
-  yepnope.errorTimeout = 10000;
+  yepnope.errorTimeout = 1e4;
 
   // Webreflection readystate hack
   // safe for jQuery 1.4+ ( i.e. don't use yepnope with jQuery 1.3.2 )
