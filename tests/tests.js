@@ -228,6 +228,16 @@ if ( ! window.console ) {
     stop(timeout);
   });
 
+  asyncTest("Yepnope calls within loaded files", 2, function() {
+    yepnope({
+      load: 'file1.js',
+      callback: function(){
+        ok( w.file1, 'file1.js has loaded.');
+      }
+    })
+  });
+
+
   asyncTest("CSS Callback Timing", 3, function() {
     var startTime = (+new Date),
         myrgb = rgb();
