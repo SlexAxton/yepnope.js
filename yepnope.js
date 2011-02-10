@@ -121,8 +121,7 @@ var docElement            = doc.documentElement,
     link.type = 'text/css';
 
     // Poll for changes in webkit and gecko
-    if ( isWebkit || isGecko ) {
-
+    if ( !oldObj.e && ( isWebkit || isGecko ) ) {
       // A self executing function with a sTimeout poll to call itself
       // again until the css file is added successfully
       ( function poll ( link ) {
@@ -176,6 +175,9 @@ var docElement            = doc.documentElement,
           }, 0 );
         }
       };
+
+      // if we shouldn't inject due to error or settings, just call this right away
+      oldObj.e && link.onload();
     }
 
     // 404 Fallback
@@ -186,9 +188,10 @@ var docElement            = doc.documentElement,
         execWhenReady();
       }
     }, yepnope.errorTimeout );
-
+    
     // Inject CSS
-    docElement.insertBefore( link, docFirst );
+    // only inject if there are no errors, and we didn't set the no inject flag ( oldObj.e )
+    ! oldObj.e && docElement.insertBefore( link, docFirst );
   }
 
   function executeStack ( a ) {
@@ -234,16 +237,16 @@ var docElement            = doc.documentElement,
     }
   }
 
-  function preloadFile ( elem, url, type, splicePoint, docElement ) {
+  function preloadFile ( elem, url, type, splicePoint, docElement, dontExec ) {
 
     // Create appropriate element for browser and type
     var preloadElem = doc.createElement( elem ),
         done        = 0,
         stackObject = {
-          t: type,  // type
-          s: url    // src
-        //r: 0      // ready
-        //e: 0      // error
+          t: type,     // type
+          s: url,      // src
+        //r: 0,        // ready
+          e : dontExec // set to true if we don't want to reinject
         };
 
     function onload () {
@@ -316,7 +319,7 @@ var docElement            = doc.documentElement,
     }
   }
 
-  function load ( resource, type ) {
+  function load ( resource, type, dontExec ) {
 
     var elem  = ( type == 'c' ? strCssElem : strJsElem );
 
@@ -324,9 +327,7 @@ var docElement            = doc.documentElement,
     type = type || 'j';
     if ( isString( resource ) ) {
       // if the resource passed in here is a string, preload the file
-      // use the head when we can (which is the documentElement when the head element doesn't exist)
-      // and use the body element for objects. Images seem fine in the head, for some odd reason.
-      preloadFile( elem, resource, type, this.i++, docElement );
+      preloadFile( elem, resource, type, this.i++, docElement, dontExec );
     } else {
       // Otherwise it's a resource object and we can splice it into the app at the current location
       execStack.splice( this.i++, 0, resource );
@@ -405,11 +406,11 @@ var docElement            = doc.documentElement,
 
       // if someone is overriding all normal functionality
       if ( resource.instead ) {
-        return resource.instead( input, callback, chain, index, testResult );
+        return resource.instead( input, callback, chain, index, testResult, resource );
       }
       else {
 
-        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? 'c' : undef );
+        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? 'c' : undef, resource.noexec );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {

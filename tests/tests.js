@@ -41,11 +41,13 @@ if ( ! window.console ) {
   }
 
   var timeout   = 25000,
-      rgb       = (function( i ){
-        var a = [];
-        while ( i-- ) a.push( Math.floor( Math.random() * 255 ) );
-        return a;
-      })(3),
+      rgb       = function (){
+        return (function( i ){
+          var a = [];
+          while ( i-- ) a.push( Math.floor( Math.random() * 255 ) );
+          return a;
+        })(3);
+      },
       u         = (+new Date);
 
   module("Input Support")
@@ -227,18 +229,18 @@ if ( ! window.console ) {
   });
 
   asyncTest("CSS Callback Timing", 3, function() {
-    var startTime = (+new Date);
-
+    var startTime = (+new Date),
+        myrgb = rgb();
     // For good measure, make sure this is always true
-    cssIsLoaded(rgb, function(result) {
+    cssIsLoaded(myrgb, function(result) {
       ok(!result, 'CSS is not already loaded.');
     });
 
     yepnope([
       {
-        load : 'css/sleep-3/' + rgb.join(',') + '.css',
+        load : 'css/sleep-3/' + myrgb.join(',') + '.css',
         callback : function() {
-          cssIsLoaded(rgb, function(result) {
+          cssIsLoaded(myrgb, function(result) {
 
             ok(result, 'CSS is loaded at callback runtime.');
 
@@ -253,7 +255,7 @@ if ( ! window.console ) {
 
     // Since the load is slept for 3 seconds, it should not exist after 1.5 seconds
     setTimeout(function() {
-      cssIsLoaded(rgb, function(result) {
+      cssIsLoaded(myrgb, function(result) {
         ok(!result, 'CSS is not loaded before callback.');
       });
     }, 1500);
@@ -373,4 +375,57 @@ if ( ! window.console ) {
     stop(timeout);
   });
 
+  asyncTest("Preload only", 8, function () {
+    var myrgb = rgb();
+
+    ++u;
+
+    ok( !w[ 'a' + u ], "JS Not in the page before hand" );
+
+    cssIsLoaded(myrgb, function(result) {
+      ok(!result, 'CSS is not already loaded.');
+    });
+
+    yepnope([
+    // Do this with JS
+    {
+      load: "preload!js/sleep-3/a" + u + ".js",
+      callback: function () {
+        ok( !w[ 'a' + u ], "After callback, js still not executed in the page." );
+        var timeStart = (+new Date);
+        yepnope({
+          load: "js/sleep-3/a" + u + ".js",
+          callback: function () {
+            var diff = (+new Date) - timeStart;
+            ok( diff < 3000, "The js callback didn't have to wait" );
+            ok( w[ 'a' + u ], "a successfully executed." );
+          }        
+        });
+      }
+    },
+    // Now with CSS
+    {
+      load: "preload!css/sleep-3/" + myrgb.join(',') + '.css',
+      callback: function () {
+        cssIsLoaded(myrgb, function(result) {
+          ok(!result, 'CSS is not in the page after callback.');
+        });
+        var timeStart = (+new Date);
+        yepnope({
+          load: "css/sleep-3/" + myrgb.join(',') + '.css',
+          callback: function () {
+            var diff = (+new Date) - timeStart;
+            ok( diff < 3000, "The css callback didn't have to wait" );
+            cssIsLoaded(myrgb, function(result) {
+              ok( result, 'CSS was successfully injected.');
+            });
+          },
+          complete: function () {
+            start();
+          }
+        });
+      }
+    }]);
+    stop(timeout);
+  });
 })( window )
