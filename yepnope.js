@@ -121,7 +121,7 @@ var docElement            = doc.documentElement,
     link.type = 'text/css';
 
     // Poll for changes in webkit and gecko
-    if ( !oldObj.e && ( isWebkit || isGecko ) ) {
+    if ( ! oldObj.e && ( isWebkit || isGecko ) ) {
       // A self executing function with a sTimeout poll to call itself
       // again until the css file is added successfully
       ( function poll ( link ) {
@@ -406,7 +406,7 @@ var docElement            = doc.documentElement,
 
       // if someone is overriding all normal functionality
       if ( resource.instead ) {
-        return resource.instead( input, callback, chain, index, testResult, resource );
+        return resource.instead( input, callback, chain, index, testResult );
       }
       else {
 
