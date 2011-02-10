@@ -7,7 +7,12 @@
 
 var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
+    // This is a bit tricky, not all browsers insert the head element if it's not there, and not all browsers
+    // support document.children, so this covers everything that we're trying to support, feel free to change this line
+    // to suit your needs. In the name of good practices and saving space, we decided to assume that your document has a
+    // head element. If it doesn't (ugh), then switch out these lines
     docFirst              = doc.getElementsByTagName( 'head' )[ 0 ],
+    // docFirst           = ( doc.getElementsByTagName( 'head' ) || docElement.children )[ 0 ],
     toString              = {}.toString,
     execStack             = [],
     started               = 0,
