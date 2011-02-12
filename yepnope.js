@@ -431,7 +431,7 @@ var docElement            = doc.documentElement,
       }
     }
 
-    function loadFromTestObject ( testObject, chain) {
+    function loadFromTestObject ( testObject, chain ) {
         var testResult = !! testObject.test,
             group      = testResult ? testObject.yep : testObject.nope,
             always     = testObject.load || testObject.both,

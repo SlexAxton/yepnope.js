@@ -312,6 +312,32 @@ if ( ! window.console ) {
     stop(timeout);
   });
 
+  asyncTest("Complete Fires When No Resources Are Loaded", 3, function () {
+    ++u;
+    var count = 0,
+        complete_run = false;
+
+    yepnope([{
+      load : 'js/b' + u + '.js',
+      callback: function () {
+        ok( !complete_run, 'The complete callback still fired in the correct order' );
+      }
+    },{
+      test: false,
+      yep : 'js/a' + u + '.js',
+      callback : function () {
+        count++;
+      },
+      complete : function () {
+        complete_run = true;
+        ok( !count, 'No callbacks were run on the object with no resources to load.' );
+        ok( !w['a'+u], 'The file wasnt loaded. But the complete callback fired anyways.' );
+        start();
+      }
+    }]);
+    stop(timeout);
+  });
+
   asyncTest("404 Fallback", 2, function() {
     ++u;
     yepnope([
