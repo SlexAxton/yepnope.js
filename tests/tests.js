@@ -312,31 +312,7 @@ if ( ! window.console ) {
     stop(timeout);
   });
 
-  asyncTest("Complete Fires When No Resources Are Loaded", 3, function () {
-    ++u;
-    var count = 0,
-        complete_run = false;
 
-    yepnope([{
-      load : 'js/b' + u + '.js',
-      callback: function () {
-        ok( !complete_run, 'The complete callback still fired in the correct order' );
-      }
-    },{
-      test: false,
-      yep : 'js/a' + u + '.js',
-      callback : function () {
-        count++;
-      },
-      complete : function () {
-        complete_run = true;
-        ok( !count, 'No callbacks were run on the object with no resources to load.' );
-        ok( !w['a'+u], 'The file wasnt loaded. But the complete callback fired anyways.' );
-        start();
-      }
-    }]);
-    stop(timeout);
-  });
 
   asyncTest("404 Fallback", 2, function() {
     ++u;
@@ -445,23 +421,46 @@ if ( ! window.console ) {
       callback: function () {
         cssIsLoaded(myrgb, function(result) {
           ok(!result, 'CSS is not in the page after callback.');
-        });
-        var timeStart = (+new Date);
-        yepnope({
-          load: "css/sleep-3/" + myrgb.join(',') + '.css',
-          callback: function () {
-            var diff = (+new Date) - timeStart;
-            ok( diff < 3000, "The css callback didn't have to wait" );
-            cssIsLoaded(myrgb, function(result) {
-              ok( result, 'CSS was successfully injected.');
-            });
-          },
-          complete: function () {
-            start();
-          }
+          var timeStart = (+new Date);
+          yepnope({
+            load: "css/sleep-3/" + myrgb.join(',') + '.css',
+            callback: function () {
+              var diff = (+new Date) - timeStart;
+              ok( diff < 3000, "The css callback didn't have to wait" );
+              cssIsLoaded(myrgb, function(result) {
+                ok( result, 'CSS was successfully injected.');
+              });
+            },
+            complete: function () {
+              start();
+            }
+          });
+
         });
       }
     }]);
     stop(timeout);
+  });
+
+  module('Last Calls');
+  asyncTest("Complete Fires When No Resources Are Loaded", 2, function () {
+    ++u;
+    var count = 0,
+        complete_run = false;
+
+    yepnope({
+      test: false,
+      yep : 'js/a' + u + '.js',
+      callback : function () {
+        count++;
+      },
+      complete : function () {
+        complete_run = true;
+        ok( !count, 'No callbacks were run on the object with no resources to load.' );
+        ok( !w['a'+u], 'The file wasnt loaded. But the complete callback fired anyways.' );
+        start();
+      }
+    });
+    stop(timeout/2); // we shouldn't need very long on this one, and it's annoying
   });
 })( window )
