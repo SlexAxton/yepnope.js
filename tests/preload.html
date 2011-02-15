@@ -40,13 +40,22 @@
           <td>onerror</td>
         </tr>
         <tr>
-          <td>&lt;script type="bogus"&gt;</td>
+          <td>&lt;script &gt;</td>
           <td id="script-onload-exist" class="fail"></td>
           <td id="script-onreadystatechange-exist" class="fail"></td>
           <td id="script-onerror-exist" class="fail"></td>
           <td id="script-onload-not-exist" class="fail"></td>
           <td id="script-onreadystatechange-not-exist" class="fail"></td>
           <td id="script-onerror-not-exist" class="fail"></td>
+        </tr>
+        <tr>
+          <td>&lt;script type="bogus"&gt;</td>
+          <td id="script-bogus-onload-exist" class="fail"></td>
+          <td id="script-bogus-onreadystatechange-exist" class="fail"></td>
+          <td id="script-bogus-onerror-exist" class="fail"></td>
+          <td id="script-bogus-onload-not-exist" class="fail"></td>
+          <td id="script-bogus-onreadystatechange-not-exist" class="fail"></td>
+          <td id="script-bogus-onerror-not-exist" class="fail"></td>
         </tr>
         <tr>
           <td>&lt;object&gt;</td>
@@ -83,7 +92,7 @@
             'exist'      : 'https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js',
             'not-exist'  : 'unicorn'
           },
-          elems         = ['script', 'object', 'img', 'link'],
+          elems         = ['script', 'script-bogus', 'object', 'img', 'link'],
           callbacks     = ['onload', 'onreadystatechange', 'onerror'];
 
       function each( arr, fn ) {
@@ -101,19 +110,19 @@
 
               each( elems, function( elem ) {
 
-                var script  = doc.createElement( elem )
+                var script  = doc.createElement( elem.split('-')[0] )
 
                 if ( elem == 'link') {
                   script.rel  = "stylesheet";
                   script.href = srcs[type];
-//                  script.media = "print";
+                } else if ( elem == 'script-bogus') {
+                  script.src = script.data = srcs[type];
+                  script.type = 'bogus';                                
                 } else {
                   script.src = script.data = srcs[type];
-                  script.type = 'bogus';                
                 }
 
                 script[callback] = function() {
-									console.log([elem, callback, type].join('-'));
                   if (( callback != 'onreadystatechange' ) || (callback == 'onreadystatechange' && ( script.readyState == "loaded" || script.readyState == "complete"))) {
                     doc.getElementById([elem, callback, type].join('-')).className = 'pass';
                     head.removeChild( script );
