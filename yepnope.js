@@ -1,5 +1,5 @@
 /*
-yepnope.js 1.0 RC3
+yepnope.js 1.0 RC4
 Alex Sexton & Ralph Holzmann
 WTFPL
 */
