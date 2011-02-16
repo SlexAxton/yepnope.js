@@ -338,7 +338,8 @@ pre .number {
   padding:20px 0;
   border-top:1px solid #999999;
 }
-#main article p {
+#main article p,
+#main li {
   font-size:14px;
   padding:5px 0;
 }
@@ -374,6 +375,7 @@ section.innerSection {
   margin-top:20px;
   padding-top:20px;
 }
+article h3,
 #prefixes h3 {
   font-size:22px;
   margin-top:20px;

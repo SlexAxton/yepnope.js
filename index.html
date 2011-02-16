@@ -43,7 +43,7 @@
     </section> 
  
     <div id="large-description"> 
-      <strong>yepnope</strong> is a <strong>super-fast</strong> async script loader, and it
+      <strong>yepnope</strong> is a asynchronous conditional script loader that's <strong>super-fast</strong>, and
       allows you to load <strong>only the scripts that your users need.</strong> 
     </div> 
  
@@ -52,8 +52,7 @@
         <h1>The API</h1> 
         <p>There are only a handful of things to know about yepnope. There are only 3 functions available to you
         and there's only one that's really important.</p> 
-        <section> 
-          <h2><pre><span class="keyword">yepnope</span>(resources <span class="comment">/* string | object | array */</span> <span class="optional">[, $LABchain]</span>)</pre></h2> 
+          <pre><span class="keyword">yepnope</span>(resources <span class="comment">/* string | object | array */</span>)</pre> 
           <p>The <span class="code">yepnope</span> function is the core of yepnope.js (crazy, huh?). It takes a whole bunch
           of stuff, to try to make it easy on you.</p> 
           <p>The recommended type for <span class="code">resources</span> is an array of <a href="#testObject">test objects</a>. The consistency helps
@@ -61,29 +60,22 @@
           <p>However, if you don't need more than one test group, then you can avoid putting it in an array, and just send
           in the object.</p> 
           <p>If you're <em>really</em> feeling lazy, you can just pass a string in, as well.</p> 
-          <p>On top of all that, inside of your array, each element can be a test object, another array, or a string
+          <p>On top of all that, inside of your array, each item can be a test object, another array, or a string
           literal. Just send in whatever you got, and there's a good chance yepnope will take it (as long as it's 
           a string, array, or test object)</p> 
-          <p class="light">The <span class="code">$LABchain</span> is an advanced and optional parameter that takes an existing chain
-          and obeys the <span class="code">script</span> and <span class="code">wait</span> calls that you've already
-          made on your $LAB object.</p> 
  
           <section class="innerSection" id="testObject"> 
             <h3>What's in a test object?!</h3> 
             <p>Great question! Here's a list of the things that yepnope will care about if you put it in a test object. <em>All of these
             properties are optional</em>.</p> 
 <pre class="tallCode">yepnope([{
-  test : <span class="optional">/* boolean<span class="comment">(ish)</span> - Something truthy that you want to test */</span>,
-  yep  : <span class="optional">/* array <span class="comment">(of strings)</span> | string - The things to load if <span class="keyword">test</span> is <span class="keyword">true</span> */</span>,
+  test : <span class="optional">/* boolean<span class="comment">(ish)</span> - Something truthy that you want to test             */</span>,
+  yep  : <span class="optional">/* array <span class="comment">(of strings)</span> | string - The things to load if <span class="keyword">test</span> is <span class="keyword">true</span>  */</span>,
   nope : <span class="optional">/* array <span class="comment">(of strings)</span> | string - The things to load if <span class="keyword">test</span> is <span class="keyword">false</span> */</span>,
-  both : <span class="optional">/* array <span class="comment">(of strings)</span> | string - Load everytime (sugar) */</span>,
-  load : <span class="optional">/* array <span class="comment">(of strings)</span> | string - Load everytime (sugar) */</span>,
-  callback : function (url <span class="comment">/* string */</span> <span class="optional">[, testResult, key ]</span>) {
-    <span class="comment">// This gets called for _each_ resource loaded.</span>
-  },
-  complete: function () {
-
-  }
+  both : <span class="optional">/* array <span class="comment">(of strings)</span> | string - Load everytime (sugar)              */</span>,
+  load : <span class="optional">/* array <span class="comment">(of strings)</span> | string - Load everytime (sugar)              */</span>,
+  callback : <span class="optional">/* function ( testResult, key ) | object { key : fn }            */</span>,
+  complete : <span class="optional">/* function                                                      */</span>
 }, ... ]);</pre> 
             <p>Note that yepnope can load CSS or JS files. All resources will be considered JS files unless they end
             in '<span class="code">.css</span>'. You can force files with other extensions (cache-busted scripts, for 
@@ -91,404 +83,429 @@
           </section> 
         </article>
         <article>
-        <h2>Yepnope: The Guide</h2>
-        <h3>Why should you use yepnope?</h3>
-
-        <p>Yepnope has a simple API to help you order load and execute your scripts in the fastest possible way. 
-        Yepnope natively supports JavaScript and CSS resources, and loads them asyncronously and in parallel, 
-        but always executes them in the order you intended. Yepnope is customizable and extendable so you can 
-        add your own customizations with ease! Yepnope is small, weighing in at just over 1.6kb minified and gzipped.</p>
-
-        <h3>Why not just concatenate all my scripts and put them at the bottom?</h3>
-
-        <p>While this is not a bad practice, it is advice from the early days of performance driven script loading. Since 
-        then, we've found that in many cases, you can get better performance. For instance, if you concatenate all of your 
-        JavaScript into a single file, you are often loading large chunks of JavaScript that don't actually run 
-        on the page that you're on. These are wasted bytes, and cost you time and user-experience street cred. Also, it's 
-        been shown (linktokyles) that loading a small amount of scripts in parallel is actually faster than loading them all 
-        concatenated together, since they can all download at the same time (yes, even though there are more http requests).</p>
-
-        <p>More specifically, a lot of times code is specific to a certain situation, yepnope captilizes on this fact, and 
-        allows you to load your scripts based on the situation you find yourself in. Many times, this manifests itself as 
-        Feature Tests. Feature Tests check for the availability of a feature in the executing browser environment. Usually 
-        when a feature is not supported, a "polyfill" is loaded in to offer backwards compatibility in non-supporting browsers. 
-        With yepnope, the only people who pay the cost of the polyfill file are those who need it.</p>
-
-        <p>If yepnope saves you from loading a single JavaScript file, it probably paid for itself. Everything after that 
-        is just gravy.</p>
-
-        <h3>Can't I do this with other script loaders?</h3>
-
-        <p>Yep. We just think this approach is specifically well-suited for this use-case, and other loaders are geared towards 
-        other problems. Most of them are super-awesome too!</p>
-
-        <h3>What does this have to do with Modernizr? ( or What is Modernizr.load ? )</h3>
-
-        <p>Currently yepnope is being included in special builds of Modernizr, because it's such a good companion to a feature 
-        testing library. The output of Modernizr is a fantastic input to yepnope. Yepnope is currently included unmodified from 
-        its original state, but is also aliased as Modernizr.load - you can use the two interchangably, though we suggest that you 
-        stick to one or the other.</p>
-
-
-        <h2>Using Yepnope</h2>
-        <pre><code>yepnope()</code></pre>
-
-        <p>Takes: string, object, array of either</p>
-
-        <p>The yepnope function is where all the magic happens. It's built to take what you give it, so pay close attention:</p>
-
-        <h4>-- A String</h4>
-
-        <p>The most simple thing you can pass the yepnope function is a string.</p>
-
-        <pre><code>yepnope( '/url/to/your/script.js' );</code></pre>
-
-        <p>This will load your js file at sometime in the future (but as soon as possible into the future). That's because yepnope 
-        is _asynchronous_. It doesn't wait for the script to be finished loading before the next thing is allowed to happen. This 
-        is why yepnope can make your apps faster!</p>
-
-        <p><em>"I'm still confused, why can't I use the script that I just loaded?"</em></p>
-
-        <p>You can! Just not like that. If you need to do something after your file has been loaded, you'll want to use a callback 
-        function.</p>
-
-        <p><em>"You mean I can't do this?":</em></p>
-
-        <pre><code>
-        yepnope( 'js/jquery.js' );
-        $.ajax(...); // NOPE
-        </code></pre>
-
-        <p>Sorry, but that's not the way it works! If you're not used to asynchronous code, this can be a chore, but we'll go through 
-        how you can make it work like you want!</p>
-
-        <h4>-- An Object</h4>
-
-        <pre><code>
-        yepnope( {
-          load : '/url/to/your/script.js'
-        } );
-        </code></pre>
-
-        <p>This is exactly equivalent to the first example with a string, except we can add on to this one. For instance, we can 
-        add a callback function to run whenever the file is done loading. This is done with the 'callback' property (go figure!). 
-        From now on, we'll refer to this object as a Test Object (even though sometimes it doesn't have a test in it ;).</p>
-
-        <pre><code>
-yepnope( {
-    load : '/url/to/your/script.js',
-    callback : function ( url, result, key ) {
-        // whenever this runs, your script has just executed.
-        alert( 'script.js has loaded!' );
-    }
-} );
-        </code></pre>
-
-        <p>If you're used to the asynchronous pattern, this should be a breeze, and if not, it'll seem natural in no time.</p>
-
-        <p>One of the most important parts of yepnope is your ability to pass in feature test results to determine whether or 
-        not you need to load a script. Here's yepnope's api for doing that:</p>
-
-        <pre><code>
-yepnope( {
-    test  : window.JSON,
-    nope : 'json2.js',
-    complete : function ( url, result, key ) {
-        var data = window.JSON.parse( '{ "json" : "string" }' );
-    }
-} );
-        </code></pre>
-
-        <p>The power here, is that you were able to parse a json string, but if your browser already had built in support for 
-        json parsing, it didn't require you to load anything extra!</p>
-
-        <p>Notice that we don't have a 'yep' script property set. That's because it isn't mandatory. If you don't have anything 
-        to load when your script passes, you can leave out the 'yep', the same goes for 'nope'.</p>
-
-        <p>This is a simple example, and one based on a very easily replaceable browser feature. Many other things that you may 
-        feature test for often require some set of scripts and styles that aren't always able to be exact fill-ins for their native 
-        counterparts. Regardless, yepnope likely has a way to help you structure it nicely.</p>
-
-        <p>Now if you want to load more than one script, you have a few options (based on your app, one might feel better than 
-        another - the yepnope developers suggest that you always do what feels better).</p>
-
-        <p>You can set the load property in the test object to an array of urls.</p>
-
-        <pre><code>
-yepnope( {
-    load : [ 'script1.js', 'style1.css' ],
-    callback: function ( url, result, key ) {
-        // Wait! What happens in here now?! Does this get called once or twice?
-    }
-} );
-        </code></pre>
-
-        <p>The callback becomes a little bit confusing when we introduce a multiple file load. In fact, the callback function gets 
-        called for every single file you load in the test object (keep that in mind when you learn new ways to load files).</p>
-
-        <p>It's about time you learned what the parameters that get passed into your function are for.</p>
-
-        <pre><code>
-...
-callback: function ( url, result, key ) {
-    console.log( url, result, key );
-}
-...
-        </code></pre>
-        <ul>
-          <li><strong>url</strong> - This is the url (without any prefixes attached) that was loaded</li>
-          <li><strong>result</strong> - This is the result of your test, treat it as a truthy value</li>
-          <li><strong>key</strong> - If you provided a key mapping to your file, this is that key. Also if you 
-          use an array, it's the index of the array it came from ( can get confusing if you used multiple arrays ). 
-          In cases where you just use a string to load a resource, it's 0.</li>
-        </ul>
-
-        <p>These are here to help you make decisions in your callbacks.</p>
-
-        <p>As shown in the previous example, often times we end up loading more than just one thing at a time. Yepnope gets 
-        its name from being able to act on either outcome of a test, so your callback often needs to know how that test turned 
-        out (without you having to copy it and run it again).</p>
-
-        <p>In the following example, assume your browser does not support geolocation (and the 'nope' array is what gets loaded):</p>
-
-        <pre><code>
-yepnope( {
-    test : Modernizr.geolocation,
-    yep : 'regular-styles.css',
-    nope : [ 'modified-styles.css', 'geolocation-polyfill.js' ],
-    callback : function ( url, result, key ) {
-        alert( url );
-    }
-} );
-        </code></pre>
-
-        <p>This will cause TWO separate alerts to occur. They will each contain the exact string (minus any prefixes, if you add 
-        those in the future) of the url that was loaded from the `nope` array.</p>
-
-        <p>So in a simple case you could check to see which url is being loaded in order to know to do a certain thing:</p>
-
-        <pre><code>
-yepnope( {
-    test : Modernizr.geolocation,
-    yep : 'regular-styles.css',
-    nope : [ 'modified-styles.css', 'geolocation-polyfill.js' ],
-    callback : function ( url, result, key ) {
-        if ( url === 'modified-styles.css' ) {
-            alert( 'The Styles loaded!' );
-        }
-    }
-} );
-        </code></pre>
-
-        <p>In this example, unlike the previous one, there will only be one alert. After the css has loaded, the url will match 
-        in our if-statement, and the alert will occur. Since the url of the 'geolocation-polyfill.js' file does not match, there 
-        will be no alert.</p>
-
-        <p>Another thing you might want to know in this situation is the result of your test. Luckily, that's the second parameter. 
-        So if you wanted the alert to mention which styles were loaded, then you might try something like this:</p>
-
-        <pre><code>
-yepnope( {
-    test : Modernizr.geolocation,
-    yep : 'regular-styles.css',
-    nope : [ 'modified-styles.css', 'geolocation-polyfill.js' ],
-    callback : function ( url, result, key ) {
-        if ( url === 'modified-styles.css' ) {
-            alert( 'The Styles loaded!' );
-            if ( result ) {
-                alert( 'The Test Passed!' );
-            }
-            else {
-                alert( 'The test Failed!' );
-            }
-        }
-    }
-} );
-        </code></pre>
-
-        <p>Obviously, this example is a little bit unrealistic, but hopefully it helps you picture how you might use 
-        these in your application.</p>
-
-        <p>You may be thinking that it's a bit cumbersome to always have to repeat the urls of the files that you 
-        load in order to write callback functions for them. We agree!</p>
-
-        <p>There are a few options if you need very unique callbacks for your scripts. The first is the most simple, 
-        but a bit longer to write. Since yepnope supports an array of test objects, you can just separate the file 
-        declarations!</p>
-
-        <h4>-- An Array</h4>
-
-        <pre><code>
-yepnope( [
-    {
-        load : 'file1.js',
-        callback : function ( url, result, key ) {
-            alert( 'This is definitely file1!' );
-        }
-    },
-    {
-        load : 'file2.js',
-        callback : function ( url, result, key ) {
-            alert( 'This is definitely file2!' );
-        }
-    }
-] );
-        </code></pre>
-
-        <p>This can get a little bit long and when the files rely on the same test, you don't want to have to rerun your 
-        feature test for each file you want load based on its result. So you can use a key/value mapping in an object 
-        literal to name your resources. Then the 'key' variable will let you know which of the files the callback is 
-        related to.</p>
-
-        <pre><code>
-yepnope( {
-    test : Modernizr.geolocation,
-    yep : {
-        'rstyles' : 'regular-styles.css'
-    },
-    nope : {
-        'mstyles' : 'modified-styles.css',
-        'geopoly' : 'geolocation-polyfill.js'
-    },
-    callback : function ( url, result, key ) {
-        if ( key === 'geopoly' ) {
-            alert( 'This is the geolocation polyfill!' );
-        }
-    }
-} );
-        </code></pre>
-
-        <p>Now we have a much more succinct way of knowing which one of our files our callback is related to. But as you 
-        may suspect, the code that you would have to write in order to find every single key would get ugly fast. So we 
-        also allow you to give a key value set for your callbacks:</p>
-
-        <pre><code>
-yepnope( {
-    test : Modernizr.geolocation,
-    yep : {
-        'rstyles' : 'regular-styles.css'
-    },
-    nope : {
-        'mstyles' : 'modified-styles.css',
-        'geopoly' : 'geolocation-polyfill.js'
-    },
-    callback : {
-        'rstyles' : function ( url, result, key ) {
-            alert( 'This is the regular styles!' );
-        },
-        'mstyles' : function ( url, result, key ) {
-            alert( 'This is the modified styles!' );
-        },
-        'geopoly' : function ( url, result, key ) {
-            alert( 'This is the geolocation polyfill!' );
-        }
-    }
-} );
-        </code></pre>
-
-        <p>Only the keys that correspond to a file that actually got loaded will be called. So in this case, if geolocation 
-        was not supported, the 'rstyles' callback would never fire.</p>
-
-        <p>We don't want this tutorial to sound too much like it's reading your mind, but we know what you're asking 
-        yourself. <em>"Well now that I've split up all my callbacks, how do I just run some code at the very end, after 
-          <strong>everything</strong> is done loading?"</em></p>
-
-        <p>That's a <strong>great</strong> question! You are absolutely right. With this current situation, you'd have to 
-        duplicate code in order to make sure something ran at the very end ( depending on if the test passed or failed ). 
-        That's why there's also the 'complete' callback. Here it is in action:</p>
-
-        <pre><code>
-yepnope( {
-    test : Modernizr.geolocation,
-    yep : {
-        'rstyles' : 'regular-styles.css'
-    },
-    nope : {
-        'mstyles' : 'modified-styles.css',
-        'geopoly' : 'geolocation-polyfill.js'
-    },
-    callback : {
-        'rstyles' : function ( url, result, key ) {
-            alert( 'This is the regular styles!' );
-        },
-        'mstyles' : function ( url, result, key ) {
-            alert( 'This is the modified styles!' );
-        },
-        'geopoly' : function ( url, result, key ) {
-            alert( 'This is the geolocation polyfill!' );
-        }
-    },
-    complete : function () {
-        alert( 'Everything has loaded in this test object!' );
-    }
-} );
-        </code></pre>
-
-        <p>Now you can act on individual file loads and entire test object groups with clarity.</p>
-
-        <p>Here are some more questions and answers now that you're a little more familiar with how yepnope works:</p>
-
-        <h3>How do I know what order my files are going to execute in? Can I force an order?</h3>
-        <p>In short, whatever order you put them in, that's the order that we execute them in. The 'load' and 'both' 
-        sets of files are executed after your 'yep' or 'nope' sets, but the order that you specificy within those sets 
-        is also preserved. This doesn't mean that the files always load in this order, but we guarantee that they <strong>execute</strong> 
-        in this order. Since this is an asynchronous loader, we load everything all at the same time, and we just delay 
-        running it (or injecting it) until the time is just right.</p>
-
-        <h3>What happens if I use yepnope inside of a yepnope callback?</h3>
-        <p>This is actually an advanced feature of yepnope. We call it 'recursive yepnope'. It actually places the files of the 
-        internal yepnope call into the correct place in the outer yepnope call. So the next file in the outer yepnope call 
-        will wait until the inner yepnope call loads and executes before it executes. This is a great feature to use as a 
-        fallback enabler. We encourage you to use it with caution, because it results in slower script loading since we can't 
-        start preloading the files until the callback occurs (serial loading instead of parallel), but when it's the only option, 
-        it's nice. Here is an example of how it could be used as a fallback technique.</p>
-
-        <pre><code>
-yepnope( [
-    {
-        // Load jquery from a 3rd party CDN
-        load: 'http://code.jquery.com/jquery-1.5.0.js',
-        callback: function ( url, result, key ) {
-            // The boss doesn't trust the jQuery CDN, so you have to have a fallback
-            // So here you can check if your file really loaded (since callbacks will still
-            // fire after an error or a timeout)
-            if ( ! window.jQuery ) {
-                // Load jQuery from our local server
-                // Inject it into the middle of our order of scripts to execute
-                // even if other scripts are listed after this one, and are already
-                // done loading.
-                yepnope( 'local/js/jquery15.js' );
-            }
-        }
-    },
-    {
-        // This file will start downloading as soon as this line is executed,
-        // but if the jQuery CDN was down it won't be executed until after the
-        // local version was loaded.
-        load: 'jQuery.plugins.js',
-        callback: function ( url, result, key ) {
-            jQuery( '.fun' ).plugin();
-        }
-    }
-] );
-        </code></pre>
-
-        <p>Depending on your browser, when there's an error, your callbacks may fire back immediately, but in other 
-        browsers, there is no distinction between a successful script load and an error state, so we opt not to expose 
-        potentially wrong information. If your script hangs or is unavailable, there is a maximum timeout that you can set 
-        for how long it will wait before just calling back anyways. This setting is at yepnope.errorTimeout.</p>
-
-        <h3>I'm seeing two requests in my dev tools, why is it loading everything twice?</h3>
-        <p>Depending on your browser and your server this could mean a couple different things. Due to the nature of 
-        how yepnope works, there are two requests made for every file. The first request is to load it the resource 
-        into the cache and the second request is to execute it (but since it's in the cache, it should execute immediately). 
-        Seeing two requests is pretty normal as long as the second request is cached. If you notice that the second request 
-        isn't cached (and your script load times are doubling), then make sure you are sending the correct cache headers to 
-        allow the caching of your scripts. This is _vital_ to yepnope. It will not work without proper caching enabled. We 
-        actually test to make sure things aren't loaded twice in our test suite., so if you think we may have a bug in your 
-        browser regarding double loading, we encourage you to run the test suite to see if the double loading test passes.</p>
-
-
+          <h1>Yepnope: The Guide</h1>
+          <h3>Why should you use yepnope?</h3>
+  
+          <p>Yepnope has a simple API to help you order load and execute your scripts in the fastest possible way. 
+          Yepnope natively supports JavaScript and CSS resources, and loads them asyncronously and in parallel, 
+          but always executes them in the order you intended. Yepnope is customizable and extendable so you can 
+          add your own customizations with ease! Yepnope is small, weighing in at just over 1.6kb minified and gzipped.</p>
+
+        </article>
+
+        <article>
+
+          <h3>Why not just concatenate all my scripts and put them at the bottom?</h3>
+  
+          <p>While this is not a bad practice, it is advice from the early days of performance driven script loading. Since 
+          then, we've found that in many cases, you can get better performance. For instance, if you concatenate all of your 
+          JavaScript into a single file, you are often loading large chunks of JavaScript that don't actually run 
+          on the page that you're on. These are wasted bytes, and cost you time and user-experience street cred. Also, it's 
+          been shown (linktokyles) that loading a small amount of scripts in parallel is actually faster than loading them all 
+          concatenated together, since they can all download at the same time (yes, even though there are more http requests).</p>
+  
+          <p>More specifically, a lot of times code is specific to a certain situation, yepnope captilizes on this fact, and 
+          allows you to load your scripts based on the situation you find yourself in. Many times, this manifests itself as 
+          Feature Tests. Feature Tests check for the availability of a feature in the executing browser environment. Usually 
+          when a feature is not supported, a "polyfill" is loaded in to offer backwards compatibility in non-supporting browsers. 
+          With yepnope, the only people who pay the cost of the polyfill file are those who need it.</p>
+  
+          <p>If yepnope saves you from loading a single JavaScript file, it probably paid for itself. Everything after that 
+          is just gravy.</p>
+        
+        </article>
+
+        <article>
+          <h3>Can't I do this with other script loaders?</h3>
+  
+          <p>Yep. We just think this approach is specifically well-suited for this use-case, and other loaders are geared towards 
+          other problems. Most of them are super-awesome too!</p>
+  
+        </article>
+        <article>
+  
+          <h3>What does this have to do with Modernizr? ( or What is Modernizr.load ? )</h3>
+  
+          <p>Currently yepnope is being included in special builds of Modernizr, because it's such a good companion to a feature 
+          testing library. The output of Modernizr is a fantastic input to yepnope. Yepnope is currently included unmodified from 
+          its original state, but is also aliased as Modernizr.load - you can use the two interchangably, though we suggest that you 
+          stick to one or the other.</p>        
+        </article>
+
+        <article>
+        
+          <h1>Using Yepnope</h1>
+          <pre><code>yepnope()</code></pre>
+  
+          <p>Takes: string, object, array of either</p>
+  
+          <p>The yepnope function is where all the magic happens. It's built to take what you give it, so pay close attention:</p>
+        </article>
+
+        <article>
+          <h3>A String</h3>
+  
+          <p>The most simple thing you can pass the yepnope function is a string.</p>
+  
+          <pre><code>yepnope( '/url/to/your/script.js' );</code></pre>
+  
+          <p>This will load your js file at sometime in the future (but as soon as possible into the future). That's because yepnope 
+          is _asynchronous_. It doesn't wait for the script to be finished loading before the next thing is allowed to happen. This 
+          is why yepnope can make your apps faster!</p>
+  
+          <p><em>"I'm still confused, why can't I use the script that I just loaded?"</em></p>
+  
+          <p>You can! Just not like that. If you need to do something after your file has been loaded, you'll want to use a callback 
+          function.</p>
+  
+          <p><em>"You mean I can't do this?":</em></p>
+  
+          <pre><code>
+          yepnope( 'js/jquery.js' );
+          $.ajax(...); // NOPE
+          </code></pre>
+  
+          <p>Sorry, but that's not the way it works! If you're not used to asynchronous code, this can be a chore, but we'll go through 
+          how you can make it work like you want!</p>
+        </article>
+
+        <article>
+          <h3>An Object</h3>
+  
+          <pre><code>
+          yepnope( {
+            load : '/url/to/your/script.js'
+          } );
+          </code></pre>
+  
+          <p>This is exactly equivalent to the first example with a string, except we can add on to this one. For instance, we can 
+          add a callback function to run whenever the file is done loading. This is done with the 'callback' property (go figure!). 
+          From now on, we'll refer to this object as a Test Object (even though sometimes it doesn't have a test in it ;).</p>
+  
+          <pre><code>
+  yepnope( {
+      load : '/url/to/your/script.js',
+      callback : function ( url, result, key ) {
+          // whenever this runs, your script has just executed.
+          alert( 'script.js has loaded!' );
+      }
+  } );
+          </code></pre>
+  
+          <p>If you're used to the asynchronous pattern, this should be a breeze, and if not, it'll seem natural in no time.</p>
+  
+          <p>One of the most important parts of yepnope is your ability to pass in feature test results to determine whether or 
+          not you need to load a script. Here's yepnope's api for doing that:</p>
+  
+          <pre><code>
+  yepnope( {
+      test  : window.JSON,
+      nope : 'json2.js',
+      complete : function ( url, result, key ) {
+          var data = window.JSON.parse( '{ "json" : "string" }' );
+      }
+  } );
+          </code></pre>
+  
+          <p>The power here, is that you were able to parse a json string, but if your browser already had built in support for 
+          json parsing, it didn't require you to load anything extra!</p>
+  
+          <p>Notice that we don't have a 'yep' script property set. That's because it isn't mandatory. If you don't have anything 
+          to load when your script passes, you can leave out the 'yep', the same goes for 'nope'.</p>
+  
+          <p>This is a simple example, and one based on a very easily replaceable browser feature. Many other things that you may 
+          feature test for often require some set of scripts and styles that aren't always able to be exact fill-ins for their native 
+          counterparts. Regardless, yepnope likely has a way to help you structure it nicely.</p>
+  
+          <p>Now if you want to load more than one script, you have a few options (based on your app, one might feel better than 
+          another - the yepnope developers suggest that you always do what feels better).</p>
+  
+          <p>You can set the load property in the test object to an array of urls.</p>
+  
+          <pre><code>
+  yepnope( {
+      load : [ 'script1.js', 'style1.css' ],
+      callback: function ( url, result, key ) {
+          // Wait! What happens in here now?! Does this get called once or twice?
+      }
+  } );
+          </code></pre>
+  
+          <p>The callback becomes a little bit confusing when we introduce a multiple file load. In fact, the callback function gets 
+          called for every single file you load in the test object (keep that in mind when you learn new ways to load files).</p>
+  
+          <p>It's about time you learned what the parameters that get passed into your function are for.</p>
+  
+          <pre><code>
+  ...
+  callback: function ( url, result, key ) {
+      console.log( url, result, key );
+  }
+  ...
+          </code></pre>
+          <ul>
+            <li><strong>url</strong> - This is the url (without any prefixes attached) that was loaded</li>
+            <li><strong>result</strong> - This is the result of your test, treat it as a truthy value</li>
+            <li><strong>key</strong> - If you provided a key mapping to your file, this is that key. Also if you 
+            use an array, it's the index of the array it came from ( can get confusing if you used multiple arrays ). 
+            In cases where you just use a string to load a resource, it's 0.</li>
+          </ul>
+  
+          <p>These are here to help you make decisions in your callbacks.</p>
+  
+          <p>As shown in the previous example, often times we end up loading more than just one thing at a time. Yepnope gets 
+          its name from being able to act on either outcome of a test, so your callback often needs to know how that test turned 
+          out (without you having to copy it and run it again).</p>
+  
+          <p>In the following example, assume your browser does not support geolocation (and the 'nope' array is what gets loaded):</p>
+  
+          <pre><code>
+  yepnope( {
+      test : Modernizr.geolocation,
+      yep : 'regular-styles.css',
+      nope : [ 'modified-styles.css', 'geolocation-polyfill.js' ],
+      callback : function ( url, result, key ) {
+          alert( url );
+      }
+  } );
+          </code></pre>
+  
+          <p>This will cause TWO separate alerts to occur. They will each contain the exact string (minus any prefixes, if you add 
+          those in the future) of the url that was loaded from the `nope` array.</p>
+  
+          <p>So in a simple case you could check to see which url is being loaded in order to know to do a certain thing:</p>
+  
+          <pre><code>
+  yepnope( {
+      test : Modernizr.geolocation,
+      yep : 'regular-styles.css',
+      nope : [ 'modified-styles.css', 'geolocation-polyfill.js' ],
+      callback : function ( url, result, key ) {
+          if ( url === 'modified-styles.css' ) {
+              alert( 'The Styles loaded!' );
+          }
+      }
+  } );
+          </code></pre>
+  
+          <p>In this example, unlike the previous one, there will only be one alert. After the css has loaded, the url will match 
+          in our if-statement, and the alert will occur. Since the url of the 'geolocation-polyfill.js' file does not match, there 
+          will be no alert.</p>
+  
+          <p>Another thing you might want to know in this situation is the result of your test. Luckily, that's the second parameter. 
+          So if you wanted the alert to mention which styles were loaded, then you might try something like this:</p>
+  
+          <pre><code>
+  yepnope( {
+      test : Modernizr.geolocation,
+      yep : 'regular-styles.css',
+      nope : [ 'modified-styles.css', 'geolocation-polyfill.js' ],
+      callback : function ( url, result, key ) {
+          if ( url === 'modified-styles.css' ) {
+              alert( 'The Styles loaded!' );
+              if ( result ) {
+                  alert( 'The Test Passed!' );
+              }
+              else {
+                  alert( 'The test Failed!' );
+              }
+          }
+      }
+  } );
+          </code></pre>
+  
+          <p>Obviously, this example is a little bit unrealistic, but hopefully it helps you picture how you might use 
+          these in your application.</p>
+  
+          <p>You may be thinking that it's a bit cumbersome to always have to repeat the urls of the files that you 
+          load in order to write callback functions for them. We agree!</p>
+  
+          <p>There are a few options if you need very unique callbacks for your scripts. The first is the most simple, 
+          but a bit longer to write. Since yepnope supports an array of test objects, you can just separate the file 
+          declarations!</p>
+        </article>
+
+        <article>
+          <h3>An Array</h3>
+  
+          <pre><code>
+  yepnope( [
+      {
+          load : 'file1.js',
+          callback : function ( url, result, key ) {
+              alert( 'This is definitely file1!' );
+          }
+      },
+      {
+          load : 'file2.js',
+          callback : function ( url, result, key ) {
+              alert( 'This is definitely file2!' );
+          }
+      }
+  ] );
+          </code></pre>
+  
+          <p>This can get a little bit long and when the files rely on the same test, you don't want to have to rerun your 
+          feature test for each file you want load based on its result. So you can use a key/value mapping in an object 
+          literal to name your resources. Then the 'key' variable will let you know which of the files the callback is 
+          related to.</p>
+  
+          <pre><code>
+  yepnope( {
+      test : Modernizr.geolocation,
+      yep : {
+          'rstyles' : 'regular-styles.css'
+      },
+      nope : {
+          'mstyles' : 'modified-styles.css',
+          'geopoly' : 'geolocation-polyfill.js'
+      },
+      callback : function ( url, result, key ) {
+          if ( key === 'geopoly' ) {
+              alert( 'This is the geolocation polyfill!' );
+          }
+      }
+  } );
+          </code></pre>
+  
+          <p>Now we have a much more succinct way of knowing which one of our files our callback is related to. But as you 
+          may suspect, the code that you would have to write in order to find every single key would get ugly fast. So we 
+          also allow you to give a key value set for your callbacks:</p>
+  
+          <pre><code>
+  yepnope( {
+      test : Modernizr.geolocation,
+      yep : {
+          'rstyles' : 'regular-styles.css'
+      },
+      nope : {
+          'mstyles' : 'modified-styles.css',
+          'geopoly' : 'geolocation-polyfill.js'
+      },
+      callback : {
+          'rstyles' : function ( url, result, key ) {
+              alert( 'This is the regular styles!' );
+          },
+          'mstyles' : function ( url, result, key ) {
+              alert( 'This is the modified styles!' );
+          },
+          'geopoly' : function ( url, result, key ) {
+              alert( 'This is the geolocation polyfill!' );
+          }
+      }
+  } );
+          </code></pre>
+  
+          <p>Only the keys that correspond to a file that actually got loaded will be called. So in this case, if geolocation 
+          was not supported, the 'rstyles' callback would never fire.</p>
+  
+          <p>We don't want this tutorial to sound too much like it's reading your mind, but we know what you're asking 
+          yourself. <em>"Well now that I've split up all my callbacks, how do I just run some code at the very end, after 
+            <strong>everything</strong> is done loading?"</em></p>
+  
+          <p>That's a <strong>great</strong> question! You are absolutely right. With this current situation, you'd have to 
+          duplicate code in order to make sure something ran at the very end ( depending on if the test passed or failed ). 
+          That's why there's also the 'complete' callback. Here it is in action:</p>
+  
+          <pre><code>
+  yepnope( {
+      test : Modernizr.geolocation,
+      yep : {
+          'rstyles' : 'regular-styles.css'
+      },
+      nope : {
+          'mstyles' : 'modified-styles.css',
+          'geopoly' : 'geolocation-polyfill.js'
+      },
+      callback : {
+          'rstyles' : function ( url, result, key ) {
+              alert( 'This is the regular styles!' );
+          },
+          'mstyles' : function ( url, result, key ) {
+              alert( 'This is the modified styles!' );
+          },
+          'geopoly' : function ( url, result, key ) {
+              alert( 'This is the geolocation polyfill!' );
+          }
+      },
+      complete : function () {
+          alert( 'Everything has loaded in this test object!' );
+      }
+  } );
+          </code></pre>
+  
+          <p>Now you can act on individual file loads and entire test object groups with clarity.</p>
+  
+          <p>Here are some more questions and answers now that you're a little more familiar with how yepnope works:</p>
+        </article>
+
+        <article>
+          <h3>How do I know what order my files are going to execute in? Can I force an order?</h3>
+          <p>In short, whatever order you put them in, that's the order that we execute them in. The 'load' and 'both' 
+          sets of files are executed after your 'yep' or 'nope' sets, but the order that you specificy within those sets 
+          is also preserved. This doesn't mean that the files always load in this order, but we guarantee that they <strong>execute</strong> 
+          in this order. Since this is an asynchronous loader, we load everything all at the same time, and we just delay 
+          running it (or injecting it) until the time is just right.</p>
+        </article>
+
+        <article>
+          <h3>What happens if I use yepnope inside of a yepnope callback?</h3>
+          <p>This is actually an advanced feature of yepnope. We call it 'recursive yepnope'. It actually places the files of the 
+          internal yepnope call into the correct place in the outer yepnope call. So the next file in the outer yepnope call 
+          will wait until the inner yepnope call loads and executes before it executes. This is a great feature to use as a 
+          fallback enabler. We encourage you to use it with caution, because it results in slower script loading since we can't 
+          start preloading the files until the callback occurs (serial loading instead of parallel), but when it's the only option, 
+          it's nice. Here is an example of how it could be used as a fallback technique.</p>
+  
+          <pre><code>
+  yepnope( [
+      {
+          // Load jquery from a 3rd party CDN
+          load: 'http://code.jquery.com/jquery-1.5.0.js',
+          callback: function ( url, result, key ) {
+              // The boss doesn't trust the jQuery CDN, so you have to have a fallback
+              // So here you can check if your file really loaded (since callbacks will still
+              // fire after an error or a timeout)
+              if ( ! window.jQuery ) {
+                  // Load jQuery from our local server
+                  // Inject it into the middle of our order of scripts to execute
+                  // even if other scripts are listed after this one, and are already
+                  // done loading.
+                  yepnope( 'local/js/jquery15.js' );
+              }
+          }
+      },
+      {
+          // This file will start downloading as soon as this line is executed,
+          // but if the jQuery CDN was down it won't be executed until after the
+          // local version was loaded.
+          load: 'jQuery.plugins.js',
+          callback: function ( url, result, key ) {
+              jQuery( '.fun' ).plugin();
+          }
+      }
+  ] );
+          </code></pre>
+  
+          <p>Depending on your browser, when there's an error, your callbacks may fire back immediately, but in other 
+          browsers, there is no distinction between a successful script load and an error state, so we opt not to expose 
+          potentially wrong information. If your script hangs or is unavailable, there is a maximum timeout that you can set 
+          for how long it will wait before just calling back anyways. This setting is at yepnope.errorTimeout.</p>
+        </article>
+
+        <article>
+          <h3>I'm seeing two requests in my dev tools, why is it loading everything twice?</h3>
+          <p>Depending on your browser and your server this could mean a couple different things. Due to the nature of 
+          how yepnope works, there are two requests made for every file. The first request is to load it the resource 
+          into the cache and the second request is to execute it (but since it's in the cache, it should execute immediately). 
+          Seeing two requests is pretty normal as long as the second request is cached. If you notice that the second request 
+          isn't cached (and your script load times are doubling), then make sure you are sending the correct cache headers to 
+          allow the caching of your scripts. This is _vital_ to yepnope. It will not work without proper caching enabled. We 
+          actually test to make sure things aren't loaded twice in our test suite., so if you think we may have a bug in your 
+          browser regarding double loading, we encourage you to run the test suite to see if the double loading test passes.</p>
+        </article>
+
+        <article>
         <h2>Yepnope Plugins!</h2>
 
         <p>Yepnope was designed with customizability in mind. There are a few simple hooks throughout the loading process 
@@ -580,8 +597,10 @@ yepnope( {
   load: [ 'normal.js', 'ie6!ie7!ie-patch.js' ] // ie6 or ie7 only (on patch)
 } );
         </code></pre>
+        </article>
 
-        <h2>Adding Your Own Prefixes and Filters</h2>
+        <article>
+        <h3>Adding Your Own Prefixes and Filters</h3>
 
         <p>Yepnope allows you to add your own custom prefixes and filters.</p>
 
@@ -630,7 +649,9 @@ yepnope.addFilter( function ( resourceObj ) {
         </code></pre>
 
         <p>Each function passed in is required to send back the request object (whether modified or not).</p>
+        </article>
 
+        <article>
         <h3>Errors and Timeouts</h3>
 
         <p>Yepnope ( or any other script loader that we know of ) cannot accurately report script loading errors in a 
@@ -647,7 +668,9 @@ yepnope.addFilter( function ( resourceObj ) {
         </code></pre>
 
         <p>Check out the section on fallback loading if you have any questions on how to set it up.</p>
+        </article>
 
+        <article>
         <h2>COMMON GOTCHAS</h2>
         <ul> 
           <li>You cannot use document.write ( which means no google maps or ads ) in the scripts that you load with yepnope. This is true for every asynchronous script loader. We suggest that you avoid document.writes _all the time_ though.</li>
@@ -688,6 +711,15 @@ yepnope.addFilter( function ( resourceObj ) {
             // We need to make this wait for doc ready and after we format the code
             // but we preloaded it, so it should execute immediately.
             yepnope('js/hijs.js');
+          
+          
+            (function( $body ) {
+              $("a[href^=#]").bind('click', function( e ) {
+                e.preventDefault();
+                $body.animate({ scrollTop: $( '#' + this.href.split('#').pop() ).offset().top });
+              });            
+            })( $('body') );
+          
           });
         }
       },
