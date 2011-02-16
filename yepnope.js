@@ -59,10 +59,10 @@ var docElement            = doc.documentElement,
         break;
       }
     }
+    
     // If we've set the stack as ready in the loop, make it happen here
-    if ( execStackReady ) {
-      executeStack();
-    }
+    execStackReady && executeStack();
+    
   }
 
   // Takes a preloaded js obj (changes in different browsers) and injects it into the head
@@ -84,8 +84,6 @@ var docElement            = doc.documentElement,
 
         // Handle memory leak in IE
         script.onload = script.onreadystatechange = null;
-        // Only remove it if we appended it to begin with
-        ! oldObj.e && docElement.removeChild( script );
       }
     };
 
@@ -93,7 +91,6 @@ var docElement            = doc.documentElement,
     sTimeout( function () {
       if ( ! done ) {
         done = 1;
-        docElement.removeChild( script );
         execWhenReady();
       }
     }, yepnope.errorTimeout );
@@ -101,12 +98,7 @@ var docElement            = doc.documentElement,
     // Inject script into to document
     // or immediately callback if we know there
     // was previously a timeout error
-    if ( oldObj.e ) {
-      script.onload();
-    }
-    else {
-      docElement.appendChild( script );
-    }
+    oldObj.e ? script.onload() : docElement.appendChild( script );
   }
 
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
@@ -133,7 +125,7 @@ var docElement            = doc.documentElement,
           if ( ! done ) {
             try {
               // In supporting browsers, we can see the length of the cssRules of the file go up
-              if ( link.sheet && link.sheet.cssRules && link.sheet.cssRules.length ) {
+              if ( link.sheet.cssRules.length ) {
                 // Then turn off the poll
                 done = 1;
                 // And execute a function to execute callbacks when all dependencies are met
@@ -147,7 +139,7 @@ var docElement            = doc.documentElement,
             catch ( ex ) {
               // In the case that the browser does not support the cssRules array (cross domain)
               // just check the error message to see if it's a security error
-              if ( ( ex.code == 1e3 ) || ( ex.message.match( /security|denied/i ) ) ) {
+              if ( ( ex.code == 1e3 ) || ( ex.message == 'security' || ex.message == 'denied' ) ) {
                 // if it's a security error, that means it loaded a cross domain file, so stop the timeout loop
                 done = 1;
                 // and execute a check to see if we can run the callback(s) immediately after this function ends
@@ -187,7 +179,6 @@ var docElement            = doc.documentElement,
     sTimeout( function () {
       if ( ! done ) {
         done = 1;
-        docElement.removeChild( link );
         execWhenReady();
       }
     }, yepnope.errorTimeout );
@@ -197,34 +188,20 @@ var docElement            = doc.documentElement,
     ! oldObj.e && docElement.insertBefore( link, docFirst );
   }
 
-  function executeStack ( a ) {
+  function executeStack ( ) {
     // shift an element off of the stack
-    var i   = execStack.shift(),
-        src = i ? i.s  : undef,
-        t   = i ? i.t : undef;
-
+    var i   = execStack.shift();
     started = 1;
 
     // if a is truthy and the first item in the stack has an src
-    if ( a && src ) {
-      // Pop another off the stack
-      i = execStack.shift();
-      // unset the src
-      src = undef;
-    }
-
     if ( i ) {
       // if it's a script, inject it into the head with no type attribute
-      if ( src && t == 'j' ) {
+      if ( i.t ) {
         // Inject after a timeout so FF has time to be a jerk about it and
         // not double load (ignore the cache)
         sTimeout( function () {
-          injectJs( i );
+          i.t == 'c' ?  injectCss( i ) : injectJs( i );
         }, 0 );
-      }
-      // If it's a css file, fun the css injection function
-      else if ( src && t == 'c' ) {
-        injectCss( i );
       }
       // Otherwise, just call the function and potentially run the stack
       else {
@@ -289,8 +266,8 @@ var docElement            = doc.documentElement,
     else if ( elem == 'script' ) {
       // handle errors on script elements when we can
       preloadElem.onerror = function () {
-        stackObject.r = 1;
-        executeStack( 1 );
+        stackObject.e = stackObject.r = 1;
+        executeStack();
       };
     }
 
@@ -305,7 +282,7 @@ var docElement            = doc.documentElement,
     // we can't have a real error handler. So in opera, we
     // have a timeout in order to throw an error if something never loads.
     // Better solutions welcomed.
-    if ( ( isOpera && elem == 'script' ) || elem == 'object' ) {
+    if ( ( isOpera ) || elem == 'object' ) {
       sTimeout( function () {
         if ( ! done ) {
           // Remove the node from the dom
@@ -552,6 +529,6 @@ var docElement            = doc.documentElement,
 
   // Attach loader &
   // Leak it
-  window.yepnope = yepnope = getYepnope();
+  window.yepnope = getYepnope();
 
 } )( this, this.document );
