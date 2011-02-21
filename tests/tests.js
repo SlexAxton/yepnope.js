@@ -421,8 +421,8 @@ if ( ! window.console ) {
       callback: function () {
         cssIsLoaded(myrgb, function(result) {
           ok(!result, 'CSS is not in the page after callback.');
-          // force a async area so it can render, or whatever (opera need this)
-          //setTimeout(function () {
+          // force a async, as if it was like a later injection
+          setTimeout(function () {
             var timeStart = (+new Date);
             yepnope({
               load: "css/sleep-3/" + myrgb.join(',') + '.css',
@@ -437,7 +437,7 @@ if ( ! window.console ) {
                 start();
               }
             });
-          //}, 500 );
+          }, 800 );
         });
       }
     }]);
