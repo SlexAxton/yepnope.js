@@ -7,10 +7,6 @@ WTFPL
 
 var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
-    // This is a bit tricky, not all browsers insert the head element if it's not there, feel free to change this line
-    // to suit your needs. In the name of good practices and saving space, we decided to assume that your document has a
-    // head element. If it doesn't (ugh), then you'll need to target the first element on the page
-    docHead               = doc.getElementsByTagName( 'head' )[ 0 ],
     firstScript           = doc.getElementsByTagName( 'script' )[ 0 ],
     toString              = {}.toString,
     execStack             = [],
@@ -277,8 +273,10 @@ var docElement            = doc.documentElement,
     execStack.splice( splicePoint, 0, stackObject );
 
     // The only place these can't go is in the <head> element, since objects won't load in there
-    // so we'll inject it before the head element.
-    docElement.insertBefore( preloadElem, docHead );
+    // so we have two options - insert before the head element (which is hard to assume) - or
+    // insertBefore technically takes null as a second param and it will insert the element into
+    // the parent last. We chose this one - feel free to change..
+    docElement.insertBefore( preloadElem, null );
 
     // Special case for opera, since error handling is how we detect onload
     // we can't have a real error handler. So in opera, we
