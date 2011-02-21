@@ -411,7 +411,10 @@ if ( ! window.console ) {
             var diff = (+new Date) - timeStart;
             ok( diff < 3000, "The js callback didn't have to wait" );
             ok( w[ 'a' + u ], "a successfully executed." );
-          }        
+          },
+          complete : function () {
+            start();
+          }
         });
       }
     }/* ,
