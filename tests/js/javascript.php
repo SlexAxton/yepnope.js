@@ -1,11 +1,9 @@
 <?php
 header('Content-Type: text/javascript');
 if ( strrpos( $_SERVER['REQUEST_URI'], 'no-cache' ) === FALSE ) {
-	header('Cache-Control: max-age=60, must-revalidate');
 	header("Expires: Thu, 31 Dec 2020 20:00:00 GMT");
 } else {
 	$pretty_modtime = gmdate('D, d M Y H:i:s', time() - 2000) . 'GMT'; 
-	header('Cache-Control: max-age=0, must-revalidate');
 	header("Last-Modified: $pretty_modtime"); 
 	header("Expires: $pretty_modtime"); 
 	header("Pragma: no-cache"); 

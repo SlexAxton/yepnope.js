@@ -421,21 +421,23 @@ if ( ! window.console ) {
       callback: function () {
         cssIsLoaded(myrgb, function(result) {
           ok(!result, 'CSS is not in the page after callback.');
-          var timeStart = (+new Date);
-          yepnope({
-            load: "css/sleep-3/" + myrgb.join(',') + '.css',
-            callback: function () {
-              var diff = (+new Date) - timeStart;
-              ok( diff < 3000, "The css callback didn't have to wait" );
-              cssIsLoaded(myrgb, function(result) {
-                ok( result, 'CSS was successfully injected.');
-              });
-            },
-            complete: function () {
-              start();
-            }
-          });
-
+          // force a async area so it can render, or whatever (opera need this)
+          //setTimeout(function () {
+            var timeStart = (+new Date);
+            yepnope({
+              load: "css/sleep-3/" + myrgb.join(',') + '.css',
+              callback: function () {
+                var diff = (+new Date) - timeStart;
+                ok( diff < 3000, "The css callback didn't have to wait" );
+                cssIsLoaded(myrgb, function(result) {
+                  ok( result, 'CSS was successfully injected.');
+                });
+              },
+              complete: function () {
+                start();
+              }
+            });
+          //}, 500 );
         });
       }
     }]);

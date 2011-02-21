@@ -1,6 +1,5 @@
 <?php
 header('Content-Type: text/css');
-header('Cache-Control: max-age=60, must-revalidate');
 header("Expires: Thu, 31 Dec 2020 20:00:00 GMT");
 $subject = $_SERVER['REQUEST_URI'];
 $pattern = '/\/sleep-(\d+)\//';
