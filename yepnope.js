@@ -1,5 +1,5 @@
 /*
-yepnope.js 1.0 RC6
+yepnope.js 1.0 RC7pre
 Alex Sexton & Ralph Holzmann
 WTFPL
 */
@@ -10,6 +10,7 @@ var docElement            = doc.documentElement,
     // This is a bit tricky, not all browsers insert the head element if it's not there, feel free to change this line
     // to suit your needs. In the name of good practices and saving space, we decided to assume that your document has a
     // head element. If it doesn't (ugh), then you'll need to target the first element on the page
+    docHead               = doc.getElementsByTagName( 'head' )[ 0 ],
     firstScript           = doc.getElementsByTagName( 'script' )[ 0 ],
     toString              = {}.toString,
     execStack             = [],
@@ -275,8 +276,9 @@ var docElement            = doc.documentElement,
     // in the middle of other scripts or not
     execStack.splice( splicePoint, 0, stackObject );
 
-    // append the element to the appropriate parent element (scripts go in the head, usually, and objects go in the body usually)
-    docElement.appendChild( preloadElem );
+    // The only place these can't go is in the <head> element, since objects won't load in there
+    // so we'll inject it before the head element.
+    docElement.insertBefore( preloadElem, docHead );
 
     // Special case for opera, since error handling is how we detect onload
     // we can't have a real error handler. So in opera, we
