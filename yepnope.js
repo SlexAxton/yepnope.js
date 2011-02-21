@@ -1,5 +1,5 @@
 /*
-yepnope.js 1.0 RC5
+yepnope.js 1.0 RC6
 Alex Sexton & Ralph Holzmann
 WTFPL
 */
@@ -10,7 +10,7 @@ var docElement            = doc.documentElement,
     // This is a bit tricky, not all browsers insert the head element if it's not there, feel free to change this line
     // to suit your needs. In the name of good practices and saving space, we decided to assume that your document has a
     // head element. If it doesn't (ugh), then you'll need to target the first element on the page
-    docFirst              = doc.getElementsByTagName( 'head' )[ 0 ],
+    firstScript           = doc.getElementsByTagName( 'script' )[ 0 ],
     toString              = {}.toString,
     execStack             = [],
     started               = 0,
@@ -98,7 +98,7 @@ var docElement            = doc.documentElement,
     // Inject script into to document
     // or immediately callback if we know there
     // was previously a timeout error
-    oldObj.e ? script.onload() : docElement.appendChild( script );
+    oldObj.e ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
   }
 
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
@@ -185,7 +185,7 @@ var docElement            = doc.documentElement,
     
     // Inject CSS
     // only inject if there are no errors, and we didn't set the no inject flag ( oldObj.e )
-    ! oldObj.e && docElement.insertBefore( link, docFirst );
+    ! oldObj.e && firstScript.parentNode.insertBefore( link, firstScript );
   }
 
   function executeStack ( ) {
