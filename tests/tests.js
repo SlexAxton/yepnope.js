@@ -386,7 +386,7 @@ if ( ! window.console ) {
     ]);
     stop(timeout);
   });
-
+/*
   asyncTest("Preload only", 4, function () {
     var myrgb = rgb();
 
@@ -394,9 +394,9 @@ if ( ! window.console ) {
 
     ok( !w[ 'a' + u ], "JS Not in the page before hand" );
 
-    /*cssIsLoaded(myrgb, function(result) {
+    cssIsLoaded(myrgb, function(result) {
       ok(!result, 'CSS is not already loaded.');
-    });*/
+    });
 
     yepnope([
     // Do this with JS
@@ -417,7 +417,7 @@ if ( ! window.console ) {
           }
         });
       }
-    }/* ,
+    } ,
     // Now with CSS
     {
       load: "preload!css/sleep-3/" + myrgb.join(',') + '.css',
@@ -443,10 +443,10 @@ if ( ! window.console ) {
           }, 800 );
         });
       }
-    } */ ]);
+    } ]);
     stop(timeout);
   });
-
+*/
   module('Last Calls');
   asyncTest("Complete Fires When No Resources Are Loaded", 2, function () {
     ++u;
