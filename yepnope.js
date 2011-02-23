@@ -1,8 +1,17 @@
-/*
-yepnope.js 1.0 RC7pre
-Alex Sexton & Ralph Holzmann
-WTFPL
-*/
+/*yepnope1.0|WTFPL*/
+// yepnope.js
+// Version - 1.0 RC7
+//
+// by
+// Alex Sexton - @SlexAxton - AlexSexton[at]gmail.com
+// Ralph Holzmann - @ralphholzmann - ralphholzmann[at]gmail.com
+//
+// http://yepnopejs.com/
+// https://github.com/SlexAxton/yepnope.js/
+//
+// Tri-license - WTFPL | MIT | BSD
+//
+// Please minify before use.
 ( function ( window, doc, undef ) {
 
 var docElement            = doc.documentElement,
@@ -15,11 +24,13 @@ var docElement            = doc.documentElement,
     // https://github.com/Modernizr/Modernizr/wiki/Undetectables
     // If you have a better solution, we are actively looking to solve the problem
     isGecko               = ( 'MozAppearance' in docElement.style ),
-    isGecko18             = isGecko && !! window.Event.prototype.preventBubble,
+    isGeckoLTE18          = isGecko && !! doc.createRange().compareNode,
+    isGeckoGT18           = isGecko && ! isGeckoLTE18,
+    insBeforeObj          = isGeckoLTE18 ? docElement : firstScript.parentNode,
     // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
     isOpera               = window.opera && toString.call( window.opera ) == '[object Opera]',
     isWebkit              = ( 'webkitAppearance' in docElement.style ),
-    strJsElem             = isOpera || ( isGecko && ! isGecko18 ) ? 'img' : ( isGecko ? 'object' : 'script' ),
+    strJsElem             = ( isOpera || isGeckoLTE18 ) ? 'img' : isGecko ? 'object' : 'script',
     strCssElem            = isWebkit ? 'img' : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
       return toString.call( obj ) == '[object Array]';
@@ -236,7 +247,7 @@ var docElement            = doc.documentElement,
 
         // Handle memory leak in IE
         preloadElem.onload = preloadElem.onreadystatechange = null;
-        firstScript.parentNode.removeChild( preloadElem );
+        insBeforeObj.removeChild( preloadElem );
       }
     }
 
@@ -276,8 +287,7 @@ var docElement            = doc.documentElement,
     // so we have two options - insert before the head element (which is hard to assume) - or
     // insertBefore technically takes null/undefined as a second param and it will insert the element into
     // the parent last. We try the head, and it automatically falls back to undefined.
-    firstScript.parentNode.insertBefore( preloadElem, firstScript );
-    //docElement.appendChild( preloadElem );
+    insBeforeObj.insertBefore( preloadElem, ( isGeckoLTE18 ? null : firstScript ) );
     
     // Special case for opera, since error handling is how we detect onload
     // we can't have a real error handler. So in opera, we
@@ -287,7 +297,7 @@ var docElement            = doc.documentElement,
       sTimeout( function () {
         if ( ! done ) {
           // Remove the node from the dom
-          firstScript.parentNode.removeChild( preloadElem );
+          insBeforeObj.removeChild( preloadElem );
           // Set it to ready to move on
           // indicate that this had a timeout error on our stack object
           stackObject.r = stackObject.e = done = 1;
