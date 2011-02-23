@@ -30,7 +30,7 @@ var docElement            = doc.documentElement,
     // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
     isOpera               = window.opera && toString.call( window.opera ) == '[object Opera]',
     isWebkit              = ( 'webkitAppearance' in docElement.style ),
-    strJsElem             = ( isOpera || isGeckoLTE18 ) ? 'img' : isGecko ? 'object' : 'script',
+    strJsElem             = ( isOpera || isGeckoLTE18 ) ? 'object' : 'script',
     strCssElem            = isWebkit ? 'img' : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
       return toString.call( obj ) == '[object Array]';
@@ -255,7 +255,9 @@ var docElement            = doc.documentElement,
     preloadElem.src = preloadElem.data = url;
 
     // Don't let it show up visually
-    preloadElem.style.display = 'none';
+    ! isGeckoLTE18 && ( preloadElem.style.display = 'none' );
+    preloadElem.width = preloadElem.height = '0';
+
 
     // Only if we have a type to add should we set the type attribute (a real script has no type)
     if ( elem != 'object' ) {
@@ -287,8 +289,8 @@ var docElement            = doc.documentElement,
     // so we have two options - insert before the head element (which is hard to assume) - or
     // insertBefore technically takes null/undefined as a second param and it will insert the element into
     // the parent last. We try the head, and it automatically falls back to undefined.
-    insBeforeObj.insertBefore( preloadElem, ( isGeckoLTE18 ? null : firstScript ) );
-    
+    insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
+
     // Special case for opera, since error handling is how we detect onload
     // we can't have a real error handler. So in opera, we
     // have a timeout in order to throw an error if something never loads.
