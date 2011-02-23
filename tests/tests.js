@@ -274,16 +274,31 @@ if ( ! window.console ) {
   });
 
   module("Caching");
-  asyncTest("Don't Load Twice", 1, function(){
+  asyncTest("Don't Load JS Twice", 1, function(){
     ++u;
 
     yepnope('js/sleep-3/a'+u+'.js');
 
     // If it caches, it will take 3 seconds and change, if not, it'll take 6 seconds
     setTimeout(function(){
-      ok(w['a'+u], "a exists already");
+      ok(w['a'+u], "a exists already (was cached)");
       start();
     }, 5500);
+  });
+
+  asyncTest("Don't Load CSS Twice", 1, function(){
+    ++u;
+    var myrgb = rgb();
+
+    yepnope('css/sleep-3/' + myrgb.join( ',' ) + '.css');
+
+    // If it caches, it will take 3 seconds and change, if not, it'll take 6 seconds
+    setTimeout(function(){
+      cssIsLoaded( myrgb, function( result ) {
+        ok( result, "CSS was cached.");
+        start();
+      });
+    }, 5400);
   });
 
   module("Inner api");

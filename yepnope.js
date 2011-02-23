@@ -236,7 +236,7 @@ var docElement            = doc.documentElement,
 
         // Handle memory leak in IE
         preloadElem.onload = preloadElem.onreadystatechange = null;
-        docElement.removeChild( preloadElem );
+        firstScript.parentNode.removeChild( preloadElem );
       }
     }
 
@@ -244,7 +244,7 @@ var docElement            = doc.documentElement,
     preloadElem.src = preloadElem.data = url;
 
     // Don't let it show up visually
-    preloadElem.width = preloadElem.height = '0';
+    preloadElem.style.display = 'none';
 
     // Only if we have a type to add should we set the type attribute (a real script has no type)
     if ( elem != 'object' ) {
@@ -274,10 +274,11 @@ var docElement            = doc.documentElement,
 
     // The only place these can't go is in the <head> element, since objects won't load in there
     // so we have two options - insert before the head element (which is hard to assume) - or
-    // insertBefore technically takes null as a second param and it will insert the element into
-    // the parent last. We chose this one - feel free to change..
-    docElement.insertBefore( preloadElem, null );
-
+    // insertBefore technically takes null/undefined as a second param and it will insert the element into
+    // the parent last. We try the head, and it automatically falls back to undefined.
+    firstScript.parentNode.insertBefore( preloadElem, firstScript );
+    //docElement.appendChild( preloadElem );
+    
     // Special case for opera, since error handling is how we detect onload
     // we can't have a real error handler. So in opera, we
     // have a timeout in order to throw an error if something never loads.
@@ -286,7 +287,7 @@ var docElement            = doc.documentElement,
       sTimeout( function () {
         if ( ! done ) {
           // Remove the node from the dom
-          docElement.removeChild( preloadElem );
+          firstScript.parentNode.removeChild( preloadElem );
           // Set it to ready to move on
           // indicate that this had a timeout error on our stack object
           stackObject.r = stackObject.e = done = 1;
