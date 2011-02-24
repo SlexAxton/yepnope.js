@@ -111,7 +111,7 @@ All of the yepnope specific code is under the WTFPL license. Which means it's al
 
 Ralph Holzmann - A lot of Yepnope's code and ideas are his.
 
-Dave Artz      - A.getJS was a huge code-inspiration for our loader. Much of the code is just copied. So he's responsible for a ton of awesome techniques here.
+Dave Artz      - A.getJS was a huge code-inspiration for our loader. So he's responsible for a ton of awesome techniques here.
 
 Kyle Simpson   - He is the creator of LABjs of which a lot of this is inspired by.
 
