@@ -30,7 +30,7 @@ var docElement            = doc.documentElement,
     // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
     isOpera               = window.opera && toString.call( window.opera ) == '[object Opera]',
     isWebkit              = ( 'webkitAppearance' in docElement.style ),
-    isNewerWebkit           = isWebkit && !! (( 'webkitIndexedDB' in window ) || ( 'indexedDB' in window )),
+    isNewerWebkit         = isWebkit && !! (( 'webkitIndexedDB' in window ) || ( 'indexedDB' in window )),
     strJsElem             = isGecko ? 'object' : ( isOpera || isNewerWebkit ) ? 'img' : 'script',
     strCssElem            = isWebkit ? 'img' : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
