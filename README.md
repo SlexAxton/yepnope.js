@@ -6,6 +6,15 @@ A small script loader to help use feature detection to load exactly the scripts 
 
 More docs, etc at: [http://yepnopejs.com]
 
+By:
+
+Alex Sexton - AlexSexton [at] gmail
+ 
+Ralph Holzmann - RalphHolzmann [at] gmail
+
+
+Follow: [http://twitter.com/SlexAxton](@SlexAxton) and [http://twitter.com/ralphholzmann](@ralphholzmann) on Twitter for more updates.
+
 ##A simple example (assuming modernizr is there):##
 
     yepnope([
@@ -24,7 +33,7 @@ More docs, etc at: [http://yepnopejs.com]
       
       // no tests, just a load and a callback
       {
-        load:'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js',
+        load:'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js',
         callback: function(){
           console.log('jQuery was loaded!');
           window.oldalert = window.alert;
@@ -64,7 +73,7 @@ Any forks and stuff are welcome.
 
 ##Current Released Version##
 
-1.0
+1.0.0
 
 NOTE: the code in the github repository is considered in development. Use at your own risk. The download buttons will link to our current release version.
 
@@ -73,8 +82,6 @@ NOTE: the code in the github repository is considered in development. Use at you
 All of the yepnope specific code is under the WTFPL license. Which means it's also MIT and BSD (or anything you want). However, the inspired works are subject to their own licenses.
 
 ##Thanks##
-
-Ralph Holzmann - A lot of Yepnope's code and ideas are his.
 
 Dave Artz      - A.getJS was a huge code-inspiration for our loader. So he's responsible for a ton of awesome techniques here.
 
