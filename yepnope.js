@@ -1,6 +1,6 @@
 /*yepnope1.0|WTFPL*/
 // yepnope.js
-// Version - 1.0 RC7
+// Version - 1.0
 //
 // by
 // Alex Sexton - @SlexAxton - AlexSexton[at]gmail.com
@@ -12,6 +12,8 @@
 // Tri-license - WTFPL | MIT | BSD
 //
 // Please minify before use.
+// Also available as Modernizr.load via the Modernizr Project
+//
 ( function ( window, doc, undef ) {
 
 var docElement            = doc.documentElement,
