@@ -13,7 +13,7 @@ Alex Sexton - AlexSexton [at] gmail
 Ralph Holzmann - RalphHolzmann [at] gmail
 
 
-Follow: [http://twitter.com/SlexAxton](@SlexAxton) and [http://twitter.com/ralphholzmann](@ralphholzmann) on Twitter for more updates.
+Follow: [@SlexAxton](http://twitter.com/SlexAxton) and [@ralphholzmann](http://twitter.com/ralphholzmann) on Twitter for more updates.
 
 ##A simple example (assuming modernizr is there):##
 
