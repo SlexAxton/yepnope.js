@@ -94,8 +94,8 @@
           <p>While this is not a bad practice, it is advice from the early days of performance driven script loading. Since 
           then, we've found that in many cases, you can get better performance. For instance, if you concatenate all of your 
           JavaScript into a single file, you are often loading large chunks of JavaScript that don't actually run 
-          on the page that you're on. These are wasted bytes, and cost you time and user-experience street cred. Also, it's 
-          been shown (linktokyles) that loading a small amount of scripts in parallel is actually faster than loading them all 
+          on the page that you're on. These are wasted bytes, and cost you time and user-experience street cred. Also, <a href="http://blog.getify.com/2009/11/labjs-why-not-just-concat/">it's 
+            been shown</a> that loading a small amount of scripts in parallel is actually faster than loading them all 
           concatenated together, since they can all download at the same time (yes, even though there are more http requests).</p>
   
           <p>More specifically, a lot of times code is specific to a certain situation, yepnope captilizes on this fact, and 
