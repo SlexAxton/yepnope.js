@@ -16,8 +16,6 @@ More docs, etc at: [http://yepnopejs.com]
       }
     ]);
 
-##Common Use:##
-
 ##A crazy/contrived example:##
 
     yepnope([
