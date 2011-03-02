@@ -4,7 +4,7 @@ A Conditional Script Loader For Your Polyfills, or Regressive Enhancement With S
 
 A small script loader to help use feature detection to load exactly the scripts that your _user_ needs, not just all the scripts that you _think_ they might need.
 
-More docs, etc at: [http://yepnopejs.com]
+More docs, etc at: [http://yepnopejs.com](http://yepnopejs.com)
 
 By:
 
