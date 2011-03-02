@@ -341,7 +341,11 @@ pre .number {
 #main article p,
 #main li {
   font-size:14px;
-  padding:5px 0;
+  padding: 10px 0;
+  line-height: 1.4;
+}
+#main article p:last-child {
+	padding-bottom: 0;
 }
 #main article p.light {
   color:#777777;
@@ -392,7 +396,6 @@ footer {
  color:#444444;
  text-align:center;
 }
-
 
 
 
