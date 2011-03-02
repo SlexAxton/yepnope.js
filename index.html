@@ -81,9 +81,9 @@
           <h3>Why should you use yepnope?</h3>
   
           <p>Yepnope has a simple API to help you order load and execute your scripts in the fastest possible way. 
-          Yepnope natively supports JavaScript and CSS resources, and loads them asyncronously and in parallel, 
+          Yepnope natively supports JavaScript and CSS resources, and loads them asynchronously and in parallel, 
           but always executes them in the order you intended. Yepnope is customizable and extendable so you can 
-          add your own customizations with ease! Yepnope is small, weighing in at just over 1.6kb minified and gzipped.</p>
+          add your own customizations with ease! Yepnope is small, weighing in at just under 1.6kb minified and gzipped.</p>
 
         </article>
 
@@ -98,7 +98,7 @@
           been shown (linktokyles) that loading a small amount of scripts in parallel is actually faster than loading them all 
           concatenated together, since they can all download at the same time (yes, even though there are more http requests).</p>
   
-          <p>More specifically, a lot of times code is specific to a certain situation, yepnope captilizes on this fact, and 
+          <p>More specifically, a lot of the time, code is specific to a certain situation, yepnope capitalizes on this fact, and 
           allows you to load your scripts based on the situation you find yourself in. Many times, this manifests itself as 
           Feature Tests. Feature Tests check for the availability of a feature in the executing browser environment. Usually 
           when a feature is not supported, a "polyfill" is loaded in to offer backwards compatibility in non-supporting browsers. 
@@ -122,7 +122,7 @@
   
           <p>Currently yepnope is being included in special builds of Modernizr, because it's such a good companion to a feature 
           testing library. The output of Modernizr is a fantastic input to yepnope. Yepnope is currently included unmodified from 
-          its original state, but is also aliased as Modernizr.load - you can use the two interchangably, though we suggest that you 
+          its original state, but is also aliased as Modernizr.load - you can use the two interchangeably, though we suggest that you 
           stick to one or the other.</p>        
         </article>
 
@@ -174,7 +174,7 @@
   
           <p>This is exactly equivalent to the first example with a string, except we can add on to this one. For instance, we can 
           add a callback function to run whenever the file is done loading. This is done with the 'callback' property (go figure!). 
-          From now on, we'll refer to this object as a Test Object (even though sometimes it doesn't have a test in it ;).</p>
+          From now on, we'll refer to this object as a Test Object (even though sometimes it doesn't have a test in it <span class="code">;)</span>.</p>
   
           <pre><code>
   yepnope( {
@@ -189,7 +189,7 @@
           <p>If you're used to the asynchronous pattern, this should be a breeze, and if not, it'll seem natural in no time.</p>
   
           <p>One of the most important parts of yepnope is your ability to pass in feature test results to determine whether or 
-          not you need to load a script. Here's yepnope's api for doing that:</p>
+          not you need to load a script. Here's yepnope's API for doing that:</p>
   
           <pre><code>
   yepnope( {
@@ -201,8 +201,8 @@
   } );
           </code></pre>
   
-          <p>The power here, is that you were able to parse a json string, but if your browser already had built in support for 
-          json parsing, it didn't require you to load anything extra!</p>
+          <p>The power here, is that you were able to parse a JSON string, but if your browser already had built in support for 
+          JSON parsing, it didn't require you to load anything extra!</p>
   
           <p>Notice that we don't have a 'yep' script property set. That's because it isn't mandatory. If you don't have anything 
           to load when your script passes, you can leave out the 'yep', the same goes for 'nope'.</p>
@@ -264,7 +264,7 @@
   } );
           </code></pre>
   
-          <p>This will cause TWO separate alerts to occur. They will each contain the exact string (minus any prefixes, if you add 
+          <p>This will cause <em>TWO</em> separate alerts to occur. They will each contain the exact string (minus any prefixes, if you add 
           those in the future) of the url that was loaded from the `nope` array.</p>
   
           <p>So in a simple case you could check to see which url is being loaded in order to know to do a certain thing:</p>
@@ -399,7 +399,7 @@
   
           <p>That's a <strong>great</strong> question! You are absolutely right. With this current situation, you'd have to 
           duplicate code in order to make sure something ran at the very end ( depending on if the test passed or failed ). 
-          That's why there's also the 'complete' callback. Here it is in action:</p>
+          That's why there's also the '<span class="code">complete</span>' callback. Here it is in action:</p>
   
           <pre><code>
   yepnope( {
@@ -435,8 +435,8 @@
 
         <article>
           <h3>How do I know what order my files are going to execute in? Can I force an order?</h3>
-          <p>In short, whatever order you put them in, that's the order that we execute them in. The 'load' and 'both' 
-          sets of files are executed after your 'yep' or 'nope' sets, but the order that you specificy within those sets 
+          <p>In short, whatever order you put them in, that's the order that we execute them in. The '<span class="code">load</span>' and '<span class="code">both</span>' 
+          sets of files are executed after your '<span class="code">yep</span>' or '<span class="code">nope</span>' sets, but the order that you specificy within those sets 
           is also preserved. This doesn't mean that the files always load in this order, but we guarantee that they <strong>execute</strong> 
           in this order. Since this is an asynchronous loader, we load everything all at the same time, and we just delay 
           running it (or injecting it) until the time is just right.</p>
@@ -455,7 +455,7 @@
   yepnope( [
       {
           // Load jquery from a 3rd party CDN
-          load: 'http://code.jquery.com/jquery-1.5.0.js',
+          load: 'http:/&shy;/code.jquery.com/jquery-1.5.0.js',
           callback: function ( url, result, key ) {
               // The boss doesn't trust the jQuery CDN, so you have to have a fallback
               // So here you can check if your file really loaded (since callbacks will still
@@ -484,7 +484,7 @@
           <p>Depending on your browser, when there's an error, your callbacks may fire back immediately, but in other 
           browsers, there is no distinction between a successful script load and an error state, so we opt not to expose 
           potentially wrong information. If your script hangs or is unavailable, there is a maximum timeout that you can set 
-          for how long it will wait before just calling back anyways. This setting is at yepnope.errorTimeout.</p>
+          for how long it will wait before just calling back anyways. This setting is at <span class="code">yepnope.errorTimeout</span>.</p>
         </article>
 
         <article>
@@ -494,15 +494,15 @@
           into the cache and the second request is to execute it (but since it's in the cache, it should execute immediately). 
           Seeing two requests is pretty normal as long as the second request is cached. If you notice that the second request 
           isn't cached (and your script load times are doubling), then make sure you are sending the correct cache headers to 
-          allow the caching of your scripts. This is _vital_ to yepnope. It will not work without proper caching enabled. We 
-          actually test to make sure things aren't loaded twice in our test suite., so if you think we may have a bug in your 
+          allow the caching of your scripts. This is <strong>vital</strong> to yepnope. It will not work without proper caching enabled. We 
+          actually test to make sure things aren't loaded twice in our test suite, so if you think we may have a bug in your 
           browser regarding double loading, we encourage you to run the test suite to see if the double loading test passes.</p>
         </article>
 
         <article>
         <h2>Yepnope Plugins!</h2>
 
-        <p>Yepnope was designed with customizability in mind. There are a few simple hooks throughout the loading process 
+        <p>Yepnope was designed to be customizable. There are a few simple hooks throughout the loading process 
         that allow you to inject code and change settings around on the fly. There are two main ways to do this: Prefixes 
         and Filters.</p>
 
@@ -514,18 +514,6 @@
         <p>Yepnope officially supports a few prefixes and filters.</p>
 
         <p>In no specific order, they are:</p>
-
-        <h3>AutoProtocol Filter:</h3>
-
-        <p>This simple filter allows you to use protocol relative urls on your files and have them load with whatever 
-        protocol the page is using. So if you're programming on a page that might be in https or http, you can be 
-        assured that</p>
-
-        <pre><code>
-yepnope( '//code.jquery.com/jquery-git.js' )
-        </code></pre>
-
-        <p>will load from a matching protocol.</p>
 
         <h3>css! Prefix</h3>
 
@@ -563,28 +551,14 @@ yepnope( {
         use different sets of ie related prefixes to only load content for the dreaded IE browser of your choosing.</p>
 
         <p>Here is a list of supported prefixes in the IE package:</p>
-        <ul>
-          <li>ie</li>
-          <li>ie5</li>
-          <li>ie6</li>
-          <li>ie7</li>
-          <li>ie8</li>
-          <li>ie9</li>
-          <li>iegt5</li>
-          <li>iegt6</li>
-          <li>iegt7</li>
-          <li>iegt8</li>
-          <li>ielt7</li>
-          <li>ielt8</li>
-          <li>ielt9</li>
-        </ul>
+        <span class="code">ie, ie5, ie6, ie7, ie8, ie9, iegt5, iegt6, iegt7, iegt8, ielt7, ielt8,</span> and <span class="code">ielt9</span>
 
         <p>The function of these should be pretty self-explanatory (hopefully), but if it's not clear: ie followed by a single 
-        number will execute the following script if the IE version matches that number. iegt is for 'versions greater than' x, 
-        and ielt is for 'versions less than' x. The sole ie tag will allow for any Internet Explorer version.</p>
+        number will execute the following script if the IE version matches that number. <span class="code">iegt</span> is for 'versions greater than' x, 
+        and <span class="code">ielt</span> is for 'versions less than' x. The sole <span class="code">ie</span> tag will allow for any Internet Explorer version.</p>
 
         <p>Since you can chain multiple prefixes, these prefixes work together to perform a logical OR. So if any of your IE 
-        logic returns true, the resource will load (assuming there isn't something else that's stopping it.</p>
+        logic returns true, the resource will load (assuming there isn't something else that's stopping it).</p>
 
         <pre><code>
 yepnope( {
@@ -598,8 +572,8 @@ yepnope( {
 
         <p>Yepnope allows you to add your own custom prefixes and filters.</p>
 
-        <p>There are two functions on the yepnope object that allow you to add these: addFilter 
-        and addPrefix. The only difference between them, is that 'addPrefix' takes a name (string) 
+        <p>There are two functions on the yepnope object that allow you to add these: <span class="code">addFilter</span>
+        and <span class="code">addPrefix</span>. The only difference between them, is that '<span class="code">addPrefix</span>' takes a name (string) 
         as the first value, and the filter has no name, so only takes a callback function.</p>
 
         <p>The function that gets run is passed a resource object that describes things about each individual 
@@ -609,14 +583,14 @@ yepnope( {
         <p>The resource object has the following properties that you are allowed to modify:</p>
 
         <ul>
-          <li>url - The url that is injected</li>
-          <li>prefixes - the array of applies prefixes</li>
-          <li>autoCallback - a callback function that runs after each script load separately from the others</li>
-          <li>noexec - boolen to force a preload, but no execution</li>
-          <li>instead - a function that takes all the same parameters as our internal loader (advanced)</li>
-          <li>forceJS - boolean force the file to be treated as a JS file</li>
-          <li>forceCSS - boolean for force the file to be treated as a CSS file</li>
-          <li>bypass - boolean for do or don't load the file</li>
+          <li><span class="code">url</span> - The url that is injected</li>
+          <li><span class="code">prefixes</span> - the array of applies prefixes</li>
+          <li><span class="code">autoCallback</span> - a callback function that runs after each script load separately from the others</li>
+          <li><span class="code">noexec</span> - boolen to force a preload, but no execution</li>
+          <li><span class="code">instead</span> - a function that takes all the same parameters as our internal loader (advanced)</li>
+          <li><span class="code">forceJS</span> - boolean force the file to be treated as a JS file</li>
+          <li><span class="code">forceCSS</span> - boolean for force the file to be treated as a CSS file</li>
+          <li><span class="code">bypass</span> - boolean for do or don't load the file</li>
         </ul>
 
         <p>Here's a somewhat silly example:</p>
@@ -629,7 +603,7 @@ yepnope.addPrefix( 'bypass', function ( resourceObj ) {
 } );
         </code></pre>
 
-        <p>This will cause any file with the bypass! prefix to not load or execute.</p>
+        <p>This will cause any file with the <span class="code">bypass!</span> prefix to not load or execute.</p>
 
         <p>A bypass Filter would look almost exactly the same, except it would apply to all files, and you don't 
         need to pass a name:</p>
@@ -651,7 +625,7 @@ yepnope.addFilter( function ( resourceObj ) {
         <p>Yepnope ( or any other script loader that we know of ) cannot accurately report script loading errors in a 
         cross browser manner. For this reason, we have a good amount of code in place to ensure that errors that we can 
         detect fail quickly (so you could potentially try a fallback), and that errors we cannot detect are automatically 
-        called back after the amount of time that's specified in the yepnope.errorTimeout property. The default for yepnope 
+        called back after the amount of time that's specified in the <span class="code">yepnope.errorTimeout</span> property. The default for yepnope 
         is 10,000 milliseconds ( or 10 seconds for all you humans ). At any point in time you can change this value and 
         any script loaded after it's change will obey it's timeout length. Different organizations tend to require 
         different times. Please adjust to your liking before making any requests.</p>
@@ -667,10 +641,10 @@ yepnope.addFilter( function ( resourceObj ) {
         <article>
         <h2>COMMON GOTCHAS</h2>
         <ul> 
-          <li>You cannot use document.write ( which means no google maps or ads ) in the scripts that you load with yepnope. This is true for every asynchronous script loader. We suggest that you avoid document.writes _all the time_ though.</li>
-          <li>IEs less than 9 don't guarantee that the callbacks for scripts run _immediately_ after the related script executes. There are hacks for this but they are not universally applicable to all scripts. Please see Julian Aubourg's blog post on this subject if you you'd like to learn more information.</li>
+          <li>You cannot use <span class="code">document.write</span> ( which means no google maps or ads ) in the scripts that you load with yepnope. This is true for every asynchronous script loader. We suggest that you avoid document.writes <strong>all the time</strong> though.</li>
+          <li>IEs less than 9 don't guarantee that the callbacks for scripts run <strong>immediately</strong> after the related script executes. There are hacks for this but they are not universally applicable to all scripts. Please see Julian Aubourg's blog post on this subject if you you'd like to learn more information.</li>
           <li>Just because your script is done, doesn't mean the document is ready. Don't forget that you can use document ready callbacks inside of your yepnope callbacks. If you're toying with the DOM, we'd heavily encourage you to do so, because your test environment may act differently than your production server the speeds are dramatically different.</li>
-          <li>Loading too many scripts can be worse than not using yepnope. Yepnope is not to be used an excuse not to group alike scripts and styles into single files. This is still a great practice. We just don't want you to group it into ONE.</li>
+          <li>Loading too many scripts can be worse than not using yepnope. Yepnope is not to be used an excuse not to group alike scripts and styles into single files. This is still a great practice. We just don't want you to group it into <strong><em>one</em></strong>.</li>
           <li>Old IEs can only load 2 things at a time from the same domain, others only 6. This means that if you are using more than 2 scripts from the same domain, you might consider getting some subdomains and serving your files from those in order to alleviate this limit.</li>
         </ul>
         </article>
