@@ -154,9 +154,8 @@ someLoader('http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js', fu
 
         <h3>Things to keep in mind</h3>
         <ul>
-          <li>It is not the fastest loader. LABjs beats yepnope.js on speed in non-webkit browsers by a not-completely-trivial 
-          amount when loading a lot of scripts. It is unlikely your end-users will notice the difference (a matter of ms) in most 
-          cases, but it's something to take into consideration.</li>
+          <li>It is not always the fastest. There are a number of other script loaders (such as labjs) that optimize different 
+          situations than yepnope. You should run tests for your use-case if this is a priority to you.</li>
           <li>We require that you have proper cache headers. Other loaders get around this on local resources.<br />
 <pre><code>
 Expires: -future date-
