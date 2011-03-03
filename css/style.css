@@ -259,10 +259,10 @@ body {
  -moz-box-shadow:0 0 2px #222222;
  box-shadow:0 0 2px #222222;
  color:#DADADA;
+text-align:center; 
 }
 #dl-link #dl-yn {
   display:block;
-  text-align:right;
   font-size:24px;
   line-height:28px;
   font-weight:normal;
@@ -272,10 +272,10 @@ body {
   font-size:11px;
   line-height:20px;
   display:block;
-  text-align:right;
 }
 #dl-link:hover {
-  color:#DADADA;
+  color:#DADADA; 
+  background-color: #977483;
 }
 #dl-link:hover #dl-yn {
   color:#FFFFFF;
@@ -309,10 +309,10 @@ pre {
   font-family: "Bitstream Vera Sans Mono", "Droid Sans Mono", "Courier New", monospace;
 }
 pre .comment {
-  color:#555555;
+  color:#777;
 }
 pre .optional {
-  color:#777777;
+  color:#999;
 }
 pre {
   color:#D8D8D8;

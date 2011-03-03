@@ -58,8 +58,7 @@
           literal. Just send in whatever you got, and there's a good chance yepnope will take it (as long as it's 
           a string, array, or test object)</p> 
  
-          <section class="innerSection" id="testObject"> 
-            <h3>What's in a test object?!</h3> 
+            <h3 id="testObject">What's in a test object?!</h3> 
             <p>Great question! Here's a list of the things that yepnope will care about if you put it in a test object. <em>All of these
             properties are optional</em>.</p> 
 <pre class="tallCode">yepnope([{
@@ -74,7 +73,6 @@
             <p>Note that yepnope can load CSS or JS files. All resources will be considered JS files unless they end
             in '<span class="code">.css</span>'. You can force files with other extensions (cache-busted scripts, for 
             example) to be interpreted as CSS files if you use the <span class="code">css!</span> prefix.</p> 
-          </section> 
         </article>
         <article>
         <h1>Another Script Loader?#?@$!@# - Why Use Yepnope?</h1>
@@ -236,7 +234,7 @@ Expires: Thu, 31 Dec 2020 20:00:00 GMT
         <article>
         
           <h1>Using Yepnope</h1>
-          <pre><code>yepnope()</code></pre>
+          <pre><code>yepnope();</code></pre>
   
           <p>Takes: string, object, array of either</p>
   
