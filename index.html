@@ -77,6 +77,113 @@
           </section> 
         </article>
         <article>
+        <h1>Another Script Loader?#?@$!@# - Why Use Yepnope?</h1>
+
+        <p>You're right. The last few months we've been inundated by new script loaders. I'd like to first point 
+        out that that is _awesome_. It goes to show that there is a real benefit to using a script/resource loader. 
+        In fact, the yepnope prototype launched at JSConfEU back in November of 2010. Since then, we've used some of 
+        the best techniques from other script loaders and packaged up the magic for you in a piece-of-cake API.</p>
+
+        <p>I'd like it to be very clear why/when you'd want to use yepnope instead of one of the many other options, 
+        as well as when yepnope is not appropriate.</p>
+
+        <h3>Good Things</h3>
+        <ul>
+          <li>yepnope.js is only 1.59kb - smaller than most, but certainly a good size for its functionality set.</li>
+          <li>yepnope.js is called a "resource loader" because it can work with both JavaScript and CSS.</li>
+          <li>yepnope.js has a full test suite in QUnit that you can run in your set of supported browsers to make 
+          sure it works. (We run it via TestSwarm in every browser we can get our hands on)</li>
+          <li>yepnope.js fully decouples preloading from execution. This means that you have ultimate control of when your 
+          resource is executed and you can change that order on the fly.</li>
+          <li>The yepnope.js api is friendly and encourages logical grouping of resources.</li>
+          <li>yepnope.js is modular. It has a whole system for adding your own functionality and a couple examples 
+          of how you might do that. (Prefixes and filters).</li>
+          <li>The yepnope.js api encourages you to only load the resources that you need. This means that even when 
+          it's slower than another script loader, it still can come out on top, because you could avoid an entire resource.</li>
+          <li>yepnope.js is integrated into Modernizr.</li>
+          <li>yepnope.js always executes things in the order they are listed. This is a pro for some, and a con for others. 
+          We think it's a friendly default.</li>
+
+          <li>yepnope.js has the capability to do resource fallbacks and still download dependent scripts in parallel 
+          with the first. More clearly:<br />
+
+<pre><code>
+yepnope([
+    {
+        load: 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',
+        complete: function () {
+            if ( ! window.jQuery ) {
+                yepnope( 'local/jquery.min.js' );
+            }
+        }
+    },
+    {
+        load : 'jquery.plugin.js',
+        complete: function () {
+            jQuery(function () {
+                jQuery( 'div' ).plugin();
+            });
+        }
+    }
+]);
+</code></pre>
+
+          <p>In most loaders, in order to test for and potentially use the fallback version of jQuery, said loader must 
+          download load the rest of the "chain" of scripts in the callback for jQuery:</p>
+
+<pre><code>
+someLoader('http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js', function(){
+    if ( ! window.jQuery ) {
+        someLoader( 'local/jquery.min.js', 'jquery.plugin.js' );
+    } else {
+        someLoader( 'jquery.plugin.js' );
+    }
+});
+</code></pre>
+
+          <p>Not only is this not very pretty, and not very DRY, it's slow. It essentially means that jQuery will load in serial 
+          everytime. It also means that anything that depends on or comes after jQuery wont start downloading until after jQuery 
+          has executed.</p>
+
+          <p>yepnope, on the other hand, can start downloading `jquery.plugin.js` right away (at the same time as the google cdn 
+          version of jQuery). In the normal case, these will download at the same time and they will execute in order. In the case 
+          where our fallback is needed, we only have to wait the additional time for the second jQuery to load in order to continue 
+          on. This is made possible by yepnope's fully decoupled preloading and executing.</p>
+          </li>
+        </ul>
+
+        <h3>Things to keep in mind</h3>
+        <ul>
+          <li>It is not the fastest loader. LABjs beats yepnope.js on speed in non-webkit browsers by a not-completely-trivial 
+          amount when loading a lot of scripts. It is unlikely your end-users will notice the difference (a matter of ms) in most 
+          cases, but it's something to take into consideration.</li>
+          <li>We require that you have proper cache headers. Other loaders get around this on local resources.<br />
+<pre><code>
+Last-Modified: <future date>
+Expires: <future date>
+</code></pre>
+          </li>
+          <li>Other, more feature-rich libraries like RequireJS have build tools and awesome apis to help you structure and 
+          maintain an entire application. yepnope only scratches the surface compared to RequireJS and similar libraries.</li>
+          <li>yepnope.js always executes things in the order they are listed. This is a pro for some, and a con for others. It 
+          can occasionally hurt speed.</li>
+        </ul>
+
+
+        <h3>Conclusion</h3>
+
+        <p>In short, we want you to make the right decision for your application. We can certainly think of times when yepnope.js 
+        would not be the correct choice for a resource loader, and we hope we've made those situations abundantly clear in our 
+        documentation. However, we also think that yepnope meets a lot of people where they are, when it comes to a balance of 
+        performance, usability, size and feature-set.</p>
+
+        <p>If you have questions about if yepnope is right for your application. Send us a tweet or an email and we'll help you 
+        out. Most of us in the script-loader author scene are total BFFs and we aren't about competition, we're about pushing 
+        the edge. In other words, we totally use LABjs and RequireJS in a bunch of our projects, because they're badass (and the 
+        other ones are probably great too!).</p>
+          
+        </article>
+        <article>
           <h1>Yepnope: The Guide</h1>
           <h3>Why should you use yepnope?</h3>
   
