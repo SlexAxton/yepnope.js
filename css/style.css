@@ -366,6 +366,7 @@ pre .number {
 }
 #main h2 {
   font-size:22px;
+  margin-bottom: 10px;
 }
 #main pre {
   background-color:#211E1E;
@@ -397,6 +398,35 @@ article h3,
 }
 #prefixes .spacedTitle {
   margin-top:40px;
+}
+
+#main .authors li {
+  display:inline-block;
+  list-style-type:none;
+  -webkit-box-sizing: border-box; 
+     -moz-box-sizing: border-box;  
+          box-sizing: border-box;
+  width: 46%;
+  border: 1px solid hsla(210, 20%, 47%, .3);
+  border-radius: 5px;
+  margin-right: 3%;
+  height: 100px;
+  padding: 10px;
+}
+#main .authors li:last-child { 
+  margin-right: 0;
+}
+#main .authors li:hover {
+  border-color: hsl(210, 20%, 37%);
+}
+.authors li img {
+  float: left;
+  margin-right: 10px;
+}
+
+.authors li strong {
+  display:block;
+  font-size: 20px;
 }
 
 footer {
