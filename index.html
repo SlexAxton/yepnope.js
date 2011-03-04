@@ -29,13 +29,15 @@
     </div>
   </header> 
     
-    <section id="main-code-example"> 
+    <section id="main-code-example">
+    <div>
 <pre><span class="keyword">yepnope</span>({
   test : Modernizr.geolocation,
   yep  : <span class="literal">'normal.js'</span>,
   nope : [<span class="literal">'polyfill.js'</span>, <span class="literal">'wrapper.js'</span>]
 });</pre> 
     <a target="_blank" href="http://github.com/SlexAxton/yepnope.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a> 
+    </div>
     </section> 
   <div class="container"> 
 
@@ -769,7 +771,7 @@ yepnope.addFilter( function ( resourceObj ) {
     return resource;
   });
 </script>
-  <script>
+  <script type="text/javascript">
     var _gaq = [['_setAccount', 'UA-19322022-1'], ['_setDomainName', '.yepnopejs.com'], ['_trackPageview']];
     yepnope([
       {
@@ -787,14 +789,12 @@ yepnope.addFilter( function ( resourceObj ) {
             // but we preloaded it, so it should execute immediately.
             yepnope('js/hijs.js');
           
-          
             (function( $body ) {
               $("a[href^=#]").bind('click', function( e ) {
                 e.preventDefault();
-                $body.animate({ scrollTop: $( '#' + this.href.split('#').pop() ).offset().top });
+                $body.animate({ scrollTop: $( '#' + $(this).attr('href').split('#').pop() ).offset().top });
               });            
-            })( $('body') );
-          
+            })( $(document.body) );
           });
         }
       },

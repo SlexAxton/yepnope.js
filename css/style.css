@@ -287,14 +287,18 @@ text-align:center;
 }
 
 #main-code-example {
-  padding:20px 0;
-  margin:20px 0;
+  margin:20px auto;
   background-color:#211E1E;
   -webkit-box-shadow:0 0 5px #222222;
-  -o-box-shadow:0 0 5px #222222;
   -moz-box-shadow:0 0 5px #222222;
-  box-shadow:0 0 5px #222222;
   position: relative;
+}
+#main-code-example {
+	padding: 20px 0;
+  -o-box-shadow:0 0 5px #222222;
+  box-shadow:0 0 5px #222222;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 #main-code-example pre {
   width:960px;
