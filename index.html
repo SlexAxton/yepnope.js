@@ -93,7 +93,7 @@
 
         <h3>Good Things</h3>
         <ul>
-          <li>yepnope.js is <b>only 1.6kb</b> - smaller than most, but certainly a good size for its functionality set.</li>
+          <li>yepnope.js is <b>only 1.6kb</b> - smaller than most and certainly a good size for its functionality set.</li>
           <li>yepnope.js is called a "resource loader" because it can <b>work with both JavaScript and CSS</b>.</li>
           <li>yepnope.js <b>has a full test suite</b> in QUnit that you can run in your set of supported browsers to make 
           sure it works. (We run it via TestSwarm in every browser we can get our hands on)</li>
@@ -160,8 +160,7 @@ someLoader('http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js', fu
           <li>It is not always the fastest. There are a number of other script loaders (such as labjs) that optimize different 
           situations than yepnope. You should run tests for your use-case if this is a priority to you.</li>
           <li>We require that you have proper cache headers. Other loaders get around this on local resources.<br />
-<pre><code>
-Expires: -future date-
+<pre><code class="stayugly">Expires: -future date-
 // e.g.
 Expires: Thu, 31 Dec 2020 20:00:00 GMT
 </code></pre>
@@ -751,7 +750,7 @@ yepnope.addFilter( function ( resourceObj ) {
         <article>
         <h2>COMMON GOTCHAS</h2>
         <ul> 
-          <li>You cannot use <span class="code">document.write</span> ( which means no google maps or ads ) in the scripts that you load with yepnope. This is true for every asynchronous script loader. We suggest that you avoid document.writes <strong>all the time</strong> though.</li>
+          <li>You cannot use <span class="code">document.write()</span> (which means no google maps or ads) in the scripts that you load with yepnope. This is true for every asynchronous script loader. We suggest that you avoid document.writes <strong>all the time</strong> though.</li>
           <li>IEs less than 9 don't guarantee that the callbacks for scripts run <strong>immediately</strong> after the related script executes. There are hacks for this but they are not universally applicable to all scripts. Please see <a target="_blank" href="http://jaubourg.net/archive/7/2010">Julian Aubourg's blog post on this subject</a> if you you'd like to learn more information.</li>
           <li>Just because your script is done, doesn't mean the document is ready. Don't forget that you can use document ready callbacks inside of your yepnope callbacks. If you're toying with the DOM, we'd heavily encourage you to do so, because your test environment may act differently than your production server the speeds are dramatically different.</li>
           <li>Loading too many scripts can be worse than not using yepnope. Yepnope is not to be used an excuse not to group alike scripts and styles into single files. This is still a great practice. We just don't want you to group it into <strong><em>one</em></strong>.</li>
@@ -778,7 +777,7 @@ yepnope.addFilter( function ( resourceObj ) {
         load : [ 'js/jquery.min.js', 'js/jsbeautify.min.js', 'preload!js/hijs.js' ],
         complete : function () {
           $(function () {
-            $('code').each(function () {
+            $('code').not('.stayugly').each(function () {
               this.innerHTML = js_beautify( $.trim( $(this).html() ), {
                 indent_size: 2,
                 preserve_newlines: true,
