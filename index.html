@@ -11,6 +11,7 @@
   <title>yepnope.js | A Conditional Loader For Your Polyfills!</title> 
   <meta name="description" content="A Conditional Loader For Your Polyfills. Only load the scripts that you need!"> 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans:regular,bold|Inconsolata">
   <link rel="stylesheet" href="css/style.css"> 
   <script src="js/modernizr-1.6.min.js"></script> 
 </head> 
@@ -52,7 +53,7 @@
         <p>There are only a handful of things to know about yepnope. There are only 3 functions available to you
         and there's only one that's really important.</p> 
           <pre><span class="keyword">yepnope</span>(resources <span class="comment">/* string | object | array */</span>)</pre> 
-          <p>The <span class="code">yepnope</span> function is the core of yepnope.js (crazy, huh?). It takes a whole bunch
+          <p>The <span class="code">yepnope</span> function is the core of yepnope.js <small>(crazy, huh?)</small>. It takes a whole bunch
           of stuff, to try to make it easy on you.</p> 
           <p>The recommended type for <span class="code">resources</span> is an array of <a href="#testObject">test objects</a>. The consistency helps
           make your code look better and stay maintainable.</p> 
@@ -82,8 +83,8 @@
         <article>
         <h1>Another Script Loader?#?@$!@# - Why Use Yepnope?</h1>
 
-        <p>You're right. The last few months we've been inundated by new script loaders. I'd like to first point 
-        out that that is _awesome_. It goes to show that there is a real benefit to using a script/resource loader. 
+        <p>You're right. The last few months we've been <strong>inundated</strong> by new script loaders. I'd like to first point 
+        out that that is <strong><em>awesome</em></strong>. It goes to show that there is a real benefit to using a script/resource loader. 
         In fact, the yepnope prototype launched at JSConfEU back in November of 2010. Since then, we've used some of 
         the best techniques from other script loaders and packaged up the magic for you in a piece-of-cake API.</p>
 
@@ -92,19 +93,18 @@
 
         <h3>Good Things</h3>
         <ul>
-          <li>yepnope.js is only 1.6kb - smaller than most, but certainly a good size for its functionality set.</li>
-          <li>yepnope.js is called a "resource loader" because it can work with both JavaScript and CSS.</li>
-          <li>yepnope.js has a full test suite in QUnit that you can run in your set of supported browsers to make 
+          <li>yepnope.js is <b>only 1.6kb</b> - smaller than most, but certainly a good size for its functionality set.</li>
+          <li>yepnope.js is called a "resource loader" because it can <b>work with both JavaScript and CSS</b>.</li>
+          <li>yepnope.js <b>has a full test suite</b> in QUnit that you can run in your set of supported browsers to make 
           sure it works. (We run it via TestSwarm in every browser we can get our hands on)</li>
-          <li>yepnope.js fully decouples preloading from execution. This means that you have ultimate control of when your 
-          resource is executed and you can change that order on the fly.</li>
-          <li>The yepnope.js api is friendly and encourages logical grouping of resources.</li>
-          <li>yepnope.js is modular. It has a whole system for adding your own functionality and a couple examples 
+          <li>yepnope.js fully decouples preloading from execution. This means that you have ultimate <b>control of when your resource is executed</b> and <b>you can change that order on the fly</b>.</li>
+          <li>The yepnope.js <b>api is friendly</b> and encourages logical grouping of resources.</li>
+          <li>yepnope.js is <b>modular</b>. It has a whole system for adding your own functionality and a couple examples 
           of how you might do that. (Prefixes and filters).</li>
-          <li>The yepnope.js api encourages you to only load the resources that you need. This means that even when 
+          <li>The yepnope.js api encourages you to <b>only load the resources that you need</b>. This means that even when 
           it's slower than another script loader, it still can come out on top, because you could avoid an entire resource.</li>
-          <li>yepnope.js is integrated into Modernizr.</li>
-          <li>yepnope.js always executes things in the order they are listed. This is a pro for some, and a con for others. 
+          <li>yepnope.js is <b>integrated into <a href="http://modernizr.github.com/Modernizr/2.0-beta/">Modernizr</a></b>.</li>
+          <li>yepnope.js <b>always executes things in the order they are listed</b>. This is a pro for some, and a con for others. 
           We think it's a friendly default.</li>
 
           <li>yepnope.js has the capability to do resource fallbacks and still download dependent scripts in parallel 

@@ -84,7 +84,7 @@ select, input, textarea, button { font:99% sans-serif; }
 /* normalize monospace sizing 
  * en.wikipedia.org/wiki/MediaWiki_talk:Common.css/Archive_11#Teletype_style_fix_for_Chrome
  */
-pre, code, kbd, samp { font-family: monospace, sans-serif; }
+pre, code, kbd, samp { font-family: Inconsolata, monospace, sans-serif; }
  
 
 /* 
@@ -217,8 +217,6 @@ button {  width: auto; overflow: visible; }
 
 
 
-
-
  /* Primary Styles
     Author: Slexxy
  */
@@ -226,7 +224,7 @@ button {  width: auto; overflow: visible; }
 body {
   background-color:#C7FAFF;
   color:#1F1919;
-  font-family: "Helvetica Neue", Helvetica, Verdana, arial, sans-serif;
+  font-family: 'Droid Sans', "Helvetica Neue", Helvetica, Verdana, arial, sans-serif;
   overflow: hidden;
 }
 .container {
@@ -307,13 +305,16 @@ text-align:center;
 #main-code-example pre {
   font-size:36px;
 }
+
+b { background-color: hsla(344, 0%, 63%, .420); font-weight: normal; border-radius: 3px; padding: 0 2px;}
+
 .code {
   font-weight:bold;
   color:#000000;
 }
 .code,
 pre {
-  font-family: "Bitstream Vera Sans Mono", "Droid Sans Mono", "Courier New", monospace;
+  font-family: Inconsolata, "Bitstream Vera Sans Mono", "Droid Sans Mono", "Courier New", monospace;
 }
 pre .comment {
   color:#777;
@@ -346,10 +347,14 @@ pre .number {
 }
 #main article p,
 #main li {
-  font-size:14px;
+  font-size:16px;
   padding: 10px 0;
   line-height: 1.4;
 }
+#main li {
+  padding: 7px 0;
+}
+
 #main article p:last-child {
 	padding-bottom: 0;
 }
