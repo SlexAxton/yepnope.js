@@ -218,7 +218,7 @@ var docElement            = doc.documentElement,
       // Otherwise, just call the function and potentially run the stack
       else {
         i();
-        execWhenReady();
+        execWhenReady();      	
       }
     }
     else {
@@ -251,7 +251,7 @@ var docElement            = doc.documentElement,
 
         // Handle memory leak in IE
         preloadElem.onload = preloadElem.onreadystatechange = null;
-        insBeforeObj.removeChild( preloadElem );
+        sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 0);
       }
     }
 
