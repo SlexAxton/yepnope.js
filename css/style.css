@@ -399,7 +399,7 @@ article h3,
 #prefixes .spacedTitle {
   margin-top:40px;
 }
-
+#main .authors ul { margin: 0; }
 #main .authors li {
   display:inline-block;
   list-style-type:none;
@@ -407,17 +407,13 @@ article h3,
      -moz-box-sizing: border-box;  
           box-sizing: border-box;
   width: 46%;
-  border: 1px solid hsla(210, 20%, 47%, .3);
   border-radius: 5px;
   margin-right: 3%;
   height: 100px;
-  padding: 10px;
+  font-size: 15px;
 }
 #main .authors li:last-child { 
   margin-right: 0;
-}
-#main .authors li:hover {
-  border-color: hsl(210, 20%, 37%);
 }
 .authors li img {
   float: left;
@@ -426,7 +422,8 @@ article h3,
 
 .authors li strong {
   display:block;
-  font-size: 20px;
+  font-size: 19px;
+  margin-bottom: 2px;
 }
 
 footer {
