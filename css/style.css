@@ -462,7 +462,7 @@ footer {
 
 /* Grade-A Mobile Browsers (Opera Mobile, iPhone Safari, Android Chrome)  
    Consider this: www.cloudfour.com/css-media-query-for-mobile-is-fools-gold/ */
-@media screen and (max-device-width: 480px) {
+@media screen and (max-device-width: 1024px) {
   
   
   /* Uncomment if you don't want iOS and WinMobile to mobile-optimize the text for you
