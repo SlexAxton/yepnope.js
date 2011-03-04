@@ -227,11 +227,13 @@ body {
   background-color:#C7FAFF;
   color:#1F1919;
   font-family: "Helvetica Neue", Helvetica, Verdana, arial, sans-serif;
+  overflow: hidden;
 }
-#container {
+.container {
   width:960px;
   overflow:hidden;
   margin:0 auto;
+  position: relative;
 }
 #logo-thing {
   margin:15px 0;
@@ -244,7 +246,7 @@ body {
 }
 #dl-link {
  position:absolute;
- margin-left:650px;
+ right: 0;
  background-color:#211E1E;
  top:-5px;
  margin-top:-5px;
@@ -253,6 +255,9 @@ body {
  padding:10px;
  padding-bottom:5px;
  text-decoration:none;
+ -moz-border-radius:5px;
+ -webkit-border-radius:5px;
+ -o-border-radius:5px;
  border-radius:5px;
  -webkit-box-shadow:0 0 2px #222222;
  -o-box-shadow:0 0 2px #222222;
@@ -282,9 +287,6 @@ text-align:center;
 }
 
 #main-code-example {
-  left:0;
-  position:absolute;
-  width:100%;
   padding:20px 0;
   margin:20px 0;
   background-color:#211E1E;
@@ -292,6 +294,7 @@ text-align:center;
   -o-box-shadow:0 0 5px #222222;
   -moz-box-shadow:0 0 5px #222222;
   box-shadow:0 0 5px #222222;
+  position: relative;
 }
 #main-code-example pre {
   width:960px;
@@ -329,7 +332,6 @@ pre .number {
   color:#AC925F;
 }
 #large-description {
-  margin-top:300px;
   font-size:27px;
   line-height:160%;
 }

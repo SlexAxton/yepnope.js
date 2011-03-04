@@ -16,17 +16,18 @@
 </head> 
 <body> 
  
-  <div id="container"> 
-    <header> 
-      <a id="logo-thing" href="/"> 
-        <h1>yepnope.js</h1> 
-        <h4>A Conditional Loader For Your Polyfills</h4> 
-      </a> 
-      <a id="dl-link" target="_blank" href="https://github.com/SlexAxton/yepnope.js/archives/master"> 
-        <span id="dl-yn">download yepnope 1.0.0</span> 
-        <span id="dl-stats">1.59KB gzip &amp; min - Mar 4, 2011</span> 
-      </a> 
-    </header> 
+  <header> 
+	  <div class="container"> 
+	    <a id="logo-thing" href="/"> 
+	      <h1>yepnope.js</h1> 
+	      <h4>A Conditional Loader For Your Polyfills</h4> 
+	    </a> 
+	    <a id="dl-link" target="_blank" href="https://github.com/SlexAxton/yepnope.js/archives/master"> 
+	      <span id="dl-yn">download yepnope 1.0.0</span> 
+	      <span id="dl-stats">1.59KB gzip &amp; min - Mar 4, 2011</span> 
+	    </a>
+    </div>
+  </header> 
     
     <section id="main-code-example"> 
 <pre><span class="keyword">yepnope</span>({
@@ -34,8 +35,10 @@
   yep  : <span class="literal">'normal.js'</span>,
   nope : [<span class="literal">'polyfill.js'</span>, <span class="literal">'wrapper.js'</span>]
 });</pre> 
+    <a target="_blank" href="http://github.com/SlexAxton/yepnope.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a> 
     </section> 
- 
+  <div class="container"> 
+
     <div id="large-description"> 
       <strong>yepnope</strong> is an asynchronous conditional resource loader that's <strong>super-fast</strong>, and
       allows you to load <strong>only the scripts that your users need.</strong> 
@@ -758,7 +761,6 @@ yepnope.addFilter( function ( resourceObj ) {
     <footer> 
     yepnope.js was created by <a href="http://alexsexton.com/">Alex Sexton</a> and actively developed by him and <a href="http://twitter.com/ralphholzmann">Ralph Holzmann</a>. It is licensed under the <a href="http://sam.zoy.org/wtfpl/">WTFPL</a> (so feel free to relicense as needed). 
     - Site content is <a href="http://creativecommons.org/licenses/by/3.0/">CC by Attribution</a></footer> 
-    <a target="_blank" href="http://github.com/SlexAxton/yepnope.js"><img style="position: absolute; top: 166px; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a> 
   </div> 
   <script src="js/yepnope.min.js"></script>
   <script>
