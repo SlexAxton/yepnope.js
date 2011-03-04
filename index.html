@@ -12,7 +12,7 @@
   <meta name="description" content="A Conditional Loader For Your Polyfills. Only load the scripts that you need!"> 
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
   <link rel="stylesheet" href="css/style.css"> 
-  <script src="js/modernizr-1.6.min.js"></script> 
+  <!-- script src="js/modernizr-1.6.min.js"></script --> 
 </head> 
 <body> 
  
@@ -765,19 +765,13 @@ yepnope.addFilter( function ( resourceObj ) {
     - Site content is <a href="http://creativecommons.org/licenses/by/3.0/">CC by Attribution</a></footer> 
   </div> 
   <script src="js/yepnope.min.js"></script>
-  <script>
-  yepnope.addPrefix( 'preload', function ( resource ) {
-    resource.noexec = true;
-    return resource;
-  });
-</script>
   <script type="text/javascript">
     var _gaq = [['_setAccount', 'UA-19322022-1'], ['_setDomainName', '.yepnopejs.com'], ['_trackPageview']];
     yepnope([
       {
-        load : [ 'js/jquery.min.js', 'js/jsbeautify.min.js', 'preload!js/hijs.js' ],
+        load : [ 'js/jquery.min.js', 'js/jsbeautify.min.js' ],
         complete : function () {
-          $(function () {
+          //$(function () {
             $('code').each(function () {
               this.innerHTML = js_beautify( $.trim( $(this).html() ), {
                 indent_size: 2,
@@ -785,9 +779,6 @@ yepnope.addFilter( function ( resourceObj ) {
                 space_after_anon_function: true
               } ); 
             });
-            // We need to make this wait for doc ready and after we format the code
-            // but we preloaded it, so it should execute immediately.
-            yepnope('js/hijs.js');
           
             (function( $body ) {
               $("a[href^=#]").bind('click', function( e ) {
@@ -795,11 +786,14 @@ yepnope.addFilter( function ( resourceObj ) {
                 $body.animate({ scrollTop: $( '#' + $(this).attr('href').split('#').pop() ).offset().top });
               });            
             })( $(document.body) );
-          });
+          //});
         }
       },
       {
         load: 'http://www.google-analytics.com/ga.js'
+      },
+      {
+        load: 'js/hijs.js'
       }
     ]);
   </script> 
