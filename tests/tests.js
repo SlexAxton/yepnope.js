@@ -401,8 +401,8 @@ if ( ! window.console ) {
     ]);
     stop(timeout);
   });
-/*
-  asyncTest("Preload only", 4, function () {
+
+  asyncTest("Preload only", 8, function () {
     var myrgb = rgb();
 
     ++u;
@@ -426,9 +426,6 @@ if ( ! window.console ) {
             var diff = (+new Date) - timeStart;
             ok( diff < 3000, "The js callback didn't have to wait" );
             ok( w[ 'a' + u ], "a successfully executed." );
-          },
-          complete : function () {
-            start();
           }
         });
       }
@@ -461,7 +458,7 @@ if ( ! window.console ) {
     } ]);
     stop(timeout);
   });
-*/
+
   module('Last Calls');
   asyncTest("Complete Fires When No Resources Are Loaded", 2, function () {
     ++u;
