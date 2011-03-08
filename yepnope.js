@@ -32,7 +32,7 @@ var docElement            = doc.documentElement,
     // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
     isOpera               = window.opera && toString.call( window.opera ) == '[object Opera]',
     isWebkit              = ( 'webkitAppearance' in docElement.style ),
-    isNewerWebkit         = isWebkit && !! (( 'webkitIndexedDB' in window ) || ( 'indexedDB' in window )),
+    isNewerWebkit         = isWebkit && 'async' in doc.createElement('script'),
     strJsElem             = isGecko ? 'object' : ( isOpera || isNewerWebkit ) ? 'img' : 'script',
     strCssElem            = isWebkit ? 'img' : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
@@ -52,6 +52,8 @@ var docElement            = doc.documentElement,
     prefixes              = {},
     handler,
     yepnope;
+
+
 
 
   /* Loader helper functions */
@@ -295,23 +297,19 @@ var docElement            = doc.documentElement,
     // the parent last. We try the head, and it automatically falls back to undefined.
     insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
 
-    // Special case for opera, since error handling is how we detect onload
-    // we can't have a real error handler. So in opera, we
-    // have a timeout in order to throw an error if something never loads.
-    // Better solutions welcomed.
-    if ( ( isOpera ) || elem == 'object' ) {
-      sTimeout( function () {
-        if ( ! done ) {
-          // Remove the node from the dom
-          insBeforeObj.removeChild( preloadElem );
-          // Set it to ready to move on
-          // indicate that this had a timeout error on our stack object
-          stackObject.r = stackObject.e = done = 1;
-          // Continue on
-          execWhenReady();
-        }
-      }, yepnope.errorTimeout );
-    }
+    // If something fails, and onerror doesn't fire,
+    // continue after a timeout.
+    sTimeout( function () {
+      if ( ! done ) {
+        // Remove the node from the dom
+        insBeforeObj.removeChild( preloadElem );
+        // Set it to ready to move on
+        // indicate that this had a timeout error on our stack object
+        stackObject.r = stackObject.e = done = 1;
+        // Continue on
+        execWhenReady();
+      }
+    }, yepnope.errorTimeout );
   }
 
   function load ( resource, type, dontExec ) {
