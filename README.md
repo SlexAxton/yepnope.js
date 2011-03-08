@@ -73,7 +73,7 @@ Any forks and stuff are welcome.
 
 ##Current Released Version##
 
-1.0.0
+1.0.1
 
 NOTE: the code in the github repository is considered in development. Use at your own risk. The download buttons will link to our current release version.
 
