@@ -401,7 +401,7 @@ if ( ! window.console ) {
     ]);
     stop(timeout);
   });
-
+/*
   asyncTest("Preload only", 8, function () {
     var myrgb = rgb();
 
@@ -458,7 +458,7 @@ if ( ! window.console ) {
     } ]);
     stop(timeout);
   });
-
+*/
   module('Last Calls');
   asyncTest("Complete Fires When No Resources Are Loaded", 2, function () {
     ++u;
