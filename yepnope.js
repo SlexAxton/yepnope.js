@@ -85,6 +85,7 @@ var docElement            = doc.documentElement,
     var script = doc.createElement( 'script' ),
         done;
 
+    script.charset = oldObj.c;
     script.src = oldObj.s;
 
     // Bind to load events
@@ -229,7 +230,7 @@ var docElement            = doc.documentElement,
     }
   }
 
-  function preloadFile ( elem, url, type, splicePoint, docElement, dontExec ) {
+  function preloadFile ( elem, url, type, splicePoint, docElement, dontExec, charset ) {
 
     // Create appropriate element for browser and type
     var preloadElem = doc.createElement( elem ),
@@ -238,7 +239,8 @@ var docElement            = doc.documentElement,
           t: type,     // type
           s: url,      // src
         //r: 0,        // ready
-          e : dontExec // set to true if we don't want to reinject
+          e : dontExec, // set to true if we don't want to reinject
+          c : charset
         };
 
     function onload () {
@@ -280,6 +282,8 @@ var docElement            = doc.documentElement,
     }
     // Otherwise, if it's a script element
     else if ( elem == 'script' ) {
+      // set charset attribute if present
+      preloadElem.charset = charset;
       // handle errors on script elements when we can
       preloadElem.onerror = function () {
         stackObject.e = stackObject.r = 1;
@@ -312,7 +316,7 @@ var docElement            = doc.documentElement,
     }, yepnope.errorTimeout );
   }
 
-  function load ( resource, type, dontExec ) {
+  function load ( resource, type, dontExec, charset ) {
 
     var elem  = ( type == 'c' ? strCssElem : strJsElem );
     
@@ -324,7 +328,7 @@ var docElement            = doc.documentElement,
     type = type || 'j';
     if ( isString( resource ) ) {
       // if the resource passed in here is a string, preload the file
-      preloadFile( elem, resource, type, this.i++, docElement, dontExec );
+      preloadFile( elem, resource, type, this.i++, docElement, dontExec, charset );
     } else {
       // Otherwise it's a resource object and we can splice it into the app at the current location
       execStack.splice( this.i++, 0, resource );
@@ -408,7 +412,7 @@ var docElement            = doc.documentElement,
       }
       else {
 
-        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? 'c' : undef, resource.noexec );
+        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? 'c' : undef, resource.noexec, resource.charset );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
