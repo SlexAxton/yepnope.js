@@ -129,73 +129,55 @@ var docElement            = doc.documentElement,
     link.rel  = 'stylesheet';
     link.type = 'text/css';
 
+    function onload() {
+      if ( ! done ) {
+        // Set our flag to complete
+        done = 1;
+        // Check to see if we can call the callback
+        sTimeout( execWhenReady, 0 );
+      }
+    };
+
+
     // Poll for changes in webkit and gecko
     if ( ! oldObj.e && ( isWebkit || isGecko ) ) {
       // A self executing function with a sTimeout poll to call itself
       // again until the css file is added successfully
-      ( function poll ( link ) {
+      ( function poll () {
         sTimeout( function () {
           // Don't run again if we're already done
           if ( ! done ) {
             try {
               // In supporting browsers, we can see the length of the cssRules of the file go up
-              if ( link.sheet.cssRules.length ) {
-                // Then turn off the poll
-                done = 1;
-                // And execute a function to execute callbacks when all dependencies are met
-                execWhenReady();
-              }
-              // otherwise, wait another interval and try again
-              else {
-                poll( link );
-              }
+              link.sheet.cssRules
+              onload();
             }
             catch ( ex ) {
               // In the case that the browser does not support the cssRules array (cross domain)
               // just check the error message to see if it's a security error
-              if ( ( ex.code == 1e3 ) || ( ex.message == 'security' || ex.message == 'denied' ) ) {
-                // if it's a security error, that means it loaded a cross domain file, so stop the timeout loop
-                done = 1;
-                // and execute a check to see if we can run the callback(s) immediately after this function ends
-                sTimeout( function () {
-                  execWhenReady();
-                }, 0 );
+              if ( ex.code > 0 ) {
+                onload();
               }
               // otherwise, continue to poll
               else {
-                poll( link );
+                poll();
               }
             }
           }
         }, 0 );
-      } )( link );
+      } )();
 
     }
     // Onload handler for IE and Opera
     else {
       // In browsers that allow the onload event on link tags, just use it
-      link.onload = function () {
-        if ( ! done ) {
-          // Set our flag to complete
-          done = 1;
-          // Check to see if we can call the callback
-          sTimeout( function () {
-            execWhenReady();
-          }, 0 );
-        }
-      };
-
+      link.onload = onload; 
       // if we shouldn't inject due to error or settings, just call this right away
-      oldObj.e && link.onload();
+      oldObj.e && onload();
     }
 
     // 404 Fallback
-    sTimeout( function () {
-      if ( ! done ) {
-        done = 1;
-        execWhenReady();
-      }
-    }, yepnope.errorTimeout );
+    sTimeout( onload, yepnope.errorTimeout );
     
     // Inject CSS
     // only inject if there are no errors, and we didn't set the no inject flag ( oldObj.e )
@@ -299,17 +281,7 @@ var docElement            = doc.documentElement,
 
     // If something fails, and onerror doesn't fire,
     // continue after a timeout.
-    sTimeout( function () {
-      if ( ! done ) {
-        // Remove the node from the dom
-        insBeforeObj.removeChild( preloadElem );
-        // Set it to ready to move on
-        // indicate that this had a timeout error on our stack object
-        stackObject.r = stackObject.e = done = 1;
-        // Continue on
-        execWhenReady();
-      }
-    }, yepnope.errorTimeout );
+    sTimeout( onload, yepnope.errorTimeout );
   }
 
   function load ( resource, type, dontExec ) {
