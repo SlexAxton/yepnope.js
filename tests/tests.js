@@ -261,6 +261,7 @@ if ( ! window.console ) {
       {
         load: "http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/trontastic/jquery-ui.css",
         callback: function() {
+          console.log( (+new Date) - startTime);
           ok( ((+new Date) - startTime) < 8000, "jQuery UI loaded without fallback");
         },
         complete: function() {
