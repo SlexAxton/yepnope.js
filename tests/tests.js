@@ -238,7 +238,7 @@ if ( ! window.console ) {
   });
 
 
-  asyncTest("CSS Callback Timing", 3, function() {
+  asyncTest("CSS Callback Timing", 4, function() {
     var startTime = (+new Date),
         myrgb = rgb();
     // For good measure, make sure this is always true
@@ -256,9 +256,15 @@ if ( ! window.console ) {
 
           });
 
+        }
+      },
+      {
+        load: "http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/trontastic/jquery-ui.css",
+        callback: function() {
+          ok( ((+new Date) - startTime) < 8000, "jQuery UI loaded without fallback");
         },
         complete: function() {
-          start();
+            start();
         }
       }
     ]);
