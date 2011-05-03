@@ -31,9 +31,10 @@ var docElement            = doc.documentElement,
     insBeforeObj          = isGeckoLTE18 ? docElement : firstScript.parentNode,
     // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
     isOpera               = window.opera && toString.call( window.opera ) == "[object Opera]",
+    isIE                  = !! doc.attachEvent,
     isWebkit              = ( "webkitAppearance" in docElement.style ),
     strJsElem             = isGecko ? "object" : "img",
-    strCssElem            = strJsElem,
+    strCssElem            = isIE ? "script" : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
       return toString.call( obj ) == "[object Array]";
     },
@@ -53,12 +54,10 @@ var docElement            = doc.documentElement,
     yepnope;
 
 
-
-
   /* Loader helper functions */
   function isFileReady ( readyState ) {
     // Check to see if any of the ways a file can be ready are available as properties on the file's element
-    return ( ! readyState || readyState == "complete" || readyState == "uninitialized" );
+    return ( ! readyState || readyState == "loaded" || readyState == "complete" || readyState == "uninitialized" );
   }
 
   function execWhenReady () {
@@ -228,12 +227,11 @@ var docElement            = doc.documentElement,
           e : dontExec // set to true if we don't want to reinject
         };
 
+    
     function onload () {
 
       // If the script/css file is loaded
       if ( ! done && isFileReady( preloadElem.readyState ) ) {
-
-
 
         // Set done to prevent this function from being called twice.
         stackObject.r = done = 1;
