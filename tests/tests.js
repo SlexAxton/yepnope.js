@@ -466,6 +466,30 @@ if ( ! window.console ) {
     stop(timeout);
   });
 */
+  module('Exposed Raw Functions');
+  asyncTest("InjectJs", 2, function () {
+    ++u;
+
+    ok( ! w['a'+u], 'Script not ' );
+    yepnope.injectJs( 'js/a' + u + '.js', function () {
+      ok( w['a'+u], 'The script was injected successfully' );
+      start();
+    });
+    stop(timeout);
+  });
+  asyncTest("InjectCss", 2, function () {
+    var myrgb = rgb();
+    cssIsLoaded( myrgb, function ( result ) {
+      ok( !result, 'The stylesheet was not previously there.' );
+      yepnope.injectCss( 'css/' + myrgb.join( ',' ) + '.css', function () {
+        cssIsLoaded( myrgb, function( result ) {
+          ok( result, 'The stylesheet was injected successfully' );
+          start();
+        });
+      });
+    });
+    stop(timeout);
+  });
   module('Last Calls');
   asyncTest("Complete Fires When No Resources Are Loaded", 2, function () {
     ++u;

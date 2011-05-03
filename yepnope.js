@@ -22,6 +22,7 @@ var docElement            = doc.documentElement,
     toString              = {}.toString,
     execStack             = [],
     started               = 0,
+    noop                  = function () {},
     // Before you get mad about browser sniffs, please read:
     // https://github.com/Modernizr/Modernizr/wiki/Undetectables
     // If you have a better solution, we are actively looking to solve the problem
@@ -79,11 +80,13 @@ var docElement            = doc.documentElement,
 
   // Takes a preloaded js obj (changes in different browsers) and injects it into the head
   // in the appropriate order
-  function injectJs ( oldObj ) {
+  function injectJs ( src, cb, /* internal use */ err, internal ) {
     var script = doc.createElement( "script" ),
         done;
 
-    script.src = oldObj.s;
+    script.src = src;
+
+    cb = internal ? execWhenReady : ( cb || noop );
 
     // Bind to load events
     script.onreadystatechange = script.onload = function () {
@@ -92,7 +95,7 @@ var docElement            = doc.documentElement,
 
         // Set done to prevent this function from being called twice.
         done = 1;
-        execWhenReady();
+        cb();
 
         // Handle memory leak in IE
         script.onload = script.onreadystatechange = null;
@@ -100,30 +103,32 @@ var docElement            = doc.documentElement,
     };
 
     // 404 Fallback
-    sTimeout( function () {
+    sTimeout(function () {
       if ( ! done ) {
         done = 1;
-        execWhenReady();
+        cb();
       }
     }, yepnope.errorTimeout );
 
     // Inject script into to document
     // or immediately callback if we know there
     // was previously a timeout error
-    oldObj.e ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
+    err ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
   }
 
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
   // in the appropriate order
   // Many credits to John Hann (@unscriptable) for a lot of the ideas here - found in the css! plugin for RequireJS
-  function injectCss ( oldObj ) {
+  function injectCss ( href, cb, /* Internal use */ err, internal ) {
 
     // Create stylesheet link
     var link = doc.createElement( "link" ),
         done;
 
+    cb = internal ? execWhenReady : ( cb || noop );
+
     // Add attributes
-    link.href = oldObj.s;
+    link.href = href;
     link.rel  = "stylesheet";
     link.type = "text/css";
 
@@ -132,13 +137,13 @@ var docElement            = doc.documentElement,
         // Set our flag to complete
         done = 1;
         // Check to see if we can call the callback
-        sTimeout( execWhenReady, 0 );
+        sTimeout( cb, 0 );
       }
-    };
+    }
 
 
     // Poll for changes in webkit and gecko
-    if ( ! oldObj.e && ( isWebkit || isGecko ) ) {
+    if ( ! err && ( isWebkit || isGecko ) ) {
       // A self executing function with a sTimeout poll to call itself
       // again until the css file is added successfully
       ( function poll () {
@@ -173,16 +178,15 @@ var docElement            = doc.documentElement,
       link.onload = onload;
 
       // if we shouldn't inject due to error or settings, just call this right away
-      oldObj.e && onload();
+      err && onload();
     }
-
 
     // 404 Fallback
     sTimeout( onload, yepnope.errorTimeout );
     
     // Inject CSS
     // only inject if there are no errors, and we didn't set the no inject flag ( oldObj.e )
-    ! oldObj.e && firstScript.parentNode.insertBefore( link, firstScript );
+    ! err && firstScript.parentNode.insertBefore( link, firstScript );
   }
 
   function executeStack ( ) {
@@ -197,7 +201,7 @@ var docElement            = doc.documentElement,
         // Inject after a timeout so FF has time to be a jerk about it and
         // not double load (ignore the cache)
         sTimeout( function () {
-          i.t == "c" ?  injectCss( i ) : injectJs( i );
+          i.t == "c" ?  injectCss( i.s, 0, i.e, 1 ) : injectJs( i.s, 0, i.e, 1 );
         }, 0 );
       }
       // Otherwise, just call the function and potentially run the stack
@@ -497,6 +501,10 @@ var docElement            = doc.documentElement,
       doc.readyState = "complete";
     }, 0 );
   }
+
+  // Expose a generic script and style injection method
+  yepnope.injectJs  = injectJs;
+  yepnope.injectCss = injectCss;
 
   // Attach loader &
   // Leak it
