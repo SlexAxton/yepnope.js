@@ -303,7 +303,7 @@ Expires: Thu, 31 Dec 2020 20:00:00 GMT
   yepnope( {
       test  : window.JSON,
       nope : 'json2.js',
-      complete : function ( url, result, key ) {
+      callback : function ( url, result, key ) {
           var data = window.JSON.parse( '{ "json" : "string" }' );
       }
   } );
