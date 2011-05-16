@@ -39,8 +39,7 @@ var docElement            = doc.documentElement,
       return toString.call( obj ) == '[object Array]';
     },
     isObject              = function ( obj ) {
-      // Lame object detection, but don't pass it stupid stuff?
-      return typeof obj == 'object';
+      return Object(obj) === obj;
     },
     isString              = function ( s ) {
       return typeof s == 'string';
