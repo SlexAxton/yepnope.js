@@ -85,7 +85,7 @@ var docElement            = doc.documentElement,
 
     // Add our extra attributes to the script element
     for ( i in attrs ) {
-      script[ i ] =  attrs[ i ];
+        script.setAttribute( i, attrs[ i ] );
     }
 
     cb = internal ? execWhenReady : ( cb || noop );
@@ -136,8 +136,9 @@ var docElement            = doc.documentElement,
 
     // Add our extra attributes to the link element
     for ( i in attrs ) {
-      link[ i ] =  attrs[ i ];
+        link.setAttribute( i, attrs[ i ] );
     }
+
 
     function onload() {
       if ( ! done ) {
@@ -262,11 +263,6 @@ var docElement            = doc.documentElement,
     // Don't let it show up visually
     preloadElem.width = preloadElem.height = "0";
 
-    // Add our extra attributes to the preload element
-    for ( var i in attrObj ) {
-      preloadElem[ i ] =  attrObj[ i ];
-    }
-
     // Attach handlers for all browsers
     preloadElem.onerror = preloadElem.onload = preloadElem.onreadystatechange = onload;
 
@@ -380,8 +376,7 @@ var docElement            = doc.documentElement,
         return resource.instead( input, callback, chain, index, testResult );
       }
       else {
-
-        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? "c" : undef, resource.noexec, resource.attrObj );
+        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? "c" : undef, resource.noexec, resource.attrs );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
