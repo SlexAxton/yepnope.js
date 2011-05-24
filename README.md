@@ -81,6 +81,8 @@ NOTE: the code in the github repository is considered in development. Use at you
 
 All of the yepnope specific code is under the WTFPL license. Which means it's also MIT and BSD (or anything you want). However, the inspired works are subject to their own licenses.
 
+All contributions to yepnope should be code that you wrote, and will be subject to the LGPL Contributor Agreement.
+
 ##Thanks##
 
 Dave Artz       - A.getJS was a huge code-inspiration for our loader. So he's responsible for a ton of awesome techniques here.
