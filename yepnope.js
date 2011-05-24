@@ -79,11 +79,16 @@ var docElement            = doc.documentElement,
 
   // Takes a preloaded js obj (changes in different browsers) and injects it into the head
   // in the appropriate order
-  function injectJs ( src, cb, /* internal use */ err, internal ) {
+  function injectJs ( src, cb, attrs, /* internal use */ err, internal ) {
     var script = doc.createElement( "script" ),
         done;
 
     script.src = src;
+
+    // Add our extra attributes to the script element
+    for ( i in attrs ) {
+      script[ i ] =  attrs[ i ];
+    }
 
     cb = internal ? execWhenReady : ( cb || noop );
 
@@ -118,11 +123,11 @@ var docElement            = doc.documentElement,
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
   // in the appropriate order
   // Many credits to John Hann (@unscriptable) for a lot of the ideas here - found in the css! plugin for RequireJS
-  function injectCss ( href, cb, /* Internal use */ err, internal ) {
+  function injectCss ( href, cb, attrs, /* Internal use */ err, internal ) {
 
     // Create stylesheet link
     var link = doc.createElement( "link" ),
-        done;
+        done, i;
 
     cb = internal ? execWhenReady : ( cb || noop );
 
@@ -130,6 +135,11 @@ var docElement            = doc.documentElement,
     link.href = href;
     link.rel  = "stylesheet";
     link.type = "text/css";
+
+    // Add our extra attributes to the link element
+    for ( i in attrs ) {
+      link[ i ] =  attrs[ i ];
+    }
 
     function onload() {
       if ( ! done ) {
@@ -200,7 +210,7 @@ var docElement            = doc.documentElement,
         // Inject after a timeout so FF has time to be a jerk about it and
         // not double load (ignore the cache)
         sTimeout( function () {
-          i.t == "c" ?  injectCss( i.s, 0, i.e, 1 ) : injectJs( i.s, 0, i.e, 1 );
+          i.t == "c" ?  injectCss( i.s, 0, i.a, i.e, 1 ) : injectJs( i.s, 0, i.a, i.e, 1 );
         }, 0 );
       }
       // Otherwise, just call the function and potentially run the stack
@@ -215,7 +225,7 @@ var docElement            = doc.documentElement,
     }
   }
 
-  function preloadFile ( elem, url, type, splicePoint, docElement, dontExec ) {
+  function preloadFile ( elem, url, type, splicePoint, docElement, dontExec, attrObj ) {
 
     // Create appropriate element for browser and type
     var preloadElem = doc.createElement( elem ),
@@ -224,7 +234,8 @@ var docElement            = doc.documentElement,
           t: type,     // type
           s: url,      // src
         //r: 0,        // ready
-          e : dontExec // set to true if we don't want to reinject
+          e : dontExec,// set to true if we don't want to reinject
+          a : attrObj
         };
 
     
@@ -252,6 +263,11 @@ var docElement            = doc.documentElement,
     // Don't let it show up visually
     preloadElem.width = preloadElem.height = "0";
 
+    // Add our extra attributes to the preload element
+    for ( var i in attrObj ) {
+      preloadElem[ i ] =  attrObj[ i ];
+    }
+
     // Attach handlers for all browsers
     preloadElem.onerror = preloadElem.onload = preloadElem.onreadystatechange = onload;
 
@@ -272,7 +288,7 @@ var docElement            = doc.documentElement,
     sTimeout( onload, yepnope.errorTimeout );
   }
 
-  function load ( resource, type, dontExec ) {
+  function load ( resource, type, dontExec, attrObj ) {
 
     // If this method gets hit multiple times, we should flag
     // that the execution of other threads should halt.
@@ -282,9 +298,9 @@ var docElement            = doc.documentElement,
     type = type || "j";
     if ( isString( resource ) ) {
       // if the resource passed in here is a string, preload the file
-      preloadFile( type == "c" ? strCssElem : strJsElem, resource, type, this.i++, docElement, dontExec );
+      preloadFile( type == "c" ? strCssElem : strJsElem, resource, type, this.i++, docElement, dontExec, attrObj );
     } else {
-      // Otherwise it's a resource object and we can splice it into the app at the current location
+      // Otherwise it's a callback function and we can splice it into the stack to run
       execStack.splice( this.i++, 0, resource );
       execStack.length == 1 && executeStack();
     }
@@ -366,7 +382,7 @@ var docElement            = doc.documentElement,
       }
       else {
 
-        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? "c" : undef, resource.noexec );
+        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? "c" : undef, resource.noexec, resource.attrObj );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
