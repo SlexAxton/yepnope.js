@@ -132,7 +132,7 @@ var docElement            = doc.documentElement,
     if ( ! oldObj.e && ( isWebkit || isGecko ) ) {
       // A self executing function with a sTimeout poll to call itself
       // again until the css file is added successfully
-      ( function poll ( link ) {
+      var poll = function ( link ) {
         sTimeout( function () {
           // Don't run again if we're already done
           if ( ! done ) {
@@ -167,7 +167,8 @@ var docElement            = doc.documentElement,
             }
           }
         }, 0 );
-      } )( link );
+      };
+      poll( link );
 
     }
     // Onload handler for IE and Opera
