@@ -511,4 +511,4 @@ if ( ! window.console ) {
     });
     stop(timeout/2); // we shouldn't need very long on this one, and it's annoying
   });
-})( window )
+})( window );
