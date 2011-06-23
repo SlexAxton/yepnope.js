@@ -73,7 +73,7 @@ Any forks and stuff are welcome.
 
 ##Current Released Version##
 
-1.0.1
+1.0.2
 
 NOTE: the code in the github repository is considered in development. Use at your own risk. The download buttons will link to our current release version.
 
@@ -81,7 +81,7 @@ NOTE: the code in the github repository is considered in development. Use at you
 
 All of the yepnope specific code is under the WTFPL license. Which means it's also MIT and BSD (or anything you want). However, the inspired works are subject to their own licenses.
 
-All contributions to yepnope should be code that you wrote, and will be subject to the LGPL Contributor Agreement.
+All contributions to yepnope should be code that you wrote, and will be subject to the LGPL Contributor Agreement. By sending a pull request, you agree to this.
 
 ##Thanks##
 

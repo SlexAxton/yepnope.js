@@ -1,6 +1,6 @@
-/*yepnope1.0|WTFPL*/
+/*yepnope1.0.2|WTFPL*/
 // yepnope.js
-// Version - 1.0
+// Version - 1.0.2
 //
 // by
 // Alex Sexton - @SlexAxton - AlexSexton[at]gmail.com
@@ -51,9 +51,6 @@ var docElement            = doc.documentElement,
     prefixes              = {},
     handler,
     yepnope;
-
-
-
 
   /* Loader helper functions */
   function isFileReady ( readyState ) {
