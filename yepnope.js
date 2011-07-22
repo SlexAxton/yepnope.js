@@ -226,7 +226,9 @@ var docElement            = doc.documentElement,
     }
   }
 
-  function preloadFile ( elem, url, type, splicePoint, docElement, dontExec ) {
+  function preloadFile ( elem, url, type, splicePoint, docElement, dontExec, timeout ) {
+
+    if (!timeout) timeout = yepnope.errorTimeout;
 
     // Create appropriate element for browser and type
     var preloadElem = doc.createElement( elem ),
@@ -306,10 +308,10 @@ var docElement            = doc.documentElement,
         // Continue on
         execWhenReady();
       }
-    }, yepnope.errorTimeout );
+    }, timeout );
   }
 
-  function load ( resource, type, dontExec ) {
+  function load ( resource, type, dontExec, timeout ) {
 
     var elem  = ( type == 'c' ? strCssElem : strJsElem );
     
@@ -321,7 +323,7 @@ var docElement            = doc.documentElement,
     type = type || 'j';
     if ( isString( resource ) ) {
       // if the resource passed in here is a string, preload the file
-      preloadFile( elem, resource, type, this.i++, docElement, dontExec );
+      preloadFile( elem, resource, type, this.i++, docElement, dontExec, timeout );
     } else {
       // Otherwise it's a resource object and we can splice it into the app at the current location
       execStack.splice( this.i++, 0, resource );
@@ -369,9 +371,10 @@ var docElement            = doc.documentElement,
       // loop through prefixes
       // if there are none, this automatically gets skipped
       for ( j = 0; j < pLen; j++ ) {
-        mFunc = prefixes[ parts[ j ] ];
+        var prefix_parts = parts[ j ].split( '=' );
+        mFunc = prefixes[ prefix_parts.shift() ];
         if ( mFunc ) {
-          res = mFunc( res );
+          res = mFunc( res, prefix_parts );
         }
       }
 
@@ -405,7 +408,7 @@ var docElement            = doc.documentElement,
       }
       else {
 
-        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? 'c' : undef, resource.noexec );
+        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? 'c' : undef, resource.noexec, resource.timeout );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
