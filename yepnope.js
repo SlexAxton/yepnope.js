@@ -42,7 +42,7 @@ var docElement            = doc.documentElement,
       return Object(obj) === obj;
     },
     isString              = function ( s ) {
-      return typeof s == 'string';
+      return s instanceof String || typeof s == 'string';
     },
     isFunction            = function ( fn ) {
       return toString.call( fn ) == '[object Function]';
