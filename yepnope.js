@@ -366,12 +366,13 @@ var docElement            = doc.documentElement,
         prefixes : parts
       },
       mFunc,
-      j;
+      j,
+      prefix_parts;
 
       // loop through prefixes
       // if there are none, this automatically gets skipped
       for ( j = 0; j < pLen; j++ ) {
-        var prefix_parts = parts[ j ].split( '=' );
+        prefix_parts = parts[ j ].split( '=' );
         mFunc = prefixes[ prefix_parts.shift() ];
         if ( mFunc ) {
           res = mFunc( res, prefix_parts );
