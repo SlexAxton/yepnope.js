@@ -123,7 +123,7 @@ var docElement            = doc.documentElement,
     // Add attributes
     link.href = oldObj.s;
     link.rel  = 'stylesheet';
-    link.type = 'text/css';
+    link.type = (/\.less$/.test( oldObj.s )) ? 'text/less' : 'text/css';
 
     // Poll for changes in webkit and gecko
     if ( ! oldObj.e && ( isWebkit || isGecko ) ) {
@@ -405,7 +405,7 @@ var docElement            = doc.documentElement,
       }
       else {
 
-        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? 'c' : undef, resource.noexec );
+        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /\.(le?|c)ss$/.test( resource.url ) ) ) ) ? 'c' : undef, resource.noexec );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
