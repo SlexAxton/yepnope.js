@@ -135,7 +135,8 @@ var docElement            = doc.documentElement,
           if ( ! done ) {
             try {
               // In supporting browsers, we can see the length of the cssRules of the file go up
-              if ( link.sheet.cssRules.length ) {
+              // Chrome won't throw a security or denied exception in case of same origin - cssRules will simply stay empty
+              if ( (isWebkit && link.sheet !== null) || (isGecko && link.sheet.cssRules.length) ) {
                 // Then turn off the poll
                 done = 1;
                 // And execute a function to execute callbacks when all dependencies are met
