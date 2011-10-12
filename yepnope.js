@@ -44,9 +44,15 @@ var docElement            = doc.documentElement,
     isString              = function ( s ) {
       return typeof s == 'string';
     },
-    isFunction            = function ( fn ) {
-      return toString.call( fn ) == '[object Function]';
-    },
+ /* 
+(c) 2009 - 2011 by dbj.org 
+ */
+    isFunction = (function() {
+        var rx = /^\s*\bfunction\b/;
+        return function(f) {
+                return rx.test(f);
+        }
+    }()),
     globalFilters         = [],
     prefixes              = {},
     handler,
