@@ -356,10 +356,15 @@ var docElement            = doc.documentElement,
       return res;
     }
 
+    function getExtension ( url ) {
+        return url.split(".").pop().split("?").shift();
+    }
+
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
       // run through our set of prefixes
       var resource     = satisfyPrefixes( input ),
-          autoCallback = resource.autoCallback;
+          autoCallback = resource.autoCallback,
+          extension    = getExtension( resource.url );
 
       // if no object is returned or the url is empty/0 just exit the load
       if ( resource.bypass ) {
@@ -376,7 +381,7 @@ var docElement            = doc.documentElement,
         return resource.instead( input, callback, chain, index, testResult );
       }
       else {
-        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? "c" : undef, resource.noexec, resource.attrs );
+        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && "css" == getExtension( resource.url ) ) ) ) ? "c" : undef, resource.noexec, resource.attrs );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {

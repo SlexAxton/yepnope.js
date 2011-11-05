@@ -280,6 +280,28 @@ if ( ! window.console ) {
     stop(timeout);
   });
 
+  asyncTest("Handle resources with request parameters", 2, function() {
+    ++u;
+    var reqRGB = rgb();
+
+    yepnope({
+        load : "js/request" + u + ".js?abc=123",
+        callback : function() {
+            ok( window["request" + u], "Request parameters ignored on JS successfully");
+        }
+    });
+
+    yepnope({
+        load : 'css/' + reqRGB.join( ',' ) + '.css',
+        callback : function() {
+            cssIsLoaded( reqRGB, function( result ) {
+              ok( result, "Request parameters ignored on CSS successfully");
+              start();
+            });
+        }
+    });
+  });
+
   module("Caching");
   asyncTest("Don't Load JS Twice", 1, function(){
     ++u;
