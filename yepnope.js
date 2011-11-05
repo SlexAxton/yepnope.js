@@ -119,8 +119,6 @@ var docElement            = doc.documentElement,
   }
 
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
-  // in the appropriate order
-  // Many credits to John Hann (@unscriptable) for a lot of the ideas here - found in the css! plugin for RequireJS
   function injectCss ( href, cb, attrs, /* Internal use */ err, internal ) {
 
     // Create stylesheet link
@@ -136,66 +134,13 @@ var docElement            = doc.documentElement,
 
     // Add our extra attributes to the link element
     for ( i in attrs ) {
-        link.setAttribute( i, attrs[ i ] );
+      link.setAttribute( i, attrs[ i ] );
     }
 
-
-    function onload() {
-      if ( ! done ) {
-        // Set our flag to complete
-        done = 1;
-        // Check to see if we can call the callback
-        sTimeout( cb, 0 );
-      }
+    if ( ! err ) {
+      firstScript.parentNode.insertBefore( link, firstScript );
+      sTimeout(cb, 0);
     }
-
-
-    // Poll for changes in webkit and gecko
-    if ( ! err && ( isWebkit || isGecko ) ) {
-      // A self executing function with a sTimeout poll to call itself
-      // again until the css file is added successfully
-      var poll = function ( link ) {
-        sTimeout( function () {
-          // Don't run again if we're already done
-          if ( ! done ) {
-            try {
-              // In supporting browsers, we can check the cssRules,
-              // if they don't exist, an exception gets thrown
-              link.sheet.cssRules
-              onload();
-            }
-            catch ( ex ) {
-              // In the case that the browser does not support the cssRules array (cross domain)
-              // just check the error message to see if it's a security error
-              if ( ex.code > 0 ) {
-                onload();
-              }
-              // otherwise, continue to poll
-              else {
-                poll();
-              }
-            }
-          }
-        }, 0 );
-      };
-      poll( link );
-
-    }
-    // Onload handler for IE and Opera
-    else {
-      // In browsers that allow the onload event on link tags, just use it
-      link.onload = onload;
-
-      // if we shouldn't inject due to error or settings, just call this right away
-      err && onload();
-    }
-
-    // 404 Fallback
-    sTimeout( onload, yepnope.errorTimeout );
-    
-    // Inject CSS
-    // only inject if there are no errors, and we didn't set the no inject flag ( oldObj.e )
-    ! err && firstScript.parentNode.insertBefore( link, firstScript );
   }
 
   function executeStack ( ) {
