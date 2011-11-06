@@ -58,22 +58,6 @@ var docElement            = doc.documentElement,
     return ( ! readyState || readyState == "loaded" || readyState == "complete" || readyState == "uninitialized" );
   }
 
-  function execWhenReady () {
-    var execStackReady = 1,
-        i              = -1;
-
-    // Loop through the stack of scripts in the cue and execute them when all scripts in a group are ready
-    while ( execStack.length - ++i ) {
-      if ( execStack[ i ].s && ! ( execStackReady = execStack[ i ].r ) ) {
-        // As soon as we encounter a script that isn't ready, stop looking for more
-        break;
-      }
-    }
-    
-    // If we've set the stack as ready in the loop, make it happen here
-    execStackReady && executeStack();
-    
-  }
 
   // Takes a preloaded js obj (changes in different browsers) and injects it into the head
   // in the appropriate order
@@ -88,7 +72,7 @@ var docElement            = doc.documentElement,
         script.setAttribute( i, attrs[ i ] );
     }
 
-    cb = internal ? execWhenReady : ( cb || noop );
+    cb = internal ? executeStack : ( cb || noop );
 
     // Bind to load events
     script.onreadystatechange = script.onload = function () {
@@ -125,7 +109,7 @@ var docElement            = doc.documentElement,
     var link = doc.createElement( "link" ),
         done, i;
 
-    cb = internal ? execWhenReady : ( cb || noop );
+    cb = internal ? executeStack : ( cb || noop );
 
     // Add attributes
     link.href = href;
@@ -161,7 +145,7 @@ var docElement            = doc.documentElement,
       // Otherwise, just call the function and potentially run the stack
       else {
         i();
-        execWhenReady();      	
+        executeStack();      	
       }
     }
     else {
@@ -192,7 +176,7 @@ var docElement            = doc.documentElement,
         // Set done to prevent this function from being called twice.
         stackObject.r = done = 1;
 
-        ! started && execWhenReady();
+        ! started && executeStack();
 
         // Handle memory leak in IE
         preloadElem.onload = preloadElem.onreadystatechange = null;

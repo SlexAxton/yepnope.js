@@ -238,6 +238,7 @@ if ( ! window.console ) {
   });
 
 
+  /** /
   asyncTest("CSS Callback Timing", 4, function() {
     var startTime = (+new Date),
         myrgb = rgb();
@@ -279,6 +280,7 @@ if ( ! window.console ) {
 
     stop(timeout);
   });
+  /**/
 
   asyncTest("Handle resources with request parameters", 2, function() {
     ++u;
