@@ -102,7 +102,8 @@ var docElement            = doc.documentElement,
     sTimeout(function () {
       if ( ! done ) {
         done = 1;
-        cb();
+        // Might as well pass in an error-state if we fire the 404 fallback
+        cb(1);
       }
     }, timeout );
 
@@ -258,7 +259,7 @@ var docElement            = doc.documentElement,
   }
 
   /* End loader helper functions */
-    // Yepnope Function
+  // Yepnope Function
   yepnope = function ( needs ) {
 
     var i,
