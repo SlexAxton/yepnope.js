@@ -1,6 +1,6 @@
-/*yepnope1.0|WTFPL*/
+/*yepnope1.0.2|WTFPL*/
 // yepnope.js
-// Version - 1.0
+// Version - 1.0.2
 //
 // by
 // Alex Sexton - @SlexAxton - AlexSexton[at]gmail.com
@@ -52,29 +52,12 @@ var docElement            = doc.documentElement,
     handler,
     yepnope;
 
-
   /* Loader helper functions */
   function isFileReady ( readyState ) {
     // Check to see if any of the ways a file can be ready are available as properties on the file's element
     return ( ! readyState || readyState == "loaded" || readyState == "complete" || readyState == "uninitialized" );
   }
 
-  function execWhenReady () {
-    var execStackReady = 1,
-        i              = -1;
-
-    // Loop through the stack of scripts in the cue and execute them when all scripts in a group are ready
-    while ( execStack.length - ++i ) {
-      if ( execStack[ i ].s && ! ( execStackReady = execStack[ i ].r ) ) {
-        // As soon as we encounter a script that isn't ready, stop looking for more
-        break;
-      }
-    }
-    
-    // If we've set the stack as ready in the loop, make it happen here
-    execStackReady && executeStack();
-    
-  }
 
   // Takes a preloaded js obj (changes in different browsers) and injects it into the head
   // in the appropriate order
@@ -89,7 +72,7 @@ var docElement            = doc.documentElement,
         script.setAttribute( i, attrs[ i ] );
     }
 
-    cb = internal ? execWhenReady : ( cb || noop );
+    cb = internal ? executeStack : ( cb || noop );
 
     // Bind to load events
     script.onreadystatechange = script.onload = function () {
@@ -120,15 +103,13 @@ var docElement            = doc.documentElement,
   }
 
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
-  // in the appropriate order
-  // Many credits to John Hann (@unscriptable) for a lot of the ideas here - found in the css! plugin for RequireJS
   function injectCss ( href, cb, attrs, /* Internal use */ err, internal ) {
 
     // Create stylesheet link
     var link = doc.createElement( "link" ),
         done, i;
 
-    cb = internal ? execWhenReady : ( cb || noop );
+    cb = internal ? executeStack : ( cb || noop );
 
     // Add attributes
     link.href = href;
@@ -137,65 +118,13 @@ var docElement            = doc.documentElement,
 
     // Add our extra attributes to the link element
     for ( i in attrs ) {
-        link.setAttribute( i, attrs[ i ] );
+      link.setAttribute( i, attrs[ i ] );
     }
 
-
-    function onload() {
-      if ( ! done ) {
-        // Set our flag to complete
-        done = 1;
-        // Check to see if we can call the callback
-        sTimeout( cb, 0 );
-      }
+    if ( ! err ) {
+      firstScript.parentNode.insertBefore( link, firstScript );
+      sTimeout(cb, 0);
     }
-
-
-    // Poll for changes in webkit and gecko
-    if ( ! err && ( isWebkit || isGecko ) ) {
-      // A self executing function with a sTimeout poll to call itself
-      // again until the css file is added successfully
-      ( function poll () {
-        sTimeout( function () {
-          // Don't run again if we're already done
-          if ( ! done ) {
-            try {
-              // In supporting browsers, we can check the cssRules,
-              // if they don't exist, an exception gets thrown
-              link.sheet.cssRules
-              onload();
-            }
-            catch ( ex ) {
-              // In the case that the browser does not support the cssRules array (cross domain)
-              // just check the error message to see if it's a security error
-              if ( ex.code > 0 ) {
-                onload();
-              }
-              // otherwise, continue to poll
-              else {
-                poll();
-              }
-            }
-          }
-        }, 0 );
-      } )();
-
-    }
-    // Onload handler for IE and Opera
-    else {
-      // In browsers that allow the onload event on link tags, just use it
-      link.onload = onload;
-
-      // if we shouldn't inject due to error or settings, just call this right away
-      err && onload();
-    }
-
-    // 404 Fallback
-    sTimeout( onload, yepnope.errorTimeout );
-    
-    // Inject CSS
-    // only inject if there are no errors, and we didn't set the no inject flag ( oldObj.e )
-    ! err && firstScript.parentNode.insertBefore( link, firstScript );
   }
 
   function executeStack ( ) {
@@ -216,7 +145,7 @@ var docElement            = doc.documentElement,
       // Otherwise, just call the function and potentially run the stack
       else {
         i();
-        execWhenReady();      	
+        executeStack();      	
       }
     }
     else {
@@ -247,7 +176,7 @@ var docElement            = doc.documentElement,
         // Set done to prevent this function from being called twice.
         stackObject.r = done = 1;
 
-        ! started && execWhenReady();
+        ! started && executeStack();
 
         // Handle memory leak in IE
         preloadElem.onload = preloadElem.onreadystatechange = null;
@@ -356,10 +285,15 @@ var docElement            = doc.documentElement,
       return res;
     }
 
+    function getExtension ( url ) {
+        return url.split(".").pop().split("?").shift();
+    }
+
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
       // run through our set of prefixes
       var resource     = satisfyPrefixes( input ),
-          autoCallback = resource.autoCallback;
+          autoCallback = resource.autoCallback,
+          extension    = getExtension( resource.url );
 
       // if no object is returned or the url is empty/0 just exit the load
       if ( resource.bypass ) {
@@ -376,7 +310,7 @@ var docElement            = doc.documentElement,
         return resource.instead( input, callback, chain, index, testResult );
       }
       else {
-        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? "c" : undef, resource.noexec, resource.attrs );
+        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && "css" == getExtension( resource.url ) ) ) ) ? "c" : undef, resource.noexec, resource.attrs );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {

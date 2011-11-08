@@ -8,5 +8,6 @@ if (sizeof($matches) > 1) {
   sleep($matches[1]);
 }
 
-$num = basename($_SERVER['REQUEST_URI'], '.css');
+$parts = explode( "?", $_SERVER['REQUEST_URI'] );
+$num = basename($parts[0], '.css');
 echo '#item_' . str_replace(',','',$num) . ' { color: rgb(' . $num . '); }';

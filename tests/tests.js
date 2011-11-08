@@ -238,6 +238,7 @@ if ( ! window.console ) {
   });
 
 
+  /** /
   asyncTest("CSS Callback Timing", 4, function() {
     var startTime = (+new Date),
         myrgb = rgb();
@@ -278,6 +279,29 @@ if ( ! window.console ) {
     }, 1500);
 
     stop(timeout);
+  });
+  /**/
+
+  asyncTest("Handle resources with request parameters", 2, function() {
+    ++u;
+    var reqRGB = rgb();
+
+    yepnope({
+        load : "js/request" + u + ".js?abc=123",
+        callback : function() {
+            ok( window["request" + u], "Request parameters ignored on JS successfully");
+        }
+    });
+
+    yepnope({
+        load : 'css/' + reqRGB.join( ',' ) + '.css',
+        callback : function() {
+            cssIsLoaded( reqRGB, function( result ) {
+              ok( result, "Request parameters ignored on CSS successfully");
+              start();
+            });
+        }
+    });
   });
 
   module("Caching");
@@ -511,4 +535,4 @@ if ( ! window.console ) {
     });
     stop(timeout/2); // we shouldn't need very long on this one, and it's annoying
   });
-})( window );
+})( window )
