@@ -167,7 +167,7 @@ var docElement            = doc.documentElement,
     }
   }
 
-  function preloadFile ( elem, url, type, splicePoint, docElement, dontExec, attrObj, timeout ) {
+  function preloadFile ( elem, url, type, splicePoint, dontExec, attrObj, timeout ) {
 
     timeout = timeout || yepnope.errorTimeout;
 
@@ -237,7 +237,7 @@ var docElement            = doc.documentElement,
     type = type || "j";
     if ( isString( resource ) ) {
       // if the resource passed in here is a string, preload the file
-      preloadFile( type == "c" ? strCssElem : strJsElem, resource, type, this.i++, docElement, dontExec, attrObj, timeout );
+      preloadFile( type == "c" ? strCssElem : strJsElem, resource, type, this.i++, dontExec, attrObj, timeout );
     } else {
       // Otherwise it's a callback function and we can splice it into the stack to run
       execStack.splice( this.i++, 0, resource );
