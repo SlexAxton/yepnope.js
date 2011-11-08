@@ -48,6 +48,7 @@ var docElement            = doc.documentElement,
       return toString.call( fn ) == "[object Function]";
     },
     globalFilters         = [],
+    scriptCache           = {},
     prefixes              = {
       // key value pair timeout options
       timeout : function( resourceObj, prefix_parts ) {
@@ -172,8 +173,9 @@ var docElement            = doc.documentElement,
     timeout = timeout || yepnope.errorTimeout;
 
     // Create appropriate element for browser and type
-    var preloadElem = doc.createElement( elem ),
+    var preloadElem = {},
         done        = 0,
+        firstFlag   = 0,
         stackObject = {
           t: type,     // type
           s: url,      // src
@@ -182,10 +184,15 @@ var docElement            = doc.documentElement,
           a : attrObj,
           x : timeout
         };
-
     
-    function onload () {
+    // The first time (common-case)
+    if ( scriptCache[ url ] === 1 ) {
+      firstFlag = 1;
+      scriptCache[ url ] = [];
+      preloadElem = doc.createElement( elem );
+    }
 
+    function onload ( first ) {
       // If the script/css file is loaded
       if ( ! done && isFileReady( preloadElem.readyState ) ) {
 
@@ -196,11 +203,20 @@ var docElement            = doc.documentElement,
 
         // Handle memory leak in IE
         preloadElem.onload = preloadElem.onreadystatechange = null;
-        if ( elem == "object" ) {
-          sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 50);
+        if ( first ) {
+          if ( elem == "object" ) {
+            sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 50);
+          }
+               
+          for ( var i in scriptCache[ url ] ) {
+            if ( scriptCache[ url ].hasOwnProperty( i ) ) {
+              scriptCache[ url ][ i ].onload();
+            }
+          }
         }
       }
     }
+
 
     // Just set the src and the data attributes so we don't have differentiate between elem types
     preloadElem.src = preloadElem.data = url;
@@ -209,8 +225,9 @@ var docElement            = doc.documentElement,
     preloadElem.width = preloadElem.height = "0";
 
     // Attach handlers for all browsers
-    preloadElem.onerror = preloadElem.onload = preloadElem.onreadystatechange = onload;
-
+    preloadElem.onerror = preloadElem.onload = preloadElem.onreadystatechange = function(){
+      onload.call(this, firstFlag);
+    };
     // inject the element into the stack depending on if it's
     // in the middle of other scripts or not
     execStack.splice( splicePoint, 0, stackObject );
@@ -220,12 +237,19 @@ var docElement            = doc.documentElement,
     // insertBefore technically takes null/undefined as a second param and it will insert the element into
     // the parent last. We try the head, and it automatically falls back to undefined.
     if ( elem == "object" ) {
-      insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
-    }
+      // If it's the first time, or we've already loaded it all the way through
+      if ( firstFlag || scriptCache[ url ] === 2 ) {
+        insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
 
-    // If something fails, and onerror doesn't fire,
-    // continue after a timeout.
-    sTimeout( onload, timeout );
+        // If something fails, and onerror doesn't fire,
+        // continue after a timeout.
+        sTimeout( onload, timeout );
+      }
+      else {
+        // instead of injecting, just hold on to it
+        scriptCache[ url ].push( preloadElem );
+      }
+    }
   }
 
   function load ( resource, type, dontExec, attrObj, timeout ) {
@@ -327,6 +351,16 @@ var docElement            = doc.documentElement,
         return resource.instead( input, callback, chain, index, testResult );
       }
       else {
+        // Handle if we've already had this url and it's completed loaded already
+        if ( scriptCache[ resource.url ] ) {
+          // don't let this execute again
+          resource.noexec = true;
+        }
+        else {
+          scriptCache[ resource.url ] = 1;
+        }
+
+        // Throw this into the queue
         chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && "css" == getExtension( resource.url ) ) ) ) ? "c" : undef, resource.noexec, resource.attrs, resource.timeout );
 
         // If we have a callback, we'll start the chain over
@@ -338,6 +372,9 @@ var docElement            = doc.documentElement,
             // Call our callbacks with this set of data
             callback && callback( resource.origUrl, testResult, index );
             autoCallback && autoCallback( resource.origUrl, testResult, index );
+
+            // Override this to just a boolean positive
+            scriptCache[ resource.url ] = 2;
           } );
         }
       }
@@ -367,7 +404,7 @@ var docElement            = doc.documentElement,
             if ( !moreToCome ) {
               // Add in the complete callback to go at the end
               callback = function () {
-                var args = [].slice( arguments, 0 );
+                var args = [].slice.call( arguments );
                 cbRef.apply( this, args );
                 complete();
               };
@@ -399,11 +436,10 @@ var docElement            = doc.documentElement,
                 if ( ! moreToCome && ! ( --needGroupSize ) ) {
                   // If this is an object full of callbacks
                   if ( ! isFunction( callback ) ) {
-                    console.log('is object', callback);
                     // Add in the complete callback to go at the end
                     callback[ callbackKey ] = (function( innerCb ) {
                       return function () {
-                        var args = [].slice( arguments, 0 );
+                        var args = [].slice.call( arguments );
                         innerCb.apply( this, args );
                         complete();
                       };
@@ -411,9 +447,8 @@ var docElement            = doc.documentElement,
                   }
                   // If this is just a single callback
                   else {
-                    console.log(callback, complete);
                     callback = function () {
-                      var args = [].slice( arguments, 0 );
+                      var args = [].slice.call( arguments );
                       cbRef.apply( this, args );
                       complete();
                     };

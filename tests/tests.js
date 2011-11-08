@@ -152,6 +152,92 @@ if ( ! window.console ) {
     }]);
   });
 
+  asyncTest("Don't reexecute scripts (after onload has fired)", 8, function() {
+    ++u;
+    yepnope({
+      load: 'js/c'+u+'.js',
+      callback : function (url, res, idx) {
+        ok(w['c'+u], 'c exists as expected');
+        ok(url === 'js/c'+u+'.js', 'url returned correctly.');
+        ok(res === false, 'res returned correctly.');
+        ok(idx === 0, 'idx returned correctly.');
+        // set it to something else
+        w['c'+u] = -5;
+        // load the same thing again
+        yepnope({
+          load: 'js/c'+u+'.js',
+          callback : function (rl, r, i) {
+            ok(w['c'+u] === -5, 'c wasnt overwritten again in the second include.');
+            ok(rl === 'js/c'+u+'.js', 'rl returned correctly.');
+            ok(r === false, 'r returned correctly.');
+            ok(i === 0, 'i returned correctly.');
+          }
+        });
+      },
+      complete : function () {
+        start();
+      }
+    });
+  });
+
+  asyncTest("Don't reexecute scripts (between onload and injection)", 8, function() {
+    ++u;
+    // inject a script that takes 2 seconds
+    yepnope({
+      load: 'js/sleep-2/c'+u+'.js',
+      test : true,
+      callback : function (url, res, idx) {
+        ok(w['c'+u], 'c exists as expected');
+        ok(url === 'js/sleep-2/c'+u+'.js', 'url returned correctly.');
+        ok(res === true, 'res returned correctly.');
+        ok(idx === 0, 'idx returned correctly.');
+        // set it to something else
+        w['c'+u] = -4;
+        // load the same thing again
+      }
+    });
+    // Inject it again right away (while it's preloading)
+    yepnope({
+      load: {
+        lol: 'js/sleep-2/c'+u+'.js'
+      },
+      callback : {
+        lol : function (url, res, idx) {
+          ok(w['c'+u] === -4, 'c exists as expected');
+          ok(url === 'js/sleep-2/c'+u+'.js', 'url returned correctly.');
+          ok(res === false, 'res returned correctly.');
+          ok(idx === 'lol', 'idx returned correctly.');
+        }
+      },
+      complete: function () {
+        start();
+      }
+    });
+  });
+
+  asyncTest("injectJs doesn't fall for the no-reinject", 2, function() {
+    ++u;
+    // inject a script that takes 2 seconds
+    yepnope({
+      yep: 'js/sleep-1/x'+u+'.js',
+      test : true,
+      callback : function (url, res, idx) {
+        ok(w['x'+u] > 0, 'x exists as expected');
+        // set it to something else
+        w['x'+u] = -3;
+        // load the same thing again
+      }
+    });
+    setTimeout(function(){
+      // Inject it again right away (while it's preloading)
+      yepnope.injectJs('js/sleep-1/x'+u+'.js', function () {
+        ok( w['x'+u] !== -3 , 'x gets overwritten as expected.');
+        start();
+      });
+    }, 2000);
+
+  });
+
   asyncTest("Non-recursive loading of a &rarr; b &rarr; c", 3, function() {
     // Increment the unique value per test, so caching doesn't occur between tests
     ++u;
