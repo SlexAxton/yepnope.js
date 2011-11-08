@@ -549,6 +549,28 @@ if ( ! window.console ) {
   });
 
   module("Supported Plugins")
+  asyncTest("Data Attributes", 2, function() {
+    ++u;
+    yepnope.addPrefix('dataAttr', function (resourceObj, vals){
+      if ( vals.length > 1 ) {
+        resourceObj.attrs = resourceObj.attrs || {};
+        resourceObj.attrs[ 'data-'+vals[0] ] = vals[1];
+      }
+      return resourceObj;
+    });
+
+    // crazay in my nazay
+    yepnope({
+      load: 'dataAttr=lol=5!js/r'+u+'.js',
+      complete: function (){
+        ok(w['r'+u], 'It loaded');
+        var scr = $('script[src="js/r'+u+'.js"]');
+        ok( scr.data('lol') === 5 ,'The script element has the data attribute as described.');
+        start();
+      }
+    });
+
+  });
   asyncTest("IE prefix test", 2, function() {
     ++u;
     yepnope([
