@@ -25,55 +25,23 @@ Follow: [@SlexAxton](http://twitter.com/SlexAxton) and [@ralphholzmann](http://t
       }
     ]);
 
-##A crazy/contrived example:##
-
-    yepnope([
-      // straight up load (using a force css prefix)
-      'css!http://yayquery.com/css/base.css?alwaysload',
-      
-      // no tests, just a load and a callback
-      {
-        load:'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js',
-        callback: function(){
-          console.log('jQuery was loaded!');
-          window.oldalert = window.alert;
-          window.alert = function(){};
-        }
-      },
-      
-      // conditional test based loading, with a default load
-      {
-        // The test
-        test: Modernizr.csstransforms && Modernizr.csstransforms3d,
-        
-        // If it passes, 'yep' is completely optional, so let's not load anything...
-        
-        // If it fails
-        nope: [
-          'http://github.com/madrobby/vapor.js/raw/master/vapor.min.js',
-          'css!http://yayquery.com/css/base.css?supports3d=false' //prefix with css! if it doesn't end in .css
-        ],
-        
-        // Load it no matter what
-        both: 'http://www.json.org/json2.js',
-        
-        // For each thing loaded
-        callback: {
-          'json2.js' : function() {
-            window.alert = window.oldalert;
-            console.log('bypassed crock\'s alert in json2 yo, because the test result was: ', testResult);
-          }
-        }
-      }
-    ]);
-
-
-
 Any forks and stuff are welcome.
 
 ##Current Released Version##
 
-1.0.2
+1.1.0
+
+Changes in 1.1.0 :
+
+* Scripts with the same url don't reexecute, but their callbacks fire in the correct order.
+* The `complete` function behaves much more like the `callback` function with respect to 'recursive yepnope'.
+* CSS load callbacks were taken out by default and put in an official plugin. Too few people used it. Old code will still work, callbacks just fire immediately on CSS (unless css load plugin is included).
+* We exposed `yepnope.injectJs` and `yepnope.injectCss` in order to give you direct access to the injection functions.
+* We added the ability to use key/value pairs in prefixes.
+* We added a builtin prefix for overriding the global `yepnope.errorTimeout` with a specific timeout per script. `yepnope('timeout=5000!script.js');`
+* We added the ability to write filters and prefixes that add arbitrary attributes on the eventual script and link tags.
+* We removed the old and busted `demo/` folder since we just use the `tests` folder for everything.
+* We just assume you have uglifyjs if you're running our `compress` script.
 
 NOTE: the code in the github repository is considered in development. Use at your own risk. The download buttons will link to our current release version.
 

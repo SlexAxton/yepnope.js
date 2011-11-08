@@ -1,1 +1,0 @@
-$('#output').append('<div class="test3b">3b loaded!</div>');
