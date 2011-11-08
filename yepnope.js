@@ -1,6 +1,6 @@
-/*yepnope1.0.2|WTFPL*/
+/*yepnope1.1.0|WTFPL*/
 // yepnope.js
-// Version - 1.0.2
+// Version - 1.1.0
 //
 // by
 // Alex Sexton - @SlexAxton - AlexSexton[at]gmail.com
