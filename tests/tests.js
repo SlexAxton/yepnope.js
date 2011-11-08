@@ -390,6 +390,34 @@ if ( ! window.console ) {
     stop(timeout);
   });
 
+  asyncTest("key/val custom timeout", 3, function() {
+    ++u;
+    var keyvalStart = (+new Date);
+    yepnope([
+      {
+        load : 'timeout=100!iDoesNotExist2',
+        callback : function(url, res, key){
+
+          ok( ! w['i'+u], "i returned a 404");
+
+          yepnope({
+            load : 'js/i'+u+'.js',
+            callback: function() {
+
+              ok( w['i'+u], "i has loaded" );
+              ok( (+new Date) < (keyvalStart + yepnope.errorTimeout), "It took less time than the default timeout." )
+
+            },
+            complete: function(){
+              start();
+            }
+          })
+        }
+      }
+    ]);
+    stop(timeout);
+  });
+
   module("Supported Plugins")
   asyncTest("autoprotocol supported global filter plugin", 1, function() {
     ++u;

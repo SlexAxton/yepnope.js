@@ -48,7 +48,15 @@ var docElement            = doc.documentElement,
       return toString.call( fn ) == "[object Function]";
     },
     globalFilters         = [],
-    prefixes              = {},
+    prefixes              = {
+      // key value pair timeout options
+      timeout : function( resourceObj, prefix_parts ) {
+        if ( prefix_parts.length ) {
+          resourceObj.timeout = prefix_parts[ 0 ];
+        }
+        return resourceObj;
+      }
+    },
     handler,
     yepnope;
 
