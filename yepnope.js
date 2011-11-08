@@ -347,15 +347,31 @@ var docElement            = doc.documentElement,
         var testResult = !! testObject.test,
             group      = testResult ? testObject.yep : testObject.nope,
             always     = testObject.load || testObject.both,
-            callback   = testObject.callback,
+            callback   = testObject.callback || noop,
+            cbRef      = callback,
+            complete   = testObject.complete || noop,
+            needGroupSize,
             callbackKey;
 
         // Reusable function for dealing with the different input types
         // NOTE:: relies on closures to keep 'chain' up to date, a bit confusing, but
         // much smaller than the functional equivalent in this case.
-        function handleGroup ( needGroup ) {
+        function handleGroup ( needGroup, moreToCome ) {
+          if ( ! needGroup ) {
+            // Call the complete callback when there's nothing to load.
+            ! moreToCome && complete();
+          }
           // If it's a string
-          if ( isString( needGroup ) ) {
+          else if ( isString( needGroup ) ) {
+            // if it's a string, it's the last
+            if ( !moreToCome ) {
+              // Add in the complete callback to go at the end
+              callback = function () {
+                var args = [].slice( arguments, 0 );
+                cbRef.apply( this, args );
+                complete();
+              };
+            }
             // Just load the script of style
             loadScriptOrStyle( needGroup, callback, chain, 0, testResult );
           }
@@ -363,11 +379,46 @@ var docElement            = doc.documentElement,
           // Note:: order cannot be guaranteed on an key value object with multiple elements
           // since the for-in does not preserve order. Arrays _should_ go in order though.
           else if ( isObject( needGroup ) ) {
+            // I hate this, but idk another way for objects.
+            needGroupSize = (function(){
+              var count = 0, i
+              for (i in needGroup ) {
+                if ( needGroup.hasOwnProperty( i ) ) {
+                  count++;
+                }
+              }
+              return count;
+            })();
+
             for ( callbackKey in needGroup ) {
               // Safari 2 does not have hasOwnProperty, but not worth the bytes for a shim
               // patch if needed. Kangax has a nice shim for it. Or just remove the check
               // and promise not to extend the object prototype.
               if ( needGroup.hasOwnProperty( callbackKey ) ) {
+                // Find the last added resource, and append to it's callback.
+                if ( ! moreToCome && ! ( --needGroupSize ) ) {
+                  // If this is an object full of callbacks
+                  if ( ! isFunction( callback ) ) {
+                    console.log('is object', callback);
+                    // Add in the complete callback to go at the end
+                    callback[ callbackKey ] = (function( innerCb ) {
+                      return function () {
+                        var args = [].slice( arguments, 0 );
+                        innerCb.apply( this, args );
+                        complete();
+                      };
+                    })( cbRef[ callbackKey ] );
+                  }
+                  // If this is just a single callback
+                  else {
+                    console.log(callback, complete);
+                    callback = function () {
+                      var args = [].slice( arguments, 0 );
+                      cbRef.apply( this, args );
+                      complete();
+                    };
+                  }
+                }
                 loadScriptOrStyle( needGroup[ callbackKey ], callback, chain, callbackKey, testResult );
               }
             }
@@ -375,16 +426,11 @@ var docElement            = doc.documentElement,
         }
 
         // figure out what this group should do
-        handleGroup( group );
+        handleGroup( group, !!always );
 
         // Run our loader on the load/both group too
-        handleGroup( always );
-
-        // Fire complete callback
-        if ( testObject.complete ) {
-          chain.load( testObject.complete );
-        }
-
+        // the always stuff always loads second.
+        always && handleGroup( always );
     }
 
     // Someone just decides to load a single script or css file as a string

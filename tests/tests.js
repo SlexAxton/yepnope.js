@@ -364,7 +364,7 @@ if ( ! window.console ) {
 
 
 
-  asyncTest("404 Fallback", 2, function() {
+  asyncTest("404 Fallback with callback", 2, function() {
     ++u;
     yepnope([
       {
@@ -390,12 +390,39 @@ if ( ! window.console ) {
     stop(timeout);
   });
 
+  asyncTest("404 Fallback with complete", 2, function() {
+    ++u;
+    yepnope([
+      {
+        // speed this up just a little bit
+        load : 'timeout=1000!iDoesNotExist2',
+        complete : function(){
+
+          ok( ! w['i'+u], "i returned a 404");
+
+          yepnope({
+            load : 'js/i'+u+'.js',
+            callback: function() {
+
+              ok( w['i'+u], "i has loaded" );
+
+            },
+            complete: function(){
+              start();
+            }
+          })
+        }
+      }
+    ]);
+    stop(timeout);
+  });
+
   asyncTest("key/val custom timeout", 3, function() {
     ++u;
     var keyvalStart = (+new Date);
     yepnope([
       {
-        load : 'timeout=100!iDoesNotExist2',
+        load : 'timeout=100!iDoesNotExist3',
         callback : function(url, res, key){
 
           ok( ! w['i'+u], "i returned a 404");
@@ -418,8 +445,8 @@ if ( ! window.console ) {
     stop(timeout);
   });
 
-  module("Supported Plugins")
-  asyncTest("autoprotocol supported global filter plugin", 1, function() {
+  
+  asyncTest("protocoless urls supported", 1, function() {
     ++u;
     yepnope([
       {
@@ -435,6 +462,7 @@ if ( ! window.console ) {
     stop(timeout);
   });
 
+  module("Supported Plugins")
   asyncTest("IE prefix test", 2, function() {
     ++u;
     yepnope([
