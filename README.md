@@ -39,6 +39,7 @@ Changes in 1.1.0 :
 * We exposed `yepnope.injectJs` and `yepnope.injectCss` in order to give you direct access to the injection functions.
 * We added the ability to use key/value pairs in prefixes.
 * We added a builtin prefix for overriding the global `yepnope.errorTimeout` with a specific timeout per script. `yepnope('timeout=5000!script.js');`
+* We smarten'd up detection of CSS files even if there are query parameters (without the use of the `css` prefix plugin)
 * We added the ability to write filters and prefixes that add arbitrary attributes on the eventual script and link tags.
 * We removed the old and busted `demo/` folder since we just use the `tests` folder for everything.
 * We just assume you have uglifyjs if you're running our `compress` script.
