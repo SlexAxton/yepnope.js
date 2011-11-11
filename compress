@@ -1,5 +1,5 @@
 #/bin/sh
-node build/UglifyJS/bin/uglifyjs --extra --unsafe yepnope.js > yepnope.min.js
+uglifyjs --unsafe yepnope.js > yepnope.min.js
 m=$(ls -la yepnope.min.js | awk '{ print $5}')
 gzip -nfc --best yepnope.min.js > yepnope.min.js.gz
 g=$(ls -la yepnope.min.js.gz | awk '{ print $5}')

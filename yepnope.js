@@ -1,6 +1,6 @@
-/*yepnope1.0.2|WTFPL*/
+/*yepnope1.1.0|WTFPL*/
 // yepnope.js
-// Version - 1.0.2
+// Version - 1.1.0
 //
 // by
 // Alex Sexton - @SlexAxton - AlexSexton[at]gmail.com
@@ -48,7 +48,16 @@ var docElement            = doc.documentElement,
       return toString.call( fn ) == "[object Function]";
     },
     globalFilters         = [],
-    prefixes              = {},
+    scriptCache           = {},
+    prefixes              = {
+      // key value pair timeout options
+      timeout : function( resourceObj, prefix_parts ) {
+        if ( prefix_parts.length ) {
+          resourceObj.timeout = prefix_parts[ 0 ];
+        }
+        return resourceObj;
+      }
+    },
     handler,
     yepnope;
 
@@ -59,7 +68,79 @@ var docElement            = doc.documentElement,
   }
 
 
-  
+  // Takes a preloaded js obj (changes in different browsers) and injects it into the head
+  // in the appropriate order
+  function injectJs ( src, cb, attrs, timeout, /* internal use */ err, internal ) {
+    var script = doc.createElement( "script" ),
+        done;
+
+    timeout = timeout || yepnope.errorTimeout;
+
+    script.src = src;
+
+    // Add our extra attributes to the script element
+    for ( i in attrs ) {
+        script.setAttribute( i, attrs[ i ] );
+    }
+
+    cb = internal ? executeStack : ( cb || noop );
+
+    // Bind to load events
+    script.onreadystatechange = script.onload = function () {
+
+      if ( ! done && isFileReady( script.readyState ) ) {
+
+        // Set done to prevent this function from being called twice.
+        done = 1;
+        cb();
+
+        // Handle memory leak in IE
+        script.onload = script.onreadystatechange = null;
+      }
+    };
+
+    // 404 Fallback
+    sTimeout(function () {
+      if ( ! done ) {
+        done = 1;
+        // Might as well pass in an error-state if we fire the 404 fallback
+        cb(1);
+      }
+    }, timeout );
+
+    // Inject script into to document
+    // or immediately callback if we know there
+    // was previously a timeout error
+    err ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
+  }
+
+  // Takes a preloaded css obj (changes in different browsers) and injects it into the head
+  function injectCss ( href, cb, attrs, timeout, /* Internal use */ err, internal ) {
+
+    // Create stylesheet link
+    var link = doc.createElement( "link" ),
+        done, i;
+
+    timeout = timeout || yepnope.errorTimeout;
+
+    cb = internal ? executeStack : ( cb || noop );
+
+    // Add attributes
+    link.href = href;
+    link.rel  = "stylesheet";
+    link.type = "text/css";
+
+    // Add our extra attributes to the link element
+    for ( i in attrs ) {
+      link.setAttribute( i, attrs[ i ] );
+    }
+
+    if ( ! err ) {
+      firstScript.parentNode.insertBefore( link, firstScript );
+      sTimeout(cb, 0);
+    }
+  }
+
   function executeStack ( ) {
     // shift an element off of the stack
     var i   = execStack.shift();
@@ -72,7 +153,7 @@ var docElement            = doc.documentElement,
         // Inject after a timeout so FF has time to be a jerk about it and
         // not double load (ignore the cache)
         sTimeout( function () {
-          i.t == "c" ?  yepnope.injectCss( i.s, 0, i.a, i.e, 1 ) : yepnope.injectJs( i.s, 0, i.a, i.e, 1 );
+          (i.t == "c" ?  yepnope.injectCss : yepnope.injectJs)( i.s, 0, i.a, i.x, i.e, 1 );
         }, 0 );
       }
       // Otherwise, just call the function and potentially run the stack
@@ -87,22 +168,31 @@ var docElement            = doc.documentElement,
     }
   }
 
-  function preloadFile ( elem, url, type, splicePoint, docElement, dontExec, attrObj ) {
+  function preloadFile ( elem, url, type, splicePoint, dontExec, attrObj, timeout ) {
+
+    timeout = timeout || yepnope.errorTimeout;
 
     // Create appropriate element for browser and type
-    var preloadElem = doc.createElement( elem ),
+    var preloadElem = {},
         done        = 0,
+        firstFlag   = 0,
         stackObject = {
           t: type,     // type
           s: url,      // src
         //r: 0,        // ready
           e : dontExec,// set to true if we don't want to reinject
-          a : attrObj
+          a : attrObj,
+          x : timeout
         };
-
     
-    function onload () {
+    // The first time (common-case)
+    if ( scriptCache[ url ] === 1 ) {
+      firstFlag = 1;
+      scriptCache[ url ] = [];
+      preloadElem = doc.createElement( elem );
+    }
 
+    function onload ( first ) {
       // If the script/css file is loaded
       if ( ! done && isFileReady( preloadElem.readyState ) ) {
 
@@ -113,11 +203,20 @@ var docElement            = doc.documentElement,
 
         // Handle memory leak in IE
         preloadElem.onload = preloadElem.onreadystatechange = null;
-        if ( elem == "object" ) {
-          sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 50);
+        if ( first ) {
+          if ( elem == "object" ) {
+            sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 50);
+          }
+               
+          for ( var i in scriptCache[ url ] ) {
+            if ( scriptCache[ url ].hasOwnProperty( i ) ) {
+              scriptCache[ url ][ i ].onload();
+            }
+          }
         }
       }
     }
+
 
     // Just set the src and the data attributes so we don't have differentiate between elem types
     preloadElem.src = preloadElem.data = url;
@@ -126,8 +225,9 @@ var docElement            = doc.documentElement,
     preloadElem.width = preloadElem.height = "0";
 
     // Attach handlers for all browsers
-    preloadElem.onerror = preloadElem.onload = preloadElem.onreadystatechange = onload;
-
+    preloadElem.onerror = preloadElem.onload = preloadElem.onreadystatechange = function(){
+      onload.call(this, firstFlag);
+    };
     // inject the element into the stack depending on if it's
     // in the middle of other scripts or not
     execStack.splice( splicePoint, 0, stackObject );
@@ -137,16 +237,22 @@ var docElement            = doc.documentElement,
     // insertBefore technically takes null/undefined as a second param and it will insert the element into
     // the parent last. We try the head, and it automatically falls back to undefined.
     if ( elem == "object" ) {
-      insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
-    }
+      // If it's the first time, or we've already loaded it all the way through
+      if ( firstFlag || scriptCache[ url ] === 2 ) {
+        insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
 
-    // If something fails, and onerror doesn't fire,
-    // continue after a timeout.
-    sTimeout( onload, yepnope.errorTimeout );
+        // If something fails, and onerror doesn't fire,
+        // continue after a timeout.
+        sTimeout( onload, timeout );
+      }
+      else {
+        // instead of injecting, just hold on to it
+        scriptCache[ url ].push( preloadElem );
+      }
+    }
   }
 
-  function load ( resource, type, dontExec, attrObj ) {
-
+  function load ( resource, type, dontExec, attrObj, timeout ) {
     // If this method gets hit multiple times, we should flag
     // that the execution of other threads should halt.
     started = 0;
@@ -155,7 +261,7 @@ var docElement            = doc.documentElement,
     type = type || "j";
     if ( isString( resource ) ) {
       // if the resource passed in here is a string, preload the file
-      preloadFile( type == "c" ? strCssElem : strJsElem, resource, type, this.i++, docElement, dontExec, attrObj );
+      preloadFile( type == "c" ? strCssElem : strJsElem, resource, type, this.i++, dontExec, attrObj, timeout );
     } else {
       // Otherwise it's a callback function and we can splice it into the stack to run
       execStack.splice( this.i++, 0, resource );
@@ -177,7 +283,7 @@ var docElement            = doc.documentElement,
   }
 
   /* End loader helper functions */
-    // Yepnope Function
+  // Yepnope Function
   yepnope = function ( needs ) {
 
     var i,
@@ -198,14 +304,16 @@ var docElement            = doc.documentElement,
         prefixes : parts
       },
       mFunc,
-      j;
+      j,
+      prefix_parts;
 
       // loop through prefixes
       // if there are none, this automatically gets skipped
       for ( j = 0; j < pLen; j++ ) {
-        mFunc = prefixes[ parts[ j ] ];
+        prefix_parts = parts[ j ].split( '=' );
+        mFunc = prefixes[ prefix_parts.shift() ];
         if ( mFunc ) {
-          res = mFunc( res );
+          res = mFunc( res, prefix_parts );
         }
       }
 
@@ -248,7 +356,17 @@ var docElement            = doc.documentElement,
         return resource.instead( input, callback, chain, index, testResult );
       }
       else {
-        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && "css" == getExtension( resource.url ) ) ) ) ? "c" : undef, resource.noexec, resource.attrs );
+        // Handle if we've already had this url and it's completed loaded already
+        if ( scriptCache[ resource.url ] ) {
+          // don't let this execute again
+          resource.noexec = true;
+        }
+        else {
+          scriptCache[ resource.url ] = 1;
+        }
+
+        // Throw this into the queue
+        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && "css" == getExtension( resource.url ) ) ) ) ? "c" : undef, resource.noexec, resource.attrs, resource.timeout );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
@@ -259,6 +377,9 @@ var docElement            = doc.documentElement,
             // Call our callbacks with this set of data
             callback && callback( resource.origUrl, testResult, index );
             autoCallback && autoCallback( resource.origUrl, testResult, index );
+
+            // Override this to just a boolean positive
+            scriptCache[ resource.url ] = 2;
           } );
         }
       }
@@ -268,15 +389,31 @@ var docElement            = doc.documentElement,
         var testResult = !! testObject.test,
             group      = testResult ? testObject.yep : testObject.nope,
             always     = testObject.load || testObject.both,
-            callback   = testObject.callback,
+            callback   = testObject.callback || noop,
+            cbRef      = callback,
+            complete   = testObject.complete || noop,
+            needGroupSize,
             callbackKey;
 
         // Reusable function for dealing with the different input types
         // NOTE:: relies on closures to keep 'chain' up to date, a bit confusing, but
         // much smaller than the functional equivalent in this case.
-        function handleGroup ( needGroup ) {
+        function handleGroup ( needGroup, moreToCome ) {
+          if ( ! needGroup ) {
+            // Call the complete callback when there's nothing to load.
+            ! moreToCome && complete();
+          }
           // If it's a string
-          if ( isString( needGroup ) ) {
+          else if ( isString( needGroup ) ) {
+            // if it's a string, it's the last
+            if ( !moreToCome ) {
+              // Add in the complete callback to go at the end
+              callback = function () {
+                var args = [].slice.call( arguments );
+                cbRef.apply( this, args );
+                complete();
+              };
+            }
             // Just load the script of style
             loadScriptOrStyle( needGroup, callback, chain, 0, testResult );
           }
@@ -284,11 +421,44 @@ var docElement            = doc.documentElement,
           // Note:: order cannot be guaranteed on an key value object with multiple elements
           // since the for-in does not preserve order. Arrays _should_ go in order though.
           else if ( isObject( needGroup ) ) {
+            // I hate this, but idk another way for objects.
+            needGroupSize = (function(){
+              var count = 0, i
+              for (i in needGroup ) {
+                if ( needGroup.hasOwnProperty( i ) ) {
+                  count++;
+                }
+              }
+              return count;
+            })();
+
             for ( callbackKey in needGroup ) {
               // Safari 2 does not have hasOwnProperty, but not worth the bytes for a shim
               // patch if needed. Kangax has a nice shim for it. Or just remove the check
               // and promise not to extend the object prototype.
               if ( needGroup.hasOwnProperty( callbackKey ) ) {
+                // Find the last added resource, and append to it's callback.
+                if ( ! moreToCome && ! ( --needGroupSize ) ) {
+                  // If this is an object full of callbacks
+                  if ( ! isFunction( callback ) ) {
+                    // Add in the complete callback to go at the end
+                    callback[ callbackKey ] = (function( innerCb ) {
+                      return function () {
+                        var args = [].slice.call( arguments );
+                        innerCb.apply( this, args );
+                        complete();
+                      };
+                    })( cbRef[ callbackKey ] );
+                  }
+                  // If this is just a single callback
+                  else {
+                    callback = function () {
+                      var args = [].slice.call( arguments );
+                      cbRef.apply( this, args );
+                      complete();
+                    };
+                  }
+                }
                 loadScriptOrStyle( needGroup[ callbackKey ], callback, chain, callbackKey, testResult );
               }
             }
@@ -296,16 +466,11 @@ var docElement            = doc.documentElement,
         }
 
         // figure out what this group should do
-        handleGroup( group );
+        handleGroup( group, !!always );
 
         // Run our loader on the load/both group too
-        handleGroup( always );
-
-        // Fire complete callback
-        if ( testObject.complete ) {
-          chain.load( testObject.complete );
-        }
-
+        // the always stuff always loads second.
+        always && handleGroup( always );
     }
 
     // Someone just decides to load a single script or css file as a string
@@ -386,75 +551,9 @@ var docElement            = doc.documentElement,
   // Leak it
   window.yepnope = getYepnope();
 
-  // Takes a preloaded css obj (changes in different browsers) and injects it into the head
-  yepnope.injectCss = function( href, cb, attrs, /* Internal use */ err, internal ) {
-
-    // Create stylesheet link
-    var link = doc.createElement( "link" ),
-        done, i;
-
-    cb = internal ? executeStack : ( cb || noop );
-
-    // Add attributes
-    link.href = href;
-    link.rel  = "stylesheet";
-    link.type = "text/css";
-
-    // Add our extra attributes to the link element
-    for ( i in attrs ) {
-      link.setAttribute( i, attrs[ i ] );
-    }
-
-    if ( ! err ) {
-      firstScript.parentNode.insertBefore( link, firstScript );
-      sTimeout(cb, 0);
-    }
-  }
-
-  // Takes a preloaded js obj (changes in different browsers) and injects it into the head
-  // in the appropriate order
-  yepnope.injectJs = function( src, cb, attrs, /* internal use */ err, internal ) {
-    var script = doc.createElement( "script" ),
-        done;
-
-    script.src = src;
-
-    // Add our extra attributes to the script element
-    for ( i in attrs ) {
-        script.setAttribute( i, attrs[ i ] );
-    }
-
-    cb = internal ? executeStack : ( cb || noop );
-
-    // Bind to load events
-    script.onreadystatechange = script.onload = function () {
-
-      if ( ! done && isFileReady( script.readyState ) ) {
-
-        // Set done to prevent this function from being called twice.
-        done = 1;
-        cb();
-
-        // Handle memory leak in IE
-        script.onload = script.onreadystatechange = null;
-      }
-    };
-
-    // 404 Fallback
-    sTimeout(function () {
-      if ( ! done ) {
-        done = 1;
-        cb();
-      }
-    }, yepnope.errorTimeout );
-
-    // Inject script into to document
-    // or immediately callback if we know there
-    // was previously a timeout error
-    err ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
-  }
-
   // Exposing executeStack to better facilitate plugins
   yepnope.executeStack = executeStack;
+  yepnope.injectJs = injectJs;
+  yepnope.injectCss = injectCss;
 
 })( this, this.document );
