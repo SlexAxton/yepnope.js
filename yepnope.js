@@ -59,74 +59,7 @@ var docElement            = doc.documentElement,
   }
 
 
-  // Takes a preloaded js obj (changes in different browsers) and injects it into the head
-  // in the appropriate order
-  function injectJs ( src, cb, attrs, /* internal use */ err, internal ) {
-    var script = doc.createElement( "script" ),
-        done;
-
-    script.src = src;
-
-    // Add our extra attributes to the script element
-    for ( i in attrs ) {
-        script.setAttribute( i, attrs[ i ] );
-    }
-
-    cb = internal ? executeStack : ( cb || noop );
-
-    // Bind to load events
-    script.onreadystatechange = script.onload = function () {
-
-      if ( ! done && isFileReady( script.readyState ) ) {
-
-        // Set done to prevent this function from being called twice.
-        done = 1;
-        cb();
-
-        // Handle memory leak in IE
-        script.onload = script.onreadystatechange = null;
-      }
-    };
-
-    // 404 Fallback
-    sTimeout(function () {
-      if ( ! done ) {
-        done = 1;
-        cb();
-      }
-    }, yepnope.errorTimeout );
-
-    // Inject script into to document
-    // or immediately callback if we know there
-    // was previously a timeout error
-    err ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
-  }
-
-  // Takes a preloaded css obj (changes in different browsers) and injects it into the head
-  function injectCss ( href, cb, attrs, /* Internal use */ err, internal ) {
-
-    // Create stylesheet link
-    var link = doc.createElement( "link" ),
-        done, i;
-
-    cb = internal ? executeStack : ( cb || noop );
-
-    // Add attributes
-    link.href = href;
-    link.rel  = "stylesheet";
-    link.type = "text/css";
-
-    // Add our extra attributes to the link element
-    for ( i in attrs ) {
-      link.setAttribute( i, attrs[ i ] );
-    }
-
-    if ( ! err ) {
-      firstScript.parentNode.insertBefore( link, firstScript );
-      sTimeout(cb, 0);
-    }
-  }
-
+  
   function executeStack ( ) {
     // shift an element off of the stack
     var i   = execStack.shift();
@@ -139,7 +72,7 @@ var docElement            = doc.documentElement,
         // Inject after a timeout so FF has time to be a jerk about it and
         // not double load (ignore the cache)
         sTimeout( function () {
-          i.t == "c" ?  injectCss( i.s, 0, i.a, i.e, 1 ) : injectJs( i.s, 0, i.a, i.e, 1 );
+          i.t == "c" ?  yepnope.injectCss( i.s, 0, i.a, i.e, 1 ) : yepnope.injectJs( i.s, 0, i.a, i.e, 1 );
         }, 0 );
       }
       // Otherwise, just call the function and potentially run the stack
@@ -302,7 +235,12 @@ var docElement            = doc.documentElement,
 
       // Determine callback, if any
       if ( callback ) {
-        callback = isFunction( callback ) ? callback : callback[ input ] || callback[ index ] || callback[ ( input.split( "/" ).pop().split( "?" )[ 0 ] ) ];
+        callback = isFunction( callback ) ?
+          callback :
+          callback[ input ] || 
+          callback[ index ] || 
+          callback[ ( input.split( "/" ).pop().split( "?" )[ 0 ] ) ] || 
+          executeStack;
       }
 
       // if someone is overriding all normal functionality
@@ -444,12 +382,79 @@ var docElement            = doc.documentElement,
     }, 0 );
   }
 
-  // Expose a generic script and style injection method
-  yepnope.injectJs  = injectJs;
-  yepnope.injectCss = injectCss;
-
   // Attach loader &
   // Leak it
   window.yepnope = getYepnope();
 
-} )( this, this.document );
+  // Takes a preloaded css obj (changes in different browsers) and injects it into the head
+  yepnope.injectCss = function( href, cb, attrs, /* Internal use */ err, internal ) {
+
+    // Create stylesheet link
+    var link = doc.createElement( "link" ),
+        done, i;
+
+    cb = internal ? executeStack : ( cb || noop );
+
+    // Add attributes
+    link.href = href;
+    link.rel  = "stylesheet";
+    link.type = "text/css";
+
+    // Add our extra attributes to the link element
+    for ( i in attrs ) {
+      link.setAttribute( i, attrs[ i ] );
+    }
+
+    if ( ! err ) {
+      firstScript.parentNode.insertBefore( link, firstScript );
+      sTimeout(cb, 0);
+    }
+  }
+
+  // Takes a preloaded js obj (changes in different browsers) and injects it into the head
+  // in the appropriate order
+  yepnope.injectJs = function( src, cb, attrs, /* internal use */ err, internal ) {
+    var script = doc.createElement( "script" ),
+        done;
+
+    script.src = src;
+
+    // Add our extra attributes to the script element
+    for ( i in attrs ) {
+        script.setAttribute( i, attrs[ i ] );
+    }
+
+    cb = internal ? executeStack : ( cb || noop );
+
+    // Bind to load events
+    script.onreadystatechange = script.onload = function () {
+
+      if ( ! done && isFileReady( script.readyState ) ) {
+
+        // Set done to prevent this function from being called twice.
+        done = 1;
+        cb();
+
+        // Handle memory leak in IE
+        script.onload = script.onreadystatechange = null;
+      }
+    };
+
+    // 404 Fallback
+    sTimeout(function () {
+      if ( ! done ) {
+        done = 1;
+        cb();
+      }
+    }, yepnope.errorTimeout );
+
+    // Inject script into to document
+    // or immediately callback if we know there
+    // was previously a timeout error
+    err ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
+  }
+
+  // Exposing executeStack to better facilitate plugins
+  yepnope.executeStack = executeStack;
+
+})( this, this.document );

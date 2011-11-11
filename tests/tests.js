@@ -501,19 +501,31 @@ if ( ! window.console ) {
     });
     stop(timeout);
   });
+
   asyncTest("InjectCss", 2, function () {
     var myrgb = rgb();
     cssIsLoaded( myrgb, function ( result ) {
       ok( !result, 'The stylesheet was not previously there.' );
       yepnope.injectCss( 'css/' + myrgb.join( ',' ) + '.css', function () {
-        cssIsLoaded( myrgb, function( result ) {
-          ok( result, 'The stylesheet was injected successfully' );
-          start();
-        });
+
+        // Putting this test in a setTimeout because we stripped out the
+        // CSS callback stuff and moved it to a plugin. The styles are 
+        // no longer guaranteed to be applied in the callback, without the
+        // plugin.
+        setTimeout(function() {
+          cssIsLoaded( myrgb, function( result ) {
+            ok( result, 'The stylesheet was injected successfully' );
+            start();
+          });
+        }, 100);
+
       });
     });
     stop(timeout);
   });
+
+  module("CSS Plugin");
+
   module('Last Calls');
   asyncTest("Complete Fires When No Resources Are Loaded", 2, function () {
     ++u;
