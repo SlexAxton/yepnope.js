@@ -21,8 +21,6 @@ if ( ! window.console ) {
     setTimeout(function(){
       // Right now we took this out of core. So just fake these for now.
       // We'll add in logic soon for if the plugin is there to actually test this.
-      cb(true);
-      return;
 
       var color = $elem.css('color'),
           matches = rgbRegex.exec( color ),
@@ -36,7 +34,9 @@ if ( ! window.console ) {
         });
         cb(result);
       } else if (/#(\w+)/.test( color )) {
-        cb( color.toLowerCase() == '#' + ($.map(rgb, function( v, i ) { return  v.toString(16); }).join('').toLowerCase()) );
+        cb( color.toLowerCase() == '#' + ($.map(rgb, function( v, i ) {
+          return  v.toString(16);
+        }).join('').toLowerCase()) );
 
       } else {
         cb(false);
@@ -692,6 +692,28 @@ if ( ! window.console ) {
   });
 
   module("CSS Plugin");
+  // Load up the plugin
+  asyncTest("InjectCss", 2, function () {
+    yepnope({
+      load : "../plugins/yepnope.css.js",
+      complete: function() {
+        var myrgb2 = rgb();
+
+        cssIsLoaded( myrgb2, function ( resultA ) {
+          ok( !resultA, 'The stylesheet was not previously there.' );
+          yepnope({
+            load : 'css/' + myrgb2.join( ',' ) + '.css',
+            callback : function () {
+              cssIsLoaded( myrgb2, function( resultB ) {
+                ok( resultB, 'The stylesheet was injected successfully' );
+                start();
+              });
+            }
+          });
+        });
+      }
+    });
+  });
 
   module('Last Calls');
   asyncTest("Complete Fires When No Resources Are Loaded", 2, function () {

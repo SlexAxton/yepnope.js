@@ -552,8 +552,8 @@ var docElement            = doc.documentElement,
   window.yepnope = getYepnope();
 
   // Exposing executeStack to better facilitate plugins
-  yepnope.executeStack = executeStack;
-  yepnope.injectJs = injectJs;
-  yepnope.injectCss = injectCss;
+  window.yepnope.executeStack = executeStack;
+  window.yepnope.injectJs = injectJs;
+  window.yepnope.injectCss = injectCss;
 
 })( this, this.document );
