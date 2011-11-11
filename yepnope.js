@@ -414,8 +414,8 @@ var docElement            = doc.documentElement,
             // Hijack yepnope and restart index counter
             getYepnope();
             // Call our callbacks with this set of data
-            callback && callback( resource.origUrl, testResult, index );
-            autoCallback && autoCallback( resource.origUrl, testResult, index );
+            callback && callback.call(window.yepnope.callbackScope, resource.origUrl, testResult, index );
+            autoCallback && autoCallback.call(window.yepnope.callbackScope, resource.origUrl, testResult, index );
           } );
         }
       }
@@ -427,6 +427,10 @@ var docElement            = doc.documentElement,
             always     = testObject.load || testObject.both,
             callback   = testObject.callback,
             callbackKey;
+  
+        //Store the callbackScope in a naughty way.
+        //I tried to figure out the pass from load > exec stack > callback execution, and now I have a headache.
+        window.yepnope.callbackScope = testObject.callbackScope || this;
 
         // Reusable function for dealing with the different input types
         // NOTE:: relies on closures to keep 'chain' up to date, a bit confusing, but
