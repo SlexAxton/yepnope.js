@@ -21,6 +21,9 @@ var docElement            = doc.documentElement,
     firstScript           = doc.getElementsByTagName( 'script' )[ 0 ],
     toString              = {}.toString,
     execStack             = [],
+    keyMap                = [],
+    finished              = [],
+    readies               = [],
     started               = 0,
     // Before you get mad about browser sniffs, please read:
     // https://github.com/Modernizr/Modernizr/wiki/Undetectables
@@ -332,6 +335,56 @@ var docElement            = doc.documentElement,
     return this;
   }
 
+  function inStack(index, url){
+      if(isString(index) && keyMap[index]){
+          //it's a callback key, get the corresponding url (maybe a user is trying to load from a fallback)
+          url = keyMap[index];
+      }
+
+      for (var i = 0; i < execStack.length; i++){
+          var o = execStack[i];
+          if(o.s && o.s === url){
+              return true;
+          }
+      }            
+      return false;
+    }
+
+  function execReadies(){        
+        for(i = 0; i < readies.length; i++){
+            if(readies[i].h){
+                if(execReady(readies[i])){
+                    //fired it, so remove it to ensure one-off
+                    readies.splice(i, 1);
+                    i--;
+                }
+            }
+        }
+    }
+
+  function execReady(ready){
+        var urls, i, u, go;
+        //allow multiple urls comma-delimited, execute when all specified are finished
+        //or if reqs not specified, execute when special keyword 'all' is finished
+        urls = ready.reqs ? ready.reqs.split(',') : ['yepnope_all']
+        go = true;
+        for(i = 0; i < urls.length; i++){
+            u = urls[i];
+            //could be a callback key
+            if(keyMap[u]) u = keyMap[u];
+            if(!finished[u]){
+                go = false;
+                break;
+            }
+        }
+        if(go){
+            //execute callback
+            ready.h(ready.reqs);
+        }
+        return go;
+    }
+
+
   // return the yepnope object with a fresh loader attached
   function getYepnope () {
     var y = yepnope;
@@ -403,24 +456,36 @@ var docElement            = doc.documentElement,
       if ( resource.instead ) {
         return resource.instead( input, callback, chain, index, testResult );
       }
-      else {
-
+      else { 
+          //if the index is a string its a callback key
+        isString(index) && (keyMap[index] = resource.url);
         chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? 'c' : undef, resource.noexec );
 
-        // If we have a callback, we'll start the chain over
-        if ( isFunction( callback ) || isFunction( autoCallback ) ) {
-          // Call getJS with our current stack of things
-          chain.load( function () {
-            // Hijack yepnope and restart index counter
-            getYepnope();
-            // Call our callbacks with this set of data
-            callback && callback( resource.origUrl, testResult, index );
-            autoCallback && autoCallback( resource.origUrl, testResult, index );
-          } );
+        
+      // Call getJS with our current stack of things
+      chain.load( function () {        
+        // Hijack yepnope and restart index counter
+        getYepnope();
+        // Call our callbacks with this set of data
+        callback && callback( resource.origUrl, testResult, index );
+        autoCallback && autoCallback( resource.origUrl, testResult, index );
+
+        //check if we're done or if the callback pushed the resource back on the stack              
+        if(!inStack(index, resource.url)){
+            finished[resource.url] = true;  
+            
+            //check if all are finished
+            if(execStack.length == 0)
+                finished['yepnope_all'] = true;
+            
+            execReadies();
         }
+      } );
+
+        
       }
     }
-
+    
     function loadFromTestObject ( testObject, chain ) {
         var testResult = !! testObject.test,
             group      = testResult ? testObject.yep : testObject.nope,
@@ -494,6 +559,16 @@ var docElement            = doc.documentElement,
       loadFromTestObject( needs, chain );
     }
   };
+  
+  yepnope.ready = function(func, reqs){
+      var ready = {
+          h: func,
+          reqs: reqs
+      }
+      if(!execReady(ready)){
+          readies.push(ready);
+      }
+  }
 
   // This publicly exposed function is for allowing
   // you to add functionality based on prefixes on the
