@@ -431,18 +431,18 @@ var docElement            = doc.documentElement,
             callback && callback( resource.origUrl, testResult, index );
             autoCallback && autoCallback( resource.origUrl, testResult, index );
             // Override this to just a boolean positive
-            scriptCache[ resource.url ] = 2;          } );
+            scriptCache[ resource.url ] = 2;          
 
-	//check if we're done or if the callback pushed the resource back on the stack              
-        if(!inStack(index, resource.url)){
-            finished[resource.url] = true;  
-            
-            //check if all are finished
-            if(execStack.length == 0)
-                finished['yepnope_all'] = true;
-            
-            execReadies();
-	}
+			//check if we're done or if the callback pushed the resource back on the stack              
+			if(!inStack(index, resource.url)){
+				finished[resource.url] = true;  
+				
+				//check if all are finished
+				if(execStack.length == 0)
+					finished['yepnope_all'] = true;
+				
+				execReadies();
+			}
       } );
       }
     }
