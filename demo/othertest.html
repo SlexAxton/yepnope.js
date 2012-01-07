@@ -1,0 +1,82 @@
+<html>
+	<head>
+		<script src="../yepnope.js" ></script>
+		
+	</head>
+	
+	<body>
+	
+		<script type="text/javascript">
+			yepnope([{
+				test : false,
+				yep  : ['js/1a.js', 'css/1a.css'],
+				nope : ['js/1b.js'],
+				complete: function(){
+				  console.log("test obj 1 complete");
+				}
+			}]);
+
+			yepnope('js/2b.js');
+
+			yepnope({
+				load: {
+					'keya': 'js/3a.js',
+					'keyb': 'js/3b.js'
+				},
+				callback: function(url, result, key){
+				  console.log("callback for key " + key + " url " + url + " result " + result);
+				},
+				complete: function(){
+				  console.log("test obj 2 complete");
+				}
+			});
+
+			yepnope({
+				load: {
+					'jsTree': 'broken-link.googleapis.com.zzz'
+				},
+				callback: {
+					'jsTree' : function(url, result, key){
+						if(result){
+						   console.log("loading from broken link success?")
+						}
+						else{
+							console.log("jstree load failed, reloading from different source");
+							yepnope({
+								load: { 'jsTree': 'jquery.jstree.js'}
+							});
+						}
+					}
+				}
+
+			});
+			  
+			yepnope.ready(function(){
+			  console.log("js/1a.js ready");
+			}, 'js/1a.js');
+
+			yepnope.ready(function(){
+			  console.log("2b ready");
+			}, 'js/2b.js');
+
+			yepnope.ready(function(){
+			  console.log("keya ready");
+			}, 'keya');
+
+			yepnope.ready(function(){
+				console.log("jsTree ready");
+			}, 'jsTree');
+			
+			yepnope.ready(function(){
+				console.log("jsTree and keyb ready");
+			}, 'jsTree,keyb');
+			
+			yepnope.ready(function(){
+				console.log("all ready");
+			});
+					
+		</script>
+	
+	</body>
+
+</html>
