@@ -20,10 +20,7 @@ var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
     firstScript           = doc.getElementsByTagName( "script" )[ 0 ],
     toString              = {}.toString,
-    execStack             = [],
-    keyMap                = [],
-    finished              = [],
-    readies               = [],
+    execStack             = [],    
     started               = 0,
     noop                  = function () {},
     // Before you get mad about browser sniffs, please read:
@@ -275,56 +272,7 @@ var docElement            = doc.documentElement,
     return this;
   }
 
-  function inStack(index, url){
-      if(isString(index) && keyMap[index]){
-          //it's a callback key, get the corresponding url (maybe a user is trying to load from a fallback)
-          url = keyMap[index];
-      }
-
-      for (var i = 0; i < execStack.length; i++){
-          var o = execStack[i];
-          if(o.s && o.s === url){
-              return true;
-          }
-      }            
-      return false;
-    }
-
-  function execReadies(){        
-        for(i = 0; i < readies.length; i++){
-            if(readies[i].h){
-                if(execReady(readies[i])){
-                    //fired it, so remove it to ensure one-off
-                    readies.splice(i, 1);
-                    i--;
-                }
-            }
-        }
-    }
-
-  function execReady(ready){
-        var urls, i, u, go;
-        //allow multiple urls comma-delimited, execute when all specified are finished
-        //or if reqs not specified, execute when special keyword 'all' is finished
-        urls = ready.reqs ? ready.reqs.split(',') : ['yepnope_all']
-        go = true;
-        for(i = 0; i < urls.length; i++){
-            u = urls[i];
-            //could be a callback key
-            if(keyMap[u]) u = keyMap[u];
-            if(!finished[u]){
-                go = false;
-                break;
-            }
-        }
-        if(go){
-            //execute callback
-            ready.h(ready.reqs);
-        }
-        return go;
-    }
-
-
+  
   // return the yepnope object with a fresh loader attached
   function getYepnope () {
     var y = yepnope;
@@ -344,7 +292,7 @@ var docElement            = doc.documentElement,
         // start the chain as a plain instance
         chain = this.yepnope.loader;
 
-    function satisfyPrefixes ( url ) {
+    function satisfyPrefixes ( url, index ) {
       // split all prefixes out
       var parts   = url.split( "!" ),
       gLen    = globalFilters.length,
@@ -372,7 +320,7 @@ var docElement            = doc.documentElement,
 
       // Go through our global filters
       for ( j = 0; j < gLen; j++ ) {
-        res = globalFilters[ j ]( res );
+        res = globalFilters[ j ]( res, index );
       }
 
       // return the final url
@@ -385,7 +333,7 @@ var docElement            = doc.documentElement,
 
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
       // run through our set of prefixes
-      var resource     = satisfyPrefixes( input ),
+      var resource     = satisfyPrefixes( input, index ),
           autoCallback = resource.autoCallback,
           extension    = getExtension( resource.url );
 
@@ -433,16 +381,7 @@ var docElement            = doc.documentElement,
             // Override this to just a boolean positive
             scriptCache[ resource.url ] = 2;          
 
-			//check if we're done or if the callback pushed the resource back on the stack              
-			if(!inStack(index, resource.url)){
-				finished[resource.url] = true;  
-				
-				//check if all are finished
-				if(execStack.length == 0)
-					finished['yepnope_all'] = true;
-				
-				execReadies();
-			}
+			
       } );
       }
     }
@@ -565,15 +504,7 @@ var docElement            = doc.documentElement,
     }
   };
   
-  yepnope.ready = function(func, reqs){
-      var ready = {
-          h: func,
-          reqs: reqs
-      }
-      if(!execReady(ready)){
-          readies.push(ready);
-      }
-  }
+
 
   // This publicly exposed function is for allowing
   // you to add functionality based on prefixes on the

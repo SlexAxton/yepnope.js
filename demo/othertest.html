@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<script src="../yepnope.js" ></script>
+		<!--<script src="../plugins/yepnope.ready.js" ></script>-->
 		
 	</head>
 	
@@ -17,19 +18,6 @@
 			}]);
 
 			yepnope('js/2b.js');
-
-			yepnope({
-				load: {
-					'keya': 'js/3a.js',
-					'keyb': 'js/3b.js'
-				},
-				callback: function(url, result, key){
-				  console.log("callback for key " + key + " url " + url + " result " + result);
-				},
-				complete: function(){
-				  console.log("test obj 2 complete");
-				}
-			});
 
 			yepnope({
 				load: {
@@ -50,6 +38,24 @@
 				}
 
 			});
+			
+			yepnope({
+				load: {
+					'keya': 'js/3a.js',
+					'keyb': 'broken-link.js/3b.js'
+				},
+				callback: function(url, result, key){
+				  console.log("callback for key " + key + " url " + url + " result " + result);
+				  if(key == 'keyb' && url == 'broken-link.js/3b.js'){
+					yepnope({load:{'keyb': 'js/3b.js'}});
+				  }
+				},
+				complete: function(){
+				  console.log("test obj 2 complete");
+				}
+			});
+
+			
 			  
 			yepnope.ready(function(){
 			  console.log("js/1a.js ready");
