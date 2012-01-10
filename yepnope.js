@@ -272,7 +272,6 @@ var docElement            = doc.documentElement,
     return this;
   }
 
-  
   // return the yepnope object with a fresh loader attached
   function getYepnope () {
     var y = yepnope;
@@ -357,10 +356,7 @@ var docElement            = doc.documentElement,
         return resource.instead( input, callback, chain, index, testResult );
       }
       else {
-          //if the index is a string its a callback key
-        isString(index) && (keyMap[index] = resource.url);
-
-	// Handle if we've already had this url and it's completed loaded already
+        // Handle if we've already had this url and it's completed loaded already
         if ( scriptCache[ resource.url ] ) {
           // don't let this execute again
           resource.noexec = true;
@@ -368,9 +364,12 @@ var docElement            = doc.documentElement,
         else {
           scriptCache[ resource.url ] = 1;
         }
-       chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? 'c' : undef, resource.noexec );
 
+        // Throw this into the queue
+        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && "css" == getExtension( resource.url ) ) ) ) ? "c" : undef, resource.noexec, resource.attrs, resource.timeout );
 
+        // If we have a callback, we'll start the chain over
+        if ( isFunction( callback ) || isFunction( autoCallback ) ) {
           // Call getJS with our current stack of things
           chain.load( function () {
             // Hijack yepnope and restart index counter
@@ -378,14 +377,14 @@ var docElement            = doc.documentElement,
             // Call our callbacks with this set of data
             callback && callback( resource.origUrl, testResult, index );
             autoCallback && autoCallback( resource.origUrl, testResult, index );
-            // Override this to just a boolean positive
-            scriptCache[ resource.url ] = 2;          
 
-			
-      } );
+            // Override this to just a boolean positive
+            scriptCache[ resource.url ] = 2;
+          } );
+        }
       }
     }
-    
+
     function loadFromTestObject ( testObject, chain ) {
         var testResult = !! testObject.test,
             group      = testResult ? testObject.yep : testObject.nope,
@@ -503,8 +502,6 @@ var docElement            = doc.documentElement,
       loadFromTestObject( needs, chain );
     }
   };
-  
-
 
   // This publicly exposed function is for allowing
   // you to add functionality based on prefixes on the
