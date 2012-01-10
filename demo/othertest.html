@@ -57,25 +57,28 @@
 
 			
 			  
-			yepnope.ready(function(){
+			yepnope.ready('js/1a.js',
+			function(){
 			  console.log("js/1a.js ready");
-			}, 'js/1a.js');
+			});
 
-			yepnope.ready(function(){
+			yepnope.ready('js/2b.js',
+			function(){
 			  console.log("2b ready");
-			}, 'js/2b.js');
+			});
 
-			yepnope.ready(function(){
+			yepnope.ready('keya',
+			function(){
 			  console.log("keya ready");
-			}, 'keya');
+			});
 
-			yepnope.ready(function(){
+			yepnope.ready('jsTree',function(){
 				console.log("jsTree ready");
-			}, 'jsTree');
+			});
 			
-			yepnope.ready(function(){
+			yepnope.ready('jsTree,keyb', function(){
 				console.log("jsTree and keyb ready");
-			}, 'jsTree,keyb');
+			});
 			
 			yepnope.ready(function(){
 				console.log("all ready");
