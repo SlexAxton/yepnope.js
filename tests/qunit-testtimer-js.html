@@ -28,8 +28,9 @@
 </body>
 
 <script type="text/javascript">
+	asyncTest.defaultTimeout=2000;
+
 	asyncTest("simple timed test", function(){
-		var time = asyncTest.defaultTimeout / 2;
 		
 		var test = asyncTest.start();
 		setTimeout(function(){
@@ -38,14 +39,14 @@
 			ok(true, "didn't time out before callback");
 			test.continue();
 			ok(true, "callback continues to run after continue");
-		}, time);
+		}, 1000);
 		
 		setTimeout(function(){
 			if(test.done) return;
 			
 			ok(false, "test runner should restart before second callback");
 			start();
-		}, time + 20);
+		}, 1020);
 	
 	});
 
@@ -59,32 +60,31 @@
 			ok(false, "FAILURE!! test should have timed out instead of hitting this assert");
 			test.continue();
 		
-		}, asyncTest.defaultTimeout + 1000);
+		}, 3000);
 	});
 	
 	asyncTest("test two callbacks", 2, function(){
 		var test = asyncTest.start(2);
-		var time = asyncTest.defaultTimeout / 2;
 		
 		setTimeout(function(){
 			if(test.done) return;
 		
 			ok(true, "first callback happens before done");
 			test.continue();
-		}, time);
+		}, 1000);
 		
 		setTimeout(function(){
 			if(test.done) return;
 			
 			ok(true, "second callback happens before done");
 			test.continue();
-		}, time + 100);
+		}, 1100);
 		
 		setTimeout(function(){
 			if(test.done) return;
 			test.continue();
 			ok(false, "should not happen before done");
-		}, time + 500);
+		}, 1500);
 	});
 	
 	asyncTest("test two callbacks with timeout, expect 'test timed out' failure", 2, function(){
@@ -162,11 +162,21 @@
 		}, 2500);
 	});
 	
-	asyncTest("test catch all", 1, function(){
-	
-		ok(true, "any other asserts in this test are leftovers from other tests that should not have happened");
-	
-		setTimeout(function(){start();},30000);
+	asyncTest("test finish, before timeout, immediately finishes", 1, function(){
+		var test = asyncTest.start();
+		
+		setTimeout(function(){
+			if(test.done) return;
+			
+			ok(true, "callback was hit");
+			test.finish();
+		}, 1000);
+		
+		setTimeout(function(){
+			if(test.done) return;
+		
+			ok(false, "should have finished before hitting this callback");
+		}, 1100);
 	});
 	
 </script>

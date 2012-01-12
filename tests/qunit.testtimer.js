@@ -15,11 +15,7 @@
 			
 		obj.exp--;
 		if (obj.exp <= 0 && obj.timer != null){
-			clearTimeout(obj.timer);
-			obj.done = true;
-			current = null;
-			//restart test runner since we're done
-			start();
+			obj.finish();
 		}
 	}
 	
@@ -27,12 +23,9 @@
 		if(obj.done)
 			return;
 		
-		obj.timer = null;
 		if(obj.exp >= 0){
 			ok(false, "test timed out");
-			obj.done = true;
-			current = null;
-			start();
+			obj.finish();
 		}
 	}
 	
@@ -42,13 +35,23 @@
 			return;
 	
 		if(!message) message = "async test aborted";
-		if(obj.timer != null) clearTimeout(obj.timer);
 		if(obj.exp >= 0){
 			ok(false, message);
-			obj.done = true;
-			current = null;
-			start();
+			obj.finish();
 		}
+	}
+	
+	function _finish(obj){
+		if(obj.done)
+			return;
+				
+		if(obj.timer != null) 
+			clearTimeout(obj.timer);
+		obj.timer = null;
+		obj.done = true;
+		current = null;
+		//restart test runner since we're done
+		start();
 	}
 	
 	asyncTest.defaultTimeout = 2000;
@@ -63,8 +66,9 @@
 			id: Math.random(),
 			wait: timeout ? timeout : asyncTest.defaultTimeout,
 			exp: expect ? expect : 1,
-			continue: function(){ _continue(temp);},
-			abort: function(msg){_abort(temp,msg);},
+			continue: function(){ _continue(this); },
+			abort: function(msg){ _abort(this,msg); },
+			finish: function() { _finish(this); },
 			done: false
 		};
 		current = temp;
