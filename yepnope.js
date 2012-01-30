@@ -20,7 +20,7 @@ var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
     firstScript           = doc.getElementsByTagName( "script" )[ 0 ],
     toString              = {}.toString,
-    execStack             = [],
+    execStack             = [],    
     started               = 0,
     noop                  = function () {},
     // Before you get mad about browser sniffs, please read:
@@ -291,7 +291,7 @@ var docElement            = doc.documentElement,
         // start the chain as a plain instance
         chain = this.yepnope.loader;
 
-    function satisfyPrefixes ( url ) {
+    function satisfyPrefixes ( url, index ) {
       // split all prefixes out
       var parts   = url.split( "!" ),
       gLen    = globalFilters.length,
@@ -319,7 +319,7 @@ var docElement            = doc.documentElement,
 
       // Go through our global filters
       for ( j = 0; j < gLen; j++ ) {
-        res = globalFilters[ j ]( res );
+        res = globalFilters[ j ]( res, index );
       }
 
       // return the final url
@@ -332,7 +332,7 @@ var docElement            = doc.documentElement,
 
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
       // run through our set of prefixes
-      var resource     = satisfyPrefixes( input ),
+      var resource     = satisfyPrefixes( input, index ),
           autoCallback = resource.autoCallback,
           extension    = getExtension( resource.url );
 

@@ -1,0 +1,81 @@
+#yepnope.ready.js#
+
+A plugin for yepnope.js providing 'yepnope.ready()' function
+
+The yepnope.ready() function is another way to be notified that yepnope is done loading some resources.
+Because it is separated from the test object, it is good to use in a place where an on-page script needs to be
+notified that a required dependency is finished loading but the script cannot simply inject itself into the
+test object.  An example of such a scenario would be in MVC3 Razor where jQuery is loaded in a _Layout using yepnope
+but a view needs to attach event handlers as soon as jQuery is loaded.
+
+usage-
+	yepnope.ready(requirements, callback);
+
+A simple example:		
+ex. 1:
+	yepnope('js/foo.js');
+	yepnope.ready('js/foo.js', function(){
+		console.log("i happen once 'js/foo.js' is loaded");
+	});
+
+
+The .ready() function can take as its requirements an array of URLs (or equivalently a comma-separated string of
+URLs).  If there is more than one URL specified as a requirement, the callback will be executed when ALL have finished
+loading.
+
+ex. 2:
+	yepnope([{
+				load : ['js/1a.js', 'css/1a.css'],				
+				complete: function(){
+				  console.log("fired when the test object is finished (1a.js and 1a.css are loaded)");
+				}
+			}]);
+	yepnope('js/2a.js');
+	
+	yepnope.ready("js/1a.js, js/2a.js"){
+		console.log("I happen when 1a.js and 2a.js are both loaded, I don't care that they're in separate test objects.");
+	}
+	
+The .ready() function can also be passed as its requirement a Key for a URL.  This Key is the same as the Key used in the 
+yepnope object.  The advantage here is that a new URL can be placed under the same key in a yepnope test object callback,
+and the .ready() callback will not be fired until the key is completely done loading.	
+	
+ex. 3:
+	yepnope({
+		load: {
+			'jQuery': 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'
+		},
+		callback: {
+			'jQuery' : function(url, result, key){
+				if(!jQuery){
+					yepnope({
+						load: { 'jQuery': 'js/jquery.min.js'}
+						complete: function(){
+							console.log("we failed at downloading from google, .ready will wait till after me.");
+						}
+					});
+				}
+				else{
+					console.log("We downloaded jQuery from google, .ready will execute shortly");
+				}
+			}
+		}
+	});
+	yepnope.ready('jQuery', function(){
+		console.log("I am called once the 'jQuery' key is finished loading, if it loads from google great! otherwise" +
+			"I will wait until it is loaded from the local 'js/jquery.min.js' file.");		
+	});
+	
+You can combine any number of Keys or URLs together into a requirements array, and .ready will wait for all of them.
+You can call .ready as many times as you want with different requirements.  If the requirements are already done loading,
+.ready will execute the callback immediately.
+
+##License##
+The yepnope.ready plugin falls under the same license as yepnope, and is a contribution to yepnope.
+
+All of the yepnope specific code is under the WTFPL license. Which means it's also MIT and BSD (or anything you want). However, the inspired works are subject to their own licenses.
+
+All contributions to yepnope should be code that you wrote, and will be subject to the LGPL Contributor Agreement. By sending a pull request, you agree to this.
+
+
+	
