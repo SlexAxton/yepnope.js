@@ -29,9 +29,9 @@ Any forks and stuff are welcome.
 
 ##Current Released Version##
 
-1.1.0
+1.5.0beta
 
-Changes in 1.1.0 :
+Changes in 1.5.0 :
 
 * Scripts with the same url don't reexecute, but their callbacks fire in the correct order.
 * The `complete` function behaves much more like the `callback` function with respect to 'recursive yepnope'.
@@ -50,7 +50,7 @@ NOTE: the code in the github repository is considered in development. Use at you
 
 All of the yepnope specific code is under the WTFPL license. Which means it's also MIT and BSD (or anything you want). However, the inspired works are subject to their own licenses.
 
-All contributions to yepnope should be code that you wrote, and will be subject to the LGPL Contributor Agreement. By sending a pull request, you agree to this.
+All contributions to yepnope should be code that you wrote, and will be subject to the Dojo CLA. By sending a pull request, you agree to this. All commits thus far have also been committed under this license.
 
 ##Thanks##
 
