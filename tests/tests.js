@@ -564,7 +564,7 @@ if ( ! window.console ) {
       load: 'dataAttr=lol=5!js/r'+u+'.js',
       complete: function (){
         ok(w['r'+u], 'It loaded');
-        var scr = $('script[src="js/r'+u+'.js"]');
+        var scr = $('script[src="js/r'+u+'.js"]').not("[type]");
         ok( scr.data('lol') === 5 ,'The script element has the data attribute as described.');
         start();
       }
