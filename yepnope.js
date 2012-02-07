@@ -72,7 +72,7 @@ var docElement            = doc.documentElement,
   // in the appropriate order
   function injectJs ( src, cb, attrs, timeout, /* internal use */ err, internal ) {
     var script = doc.createElement( "script" ),
-        done;
+        done, i;
 
     timeout = timeout || yepnope.errorTimeout;
 
