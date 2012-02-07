@@ -452,7 +452,7 @@ var docElement            = doc.documentElement,
                     callback[ callbackKey ] = (function( innerCb ) {
                       return function () {
                         var args = [].slice.call( arguments );
-                        innerCb.apply( this, args );
+                        innerCb && innerCb.apply( this, args );
                         complete();
                       };
                     })( cbRef[ callbackKey ] );
