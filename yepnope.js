@@ -1,6 +1,6 @@
-/*yepnope1.5.1|WTFPL*/
+/*yepnope1.5.2|WTFPL*/
 // yepnope.js
-// Version - 1.5.1
+// Version - 1.5.2
 //
 // by
 // Alex Sexton - @SlexAxton - AlexSexton[at]gmail.com
@@ -29,10 +29,7 @@ var docElement            = doc.documentElement,
     isGecko               = ( "MozAppearance" in docElement.style ),
     isGeckoLTE18          = isGecko && !! doc.createRange().compareNode,
     insBeforeObj          = isGeckoLTE18 ? docElement : firstScript.parentNode,
-    // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
-    isOpera               = window.opera && toString.call( window.opera ) == "[object Opera]",
     isIE                  = !! doc.attachEvent,
-    isWebkit              = ( "webkitAppearance" in docElement.style ),
     strJsElem             = isGecko ? "object" : isIE ? "script" : "img",
     strCssElem            = isIE ? "script" : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
@@ -53,7 +50,7 @@ var docElement            = doc.documentElement,
       // key value pair timeout options
       timeout : function( resourceObj, prefix_parts ) {
         if ( prefix_parts.length ) {
-          resourceObj.timeout = prefix_parts[ 0 ];
+          resourceObj['timeout'] = prefix_parts[ 0 ];
         }
         return resourceObj;
       }
@@ -74,7 +71,7 @@ var docElement            = doc.documentElement,
     var script = doc.createElement( "script" ),
         done, i;
 
-    timeout = timeout || yepnope.errorTimeout;
+    timeout = timeout || yepnope['errorTimeout'];
 
     script.src = src;
 
@@ -121,7 +118,7 @@ var docElement            = doc.documentElement,
     var link = doc.createElement( "link" ),
         done, i;
 
-    timeout = timeout || yepnope.errorTimeout;
+    timeout = timeout || yepnope['errorTimeout'];
 
     cb = internal ? executeStack : ( cb || noop );
 
@@ -149,17 +146,17 @@ var docElement            = doc.documentElement,
     // if a is truthy and the first item in the stack has an src
     if ( i ) {
       // if it's a script, inject it into the head with no type attribute
-      if ( i.t ) {
+      if ( i['t'] ) {
         // Inject after a timeout so FF has time to be a jerk about it and
         // not double load (ignore the cache)
         sTimeout( function () {
-          (i.t == "c" ?  yepnope.injectCss : yepnope.injectJs)( i.s, 0, i.a, i.x, i.e, 1 );
+          (i['t'] == "c" ?  yepnope['injectCss'] : yepnope['injectJs'])( i['s'], 0, i['a'], i['x'], i['e'], 1 );
         }, 0 );
       }
       // Otherwise, just call the function and potentially run the stack
       else {
         i();
-        executeStack();      	
+        executeStack();
       }
     }
     else {
@@ -170,21 +167,21 @@ var docElement            = doc.documentElement,
 
   function preloadFile ( elem, url, type, splicePoint, dontExec, attrObj, timeout ) {
 
-    timeout = timeout || yepnope.errorTimeout;
+    timeout = timeout || yepnope['errorTimeout'];
 
     // Create appropriate element for browser and type
     var preloadElem = {},
         done        = 0,
         firstFlag   = 0,
         stackObject = {
-          t: type,     // type
-          s: url,      // src
+          "t": type,     // type
+          "s": url,      // src
         //r: 0,        // ready
-          e : dontExec,// set to true if we don't want to reinject
-          a : attrObj,
-          x : timeout
+          "e": dontExec,// set to true if we don't want to reinject
+          "a": attrObj,
+          "x": timeout
         };
-    
+
     // The first time (common-case)
     if ( scriptCache[ url ] === 1 ) {
       firstFlag = 1;
@@ -197,7 +194,7 @@ var docElement            = doc.documentElement,
       if ( ! done && isFileReady( preloadElem.readyState ) ) {
 
         // Set done to prevent this function from being called twice.
-        stackObject.r = done = 1;
+        stackObject['r'] = done = 1;
 
         ! started && executeStack();
 
@@ -207,7 +204,7 @@ var docElement            = doc.documentElement,
           if ( elem != "img" ) {
             sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 50);
           }
-               
+
           for ( var i in scriptCache[ url ] ) {
             if ( scriptCache[ url ].hasOwnProperty( i ) ) {
               scriptCache[ url ][ i ].onload();
@@ -263,15 +260,15 @@ var docElement            = doc.documentElement,
     // If this method gets hit multiple times, we should flag
     // that the execution of other threads should halt.
     started = 0;
-    
+
     // We'll do 'j' for js and 'c' for css, yay for unreadable minification tactics
     type = type || "j";
     if ( isString( resource ) ) {
       // if the resource passed in here is a string, preload the file
-      preloadFile( type == "c" ? strCssElem : strJsElem, resource, type, this.i++, dontExec, attrObj, timeout );
+      preloadFile( type == "c" ? strCssElem : strJsElem, resource, type, this['i']++, dontExec, attrObj, timeout );
     } else {
       // Otherwise it's a callback function and we can splice it into the stack to run
-      execStack.splice( this.i++, 0, resource );
+      execStack.splice( this['i']++, 0, resource );
       execStack.length == 1 && executeStack();
     }
 
@@ -282,9 +279,9 @@ var docElement            = doc.documentElement,
   // return the yepnope object with a fresh loader attached
   function getYepnope () {
     var y = yepnope;
-    y.loader = {
-      load: load,
-      i : 0
+    y['loader'] = {
+      "load": load,
+      "i" : 0
     };
     return y;
   }
@@ -296,7 +293,7 @@ var docElement            = doc.documentElement,
     var i,
         need,
         // start the chain as a plain instance
-        chain = this.yepnope.loader;
+        chain = this['yepnope']['loader'];
 
     function satisfyPrefixes ( url ) {
       // split all prefixes out
@@ -305,10 +302,10 @@ var docElement            = doc.documentElement,
       origUrl = parts.pop(),
       pLen    = parts.length,
       res     = {
-        url      : origUrl,
+        "url"      : origUrl,
         // keep this one static for callback variable consistency
-        origUrl  : origUrl,
-        prefixes : parts
+        "origUrl"  : origUrl,
+        "prefixes" : parts
       },
       mFunc,
       j,
@@ -340,11 +337,11 @@ var docElement            = doc.documentElement,
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
       // run through our set of prefixes
       var resource     = satisfyPrefixes( input ),
-          autoCallback = resource.autoCallback,
-          extension    = getExtension( resource.url );
+          autoCallback = resource['autoCallback'],
+          extension    = getExtension( resource['url'] );
 
       // if no object is returned or the url is empty/0 just exit the load
-      if ( resource.bypass ) {
+      if ( resource['bypass'] ) {
         return;
       }
 
@@ -352,53 +349,53 @@ var docElement            = doc.documentElement,
       if ( callback ) {
         callback = isFunction( callback ) ?
           callback :
-          callback[ input ] || 
-          callback[ index ] || 
-          callback[ ( input.split( "/" ).pop().split( "?" )[ 0 ] ) ] || 
+          callback[ input ] ||
+          callback[ index ] ||
+          callback[ ( input.split( "/" ).pop().split( "?" )[ 0 ] ) ] ||
           executeStack;
       }
 
       // if someone is overriding all normal functionality
-      if ( resource.instead ) {
-        return resource.instead( input, callback, chain, index, testResult );
+      if ( resource['instead'] ) {
+        return resource['instead']( input, callback, chain, index, testResult );
       }
       else {
         // Handle if we've already had this url and it's completed loaded already
-        if ( scriptCache[ resource.url ] ) {
+        if ( scriptCache[ resource['url'] ] ) {
           // don't let this execute again
-          resource.noexec = true;
+          resource['noexec'] = true;
         }
         else {
-          scriptCache[ resource.url ] = 1;
+          scriptCache[ resource['url'] ] = 1;
         }
 
         // Throw this into the queue
-        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && "css" == getExtension( resource.url ) ) ) ) ? "c" : undef, resource.noexec, resource.attrs, resource.timeout );
+        chain.load( resource['url'], ( ( resource['forceCSS'] || ( ! resource['forceJS'] && "css" == getExtension( resource['url'] ) ) ) ) ? "c" : undef, resource['noexec'], resource['attrs'], resource['timeout'] );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
           // Call getJS with our current stack of things
-          chain.load( function () {
+          chain['load']( function () {
             // Hijack yepnope and restart index counter
             getYepnope();
             // Call our callbacks with this set of data
-            callback && callback( resource.origUrl, testResult, index );
-            autoCallback && autoCallback( resource.origUrl, testResult, index );
+            callback && callback( resource['origUrl'], testResult, index );
+            autoCallback && autoCallback( resource['origUrl'], testResult, index );
 
             // Override this to just a boolean positive
-            scriptCache[ resource.url ] = 2;
+            scriptCache[ resource['url'] ] = 2;
           } );
         }
       }
     }
 
     function loadFromTestObject ( testObject, chain ) {
-        var testResult = !! testObject.test,
-            group      = testResult ? testObject.yep : testObject.nope,
-            always     = testObject.load || testObject.both,
-            callback   = testObject.callback || noop,
+        var testResult = !! testObject['test'],
+            group      = testResult ? testObject['yep'] : testObject['nope'],
+            always     = testObject['load'] || testObject['both'],
+            callback   = testObject['callback'] || noop,
             cbRef      = callback,
-            complete   = testObject.complete || noop,
+            complete   = testObject['complete'] || noop,
             needGroupSize,
             callbackKey;
 
@@ -520,7 +517,7 @@ var docElement            = doc.documentElement,
   // that can be manipulated and then returned. (like middleware. har.)
   //
   // Examples of this can be seen in the officially supported ie prefix
-  yepnope.addPrefix = function ( prefix, callback ) {
+  yepnope['addPrefix'] = function ( prefix, callback ) {
     prefixes[ prefix ] = callback;
   };
 
@@ -532,12 +529,12 @@ var docElement            = doc.documentElement,
   //
   // The best example of a filter is the 'autoprotocol' officially
   // supported filter
-  yepnope.addFilter = function ( filter ) {
+  yepnope['addFilter'] = function ( filter ) {
     globalFilters.push( filter );
   };
 
   // Default error timeout to 10sec - modify to alter
-  yepnope.errorTimeout = 1e4;
+  yepnope['errorTimeout'] = 1e4;
 
   // Webreflection readystate hack
   // safe for jQuery 1.4+ ( i.e. don't use yepnope with jQuery 1.3.2 )
@@ -556,11 +553,11 @@ var docElement            = doc.documentElement,
 
   // Attach loader &
   // Leak it
-  window.yepnope = getYepnope();
+  window['yepnope'] = getYepnope();
 
   // Exposing executeStack to better facilitate plugins
-  window.yepnope.executeStack = executeStack;
-  window.yepnope.injectJs = injectJs;
-  window.yepnope.injectCss = injectCss;
+  window['yepnope']['executeStack'] = executeStack;
+  window['yepnope']['injectJs'] = injectJs;
+  window['yepnope']['injectCss'] = injectCss;
 
-})( this, this.document );
+})( this, document );

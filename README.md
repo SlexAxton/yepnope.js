@@ -29,9 +29,9 @@ Any forks and stuff are welcome.
 
 ##Current Released Version##
 
-1.5.1
+1.5.2
 
-(NOTE:: there were some problems with 1.5.0 in IE, we strongly suggest an upgrade to 1.5.1)
+(NOTE:: there were some problems with 1.5.0 in IE, we strongly suggest an upgrade to 1.5.2)
 
 Changes in 1.5+ :
 
