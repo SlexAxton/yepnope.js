@@ -9,7 +9,7 @@ More docs, etc at: [http://yepnopejs.com](http://yepnopejs.com)
 By:
 
 Alex Sexton - AlexSexton [at] gmail
- 
+
 Ralph Holzmann - RalphHolzmann [at] gmail
 
 
@@ -29,7 +29,7 @@ Any forks and stuff are welcome.
 
 ##Current Released Version##
 
-1.5.0beta
+1.5.0
 
 Changes in 1.5.0 :
 

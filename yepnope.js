@@ -1,6 +1,6 @@
-/*yepnope1.5.0b|WTFPL*/
+/*yepnope1.5.0|WTFPL*/
 // yepnope.js
-// Version - 1.5.0b
+// Version - 1.5.0
 //
 // by
 // Alex Sexton - @SlexAxton - AlexSexton[at]gmail.com
@@ -33,7 +33,7 @@ var docElement            = doc.documentElement,
     isOpera               = window.opera && toString.call( window.opera ) == "[object Opera]",
     isIE                  = !! doc.attachEvent,
     isWebkit              = ( "webkitAppearance" in docElement.style ),
-    strJsElem             = isGecko ? "object" : "img",
+    strJsElem             = isGecko ? "object" : isIE ? "script" : "img",
     strCssElem            = isIE ? "script" : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
       return toString.call( obj ) == "[object Array]";
@@ -72,7 +72,7 @@ var docElement            = doc.documentElement,
   // in the appropriate order
   function injectJs ( src, cb, attrs, timeout, /* internal use */ err, internal ) {
     var script = doc.createElement( "script" ),
-        done;
+        done, i;
 
     timeout = timeout || yepnope.errorTimeout;
 
@@ -204,7 +204,7 @@ var docElement            = doc.documentElement,
         // Handle memory leak in IE
         preloadElem.onload = preloadElem.onreadystatechange = null;
         if ( first ) {
-          if ( elem == "object" ) {
+          if ( elem != "img" ) {
             sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 50);
           }
                
@@ -218,8 +218,15 @@ var docElement            = doc.documentElement,
     }
 
 
-    // Just set the src and the data attributes so we don't have differentiate between elem types
-    preloadElem.src = preloadElem.data = url;
+    // Setting url to data for objects or src for img/scripts
+    if ( elem == "object" ) {
+      preloadElem.data = url;
+    } else {
+      preloadElem.src = url;
+
+      // Setting bogus script type to allow the script to be cached
+      preloadElem.type = elem;
+    }
 
     // Don't let it show up visually
     preloadElem.width = preloadElem.height = "0";
@@ -236,7 +243,7 @@ var docElement            = doc.documentElement,
     // so we have two options - insert before the head element (which is hard to assume) - or
     // insertBefore technically takes null/undefined as a second param and it will insert the element into
     // the parent last. We try the head, and it automatically falls back to undefined.
-    if ( elem == "object" ) {
+    if ( elem != "img" ) {
       // If it's the first time, or we've already loaded it all the way through
       if ( firstFlag || scriptCache[ url ] === 2 ) {
         insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
