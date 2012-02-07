@@ -29,9 +29,11 @@ Any forks and stuff are welcome.
 
 ##Current Released Version##
 
-1.5.0
+1.5.1
 
-Changes in 1.5.0 :
+(NOTE:: there were some problems with 1.5.0 in IE, we strongly suggest an upgrade to 1.5.1)
+
+Changes in 1.5+ :
 
 * Scripts with the same url don't reexecute, but their callbacks fire in the correct order.
 * The `complete` function behaves much more like the `callback` function with respect to 'recursive yepnope'.
