@@ -12,11 +12,48 @@
   <meta name="description" content="A Conditional Loader For Your Polyfills. Only load the scripts that you need!"> 
   <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans:regular,bold|Inconsolata">
   <link rel="stylesheet" href="css/style.css"> 
-  <script src="js/modernizr-2.5.1-custom.min.js"></script> 
+  <script src="js/modernizr-2.5.1-custom.min.js"></script>
 </head> 
-<body> 
+<body>
+    <script>
+      var _gaq = [['_setAccount', 'UA-19322022-1'], ['_setDomainName', '.yepnopejs.com'], ['_trackPageview']];
+      yepnope.addPrefix( 'preload', function ( resource ) {
+        resource.noexec = true;
+        return resource;
+      });
+      yepnope([
+        {
+          load : [ 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js',
+                   'js/jsbeautify.min.js',
+                   'preload!js/hijs.js'
+                 ],
+          complete : function () {
+            jQuery(function ($) {
+              $('code').not('.stayugly').each(function () {
+                this.innerHTML = js_beautify( $.trim( $(this).html() ), {
+                indent_size: 2,
+                preserve_newlines: true,
+                space_after_anon_function: true
+              } );
+              yepnope.injectJs( 'js/hijs.js' );
+              var $body = $(document.body);
+              $("a[href^=#]").bind('click', function( e ) {
+                $body.animate({
+                  scrollTop: $( '#' + $(this).attr('href').split('#').pop() ).offset().top
+                });
+                return false;
+              });
+            });
+          });
+        }
+      },
+      {
+      load: 'http://www.google-analytics.com/ga.js'
+      }
+      ]);
+    </script>
 
-  <header> 
+  <header>
           <div class="container"> 
             <a id="logo-thing" href="/"> 
               <h1>yepnope.js</h1> 
@@ -24,7 +61,7 @@
             </a> 
             <a id="dl-link" target="_blank" href="https://github.com/SlexAxton/yepnope.js/archives/master"> 
               <span id="dl-yn">download yepnope 1.5.2</span> 
-              <span id="dl-stats">1.8KB gzip &amp; min - Feb 7, 2012</span> 
+              <span id="dl-stats">1.7KB gzip &amp; min - Feb 7, 2012</span> 
             </a>
     </div>
   </header> 
@@ -49,7 +86,7 @@
     <div id="main">
       <article id="api">
         <h1>The API</h1>
-        <p>There are only a handful of things to know about yepnope. There are only 3 functions available to you
+        <p>There are only a handful of things to know about yepnope. There are only 5 functions available to you
         and there's only one that's really important.</p> 
           <pre><span class="keyword">yepnope</span>(resources <span class="comment">/* string | object | array */</span>)</pre> 
           <p>The <span class="code">yepnope</span> function is the core of yepnope.js <small>(crazy, huh?)</small>. It takes a whole bunch
@@ -76,8 +113,9 @@
   complete : <span class="optional">/* function                                                      */</span>
 }, ... ]);</pre>
         <p>Note that yepnope can load CSS or JS files. All resources will be considered JS files unless they end
-        in '<span class="code">.css</span>'. You can force files with other extensions (cache-busted scripts, for 
-        example) to be interpreted as CSS files if you use the <span class="code">css!</span> prefix.</p> 
+        in '<span class="code">.css</span>'. As of yepnope 1.5, css files with cachebusting query parameters
+        are correctly detected. If you don't have a .css extension anywhere download the <span class="code">css!</span> prefix
+        plugin from the github repository and include it at the end of your yepnope file.</p> 
         </article>
         <article>
         <h1>Another Script Loader?#?@$!@# - Why Use Yepnope?</h1>
@@ -92,21 +130,22 @@
 
         <h3>Good Things</h3>
         <ul>
-          <li>yepnope.js is <b>only 1.6kb</b> - smaller than most and certainly a good size for its functionality set.</li>
+          <li>yepnope.js is <b>only 1.7kb</b> - smaller than most and certainly a good size for its functionality set.</li>
           <li>yepnope.js is called a "resource loader" because it can <b>work with both JavaScript and CSS</b>.</li>
-          <li>yepnope.js <b>has a full test suite</b> in QUnit that you can run in your set of supported browsers to make 
+          <li>yepnope.js <b>has a full test suite</b> in QUnit that you can run in your set of supported browsers to make
           sure it works. (We run it via TestSwarm in every browser we can get our hands on)</li>
           <li>yepnope.js fully decouples preloading from execution. This means that you have ultimate <b>control of when your resource is executed</b> and <b>you can change that order on the fly</b>.</li>
           <li>The yepnope.js <b>api is friendly</b> and encourages logical grouping of resources.</li>
-          <li>yepnope.js is <b>modular</b>. It has a whole system for adding your own functionality and a couple examples 
+          <li>yepnope.js is <b>modular</b>. It has a whole system for adding your own functionality and a couple examples
           of how you might do that. (Prefixes and filters).</li>
-          <li>The yepnope.js api encourages you to <b>only load the resources that you need</b>. This means that even when 
+          <li>The yepnope.js api encourages you to <b>only load the resources that you need</b>. This means that even when
           it's slower than another script loader, it still can come out on top, because you could avoid an entire resource.</li>
-          <li>yepnope.js is <b>integrated into <a href="http://modernizr.github.com/Modernizr/2.0-beta/">Modernizr</a></b>.</li>
-          <li>yepnope.js <b>always executes things in the order they are listed</b>. This is a pro for some, and a con for others. 
-          We think it's a friendly default.</li>
+          <li>yepnope.js is <b>integrated into <a href="http://www.modernizr.com/news/modernizr-25">Modernizr</a></b>.</li>
+          <li>yepnope.js <b>always executes things in the order they are listed</b>. This is a pro for some, and a con for others.
+          We think it's a friendly default. You can override this functionality with <span class="code">yepnope.injectJs</span>
+          and <span class="code">yepnope.injectCss</span>.</li>
 
-          <li>yepnope.js has the capability to do resource fallbacks and still download dependent scripts in parallel 
+          <li>yepnope.js has the capability to do resource fallbacks and still download dependent scripts in parallel
           with the first. More clearly:<br />
 
 <pre><code>
@@ -143,13 +182,13 @@ someLoader('http:/&shy;/ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js
 });
 </code></pre>
 
-          <p>Not only is this not very pretty, and not very DRY, it's slow. It essentially means that jQuery will load in serial 
-          everytime. It also means that anything that depends on or comes after jQuery wont start downloading until after jQuery 
+          <p>Not only is this not very pretty, and not very DRY, it's slow. It essentially means that jQuery will load in serial
+          everytime. It also means that anything that depends on or comes after jQuery wont start downloading until after jQuery
           has executed.</p>
 
-          <p>yepnope, on the other hand, can start downloading `jquery.plugin.js` right away (at the same time as the google cdn 
-          version of jQuery). In the normal case, these will download at the same time and they will execute in order. In the case 
-          where our fallback is needed, we only have to wait the additional time for the second jQuery to load in order to continue 
+          <p>yepnope, on the other hand, can start downloading `jquery.plugin.js` right away (at the same time as the google cdn
+          version of jQuery). In the normal case, these will download at the same time and they will execute in order. In the case
+          where our fallback is needed, we only have to wait the additional time for the second jQuery to load in order to continue
           on. This is made possible by yepnope's fully decoupled preloading and executing.</p>
           </li>
         </ul>
@@ -231,13 +270,13 @@ Expires: Thu, 31 Dec 2020 20:00:00 GMT
         <p>Currently yepnope is being included in special builds of Modernizr, because it's such a good companion to a feature 
         testing library. The output of Modernizr is a fantastic input to yepnope. Yepnope is currently included unmodified from 
         its original state, but is also aliased as Modernizr.load - you can use the two interchangeably, though we suggest that you 
-        stick to one or the other.</p>        
+        stick to one or the other.</p>
         </article>
 
         <article>
 
         <h1>Using Yepnope</h1>
-          <pre><code>yepnope();</code></pre>
+        <pre><code>yepnope();</code></pre>
 
         <p>Takes: string, object, array of either</p>
 
@@ -608,6 +647,27 @@ Expires: Thu, 31 Dec 2020 20:00:00 GMT
         </article>
 
         <article>
+        <h3>I am requesting a file twice and it's only loading once?</h3>
+        <p>By popular demand, in yepnope 1.5+ we added the feature that scripts that have already been requested not be re-executed
+        when they are requested a second time. This can be helpful when you are dealing with less complex serverside templating
+        system and all you really care about is that all of your dependencies are available. If you need to force a load, you can
+        do so with a plugin.</p>
+        </article>
+
+        <article>
+        <h3>When does the complete callback fire?</h3>
+        <p>In versions of yepnope prior to 1.5 this could vary from time to time, but now the `complete` callback is always called
+        regardless of what happens when all (or even when nothing loads) the resources are loaded.</p>
+        </article>
+
+        <article>
+        <h3>Does yepnope wait for my CSS to load?</h3>
+        <p>It used to, but we didn't see a lot of use. So in order to keep speeds up, we removed this functionality from the
+        core, but offer it as a plugin in the github repo. Adding it to your project should make calls to yepnope wait until
+        css files are fully loaded before calling the callbacks and complete functions.</p>
+        </article>
+
+        <article>
         <h2>Yepnope Plugins!</h2>
 
         <p>Yepnope was designed to be customizable. There are a few simple hooks throughout the loading process 
@@ -623,12 +683,31 @@ Expires: Thu, 31 Dec 2020 20:00:00 GMT
 
         <p>In no specific order, they are:</p>
 
+        <h3>timeout! Prefix</h3>
+
+        <p>The timeout! prefix accepts a value as an override to the global yepnope errorTimeout. This value is the number of milliseconds
+        to wait for a resource to load before just calling the callbacks for that resource. Simply separate the `timeout` keyword
+        with a `=` and then list the the new number of milliseconds that you want to use.</p>
+
+        <pre><code>
+yepnope( {
+    load : 'timeout=2000!jquery.1.5.0.js',
+    callback : function ( url, result, key ) {
+        if ( ! window.jQuery ) {
+          // load a different one
+        }
+    }
+} );
+        </code></pre>
+
+        <p>Other plugins can use this key/val style if they so choose. Simply look at the implementation of the timeout plugin for 
+        details. The timeout plugin is the only one that's included by default in yepnope.</p>
+
         <h3>css! Prefix</h3>
 
-        <p>The css! prefix is for those people who are dynamically generating css, or have the need to use query strings 
-        (sometimes for cachebusting) on their CSS files. By default, yepnope assumes that any files that end with a '.css' are 
-        CSS files, but it also automatically assumes that everything else is a JavaScript file. With the css! prefix, you can 
-        prepend it to any file name and yepnope will treat it like a css file.</p>
+        <p>The css! prefix is for those people who need to load css files without a `.css` extension. Since yepnope 1.5 - yepnope can
+        detect the presence of query parameters without the help of the css prefix, so this is usually for cases when the css files
+        have a php ending or something similar.</p>
 
         <pre><code>
 yepnope( 'css!mystyles.php?version=1532' ); // loads as a style!
@@ -699,6 +778,7 @@ yepnope( {
           <li><span class="code">forceJS</span> - boolean force the file to be treated as a JS file</li>
           <li><span class="code">forceCSS</span> - boolean for force the file to be treated as a CSS file</li>
           <li><span class="code">bypass</span> - boolean for do or don't load the file</li>
+          <li><span class="code">attrs</span> - key value pairs that will be applied as attributes to the injected elements. (new in 1.5+)</li>
         </ul>
 
         <p>Here's a somewhat silly example:</p>
@@ -772,43 +852,6 @@ yepnope.addFilter( function ( resourceObj ) {
       yepnope.js is licensed under the <a href="http://sam.zoy.org/wtfpl/">WTFPL</a> (so feel free to relicense as needed). 
       - Site content is <a href="http://creativecommons.org/licenses/by/3.0/">CC-by</a></footer> 
     </div> 
-    <script>
-      yepnope.addPrefix( 'preload', function ( resource ) {
-        resource.noexec = true;
-        return resource;
-      });
-    </script>
-    <script type="text/javascript">
-      var _gaq = [['_setAccount', 'UA-19322022-1'], ['_setDomainName', '.yepnopejs.com'], ['_trackPageview']];
-      yepnope([
-        {
-          load : [ 'js/jquery.min.js', 'js/jsbeautify.min.js', 'preload!js/hijs.js' ],
-          complete : function () {
-          $(function () {
-            $('code').not('.stayugly').each(function () {
-              this.innerHTML = js_beautify( $.trim( $(this).html() ), {
-              indent_size: 2,
-              preserve_newlines: true,
-              space_after_anon_function: true
-            } );
-          });
 
-            // We already preloaded it, just needed to wait until dom ready, and
-            // naturally loads immediately. So.. best of both worlds.
-            yepnope( 'js/hijs.js' );
-            (function( $body ) {
-             $("a[href^=#]").bind('click', function( e ) {
-               e.preventDefault();
-               $body.animate({ scrollTop: $( '#' + $(this).attr('href').split('#').pop() ).offset().top });
-               });
-            })( $(document.body) );
-          });
-        }
-      },
-      {
-      load: 'http://www.google-analytics.com/ga.js'
-      }
-      ]);
-    </script>
 </body> 
 </html>
