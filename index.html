@@ -650,7 +650,7 @@ Expires: Thu, 31 Dec 2020 20:00:00 GMT
         </article>
 
         <article>
-        <h3>I'm seeing two requests in my dev tools, why is it loading everything twice?</h3>
+        <h3 id="twice">I'm seeing two requests in my dev tools, why is it loading everything twice?</h3>
         <p>Depending on your browser and your server this could mean a couple different things. Due to the nature of 
         how yepnope works, there are two requests made for every file. The first request is to load the resource 
         into the cache and the second request is to execute it (but since it's in the cache, it should execute immediately). 
