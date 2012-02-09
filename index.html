@@ -87,16 +87,54 @@
       <article id="whatsnew">
         <h1>What's new in yepnope 1.5.2?</h1>
         <ul>
-          <li>Scripts with the same url don't reexecute, but their callbacks fire in the correct order.</li>
+          <li>Scripts with the same url won't execute twice, but their callbacks fire in the correct order.</li>
           <li>The complete function behaves much more like the callback function with respect to 'recursive yepnope'.</li>
-          <li>CSS load callbacks were taken out by default and put in an official plugin. Too few people used it. Old code will still work, callbacks just fire immediately on CSS (unless css load plugin is included).</li>
-          <li>We exposed yepnope.injectJs and yepnope.injectCss in order to give you direct access to the injection functions.</li>
+          <li>CSS load callbacks were taken out by default and put in an official plugin. Too few people used it. Old code will still work, callbacks will just fire immediately on CSS (unless css load plugin is included).</li>
+          <li>We exposed <span class="code">yepnope.injectJs</span> and <span class="code">yepnope.injectCss</span> in order to give you direct access to the injection functions.
+<pre>yepnope.injectJs( scriptSource [, callback ] [, elemAttributes ] [, timeout ]);
+
+<code>// Example
+yepnope.injectJs( "jquery.js", function() {
+  console.log("jQuery loaded!");
+}, {
+  charset : "utf-8"
+}, 5000 );</code></pre>
+<pre>yepnope.injectCss( stylesheetSource [, callback ] [, elemAttributes ] [, timeout ]);
+
+<code>// Example
+yepnope.injectCss( "print.css", function() {
+  console.log("css injected!");
+}, {
+  media : "print"
+}, 5000 );</code></pre>
+          </li>
           <li>We added the ability to use key/value pairs in prefixes.</li>
-          <li>We added a builtin prefix for overriding the global yepnope.errorTimeout with a specific timeout per script. yepnope('timeout=5000!script.js');</li>
+          <li>We added a builtin prefix for overriding the global <span class="code">yepnope.errorTimeout</span> with a specific timeout per script.
+<pre><code>yepnope('timeout=5000!script.js');</code></pre></li>
           <li>We smarten'd up detection of CSS files even if there are query parameters (without the use of the css prefix plugin)</li>
           <li>We added the ability to write filters and prefixes that add arbitrary attributes on the eventual script and link tags.</li>
           <li>We removed the old and busted demo/ folder since we just use the tests folder for everything.</li>
           <li>We just assume you have closure compiler and uglifyjs if you're running our compress script. (it makes it super small, trust us)</li>
+          <li>
+            While you can still set up your own labels for resource callbacks, yepnope now automatically creates keys for you, derived from the basename of the resource. For example, if you were loading <span class="code">https://my-cdn.com/jquery-ui.min.js?v=1.8.16</span>, the derived key would be <span class="code">jquery-ui.min.js</span>.
+<pre><code>yepnope({
+  load: [
+    "https:/&shy;/my-cdn.com/jquery.min.js?v=1.7.1",
+    "https:/&shy;/my-cdn.com/jquery-ui.min.js?v=1.8.16"
+  ],
+  callback: {
+    "jquery.min.js" : function() {
+      console.log("jquery loaded!");
+    },
+    "jquery-ui.min.js" : function() {
+      console.log("jquery-ui loaded!");
+    }
+  }
+});</code></pre>
+          </li>
+          <li>You can now run the unit tests locally using Node.js. Simply navigate to the tests folder and run:
+<pre>npm install
+node run.js</pre></li>
         </ul>
       </article>
       <article id="api">
