@@ -29,8 +29,10 @@ var docElement            = doc.documentElement,
     isGecko               = ( "MozAppearance" in docElement.style ),
     isGeckoLTE18          = isGecko && !! doc.createRange().compareNode,
     insBeforeObj          = isGeckoLTE18 ? docElement : firstScript.parentNode,
-    isIE                  = !! doc.attachEvent,
-    strJsElem             = isGecko ? "object" : isIE ? "script" : "img",
+    // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
+    isOpera               = window.opera && toString.call( window.opera ) == "[object Opera]",
+    isIE                  = !! doc.attachEvent && !isOpera,
+    strJsElem             = isGecko ? "object" : isIE  ? "script" : "img",
     strCssElem            = isIE ? "script" : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
       return toString.call( obj ) == "[object Array]";
