@@ -1,6 +1,5 @@
-/*yepnope1.5.2|WTFPL*/
 // yepnope.js
-// Version - 1.5.2
+// Version - 1.5.4pre
 //
 // by
 // Alex Sexton - @SlexAxton - AlexSexton[at]gmail.com
@@ -172,7 +171,7 @@ var docElement            = doc.documentElement,
     timeout = timeout || yepnope['errorTimeout'];
 
     // Create appropriate element for browser and type
-    var preloadElem = {},
+    var preloadElem = doc.createElement( elem ),
         done        = 0,
         firstFlag   = 0,
         stackObject = {
@@ -188,7 +187,6 @@ var docElement            = doc.documentElement,
     if ( scriptCache[ url ] === 1 ) {
       firstFlag = 1;
       scriptCache[ url ] = [];
-      preloadElem = doc.createElement( elem );
     }
 
     function onload ( first ) {
