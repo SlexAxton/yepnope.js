@@ -109,7 +109,7 @@ var docElement            = doc.documentElement,
     // Inject script into to document
     // or immediately callback if we know there
     // was previously a timeout error
-    err ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
+    err ? script.onload() : insBeforeObj.insertBefore( script, getFirstScript() );
   }
 
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
@@ -134,7 +134,7 @@ var docElement            = doc.documentElement,
     }
 
     if ( ! err ) {
-      firstScript.parentNode.insertBefore( link, firstScript );
+      insBeforeObj.insertBefore( link, getFirstScript() );
       sTimeout(cb, 0);
     }
   }
@@ -243,7 +243,7 @@ var docElement            = doc.documentElement,
     if ( elem != "img" ) {
       // If it's the first time, or we've already loaded it all the way through
       if ( firstFlag || scriptCache[ url ] === 2 ) {
-        insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
+        insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : getFirstScript() );
 
         // If something fails, and onerror doesn't fire,
         // continue after a timeout.
@@ -255,7 +255,13 @@ var docElement            = doc.documentElement,
       }
     }
   }
-
+  // handle case when the firstScript removes itself from the DOM
+  function getFirstScript() {
+	  if ( firstScript.parentNode == null) {
+		  firstScript = doc.getElementsByTagName( "script" )[ 0 ];
+	  }
+	  return firstScript; 
+  }
   function load ( resource, type, dontExec, attrObj, timeout ) {
     // If this method gets hit multiple times, we should flag
     // that the execution of other threads should halt.
