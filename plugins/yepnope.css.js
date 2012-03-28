@@ -38,11 +38,13 @@
             var sheets = document.styleSheets;
             for(var j=0, k=sheets.length; j<k; j++) {
                 if(sheets[j].ownerNode.id == id) {
-                    sheets[j].cssRules;
+                    // this throws an exception? was originally just a statement of "sheets[j].cssRules;"
+                    if (sheets[j].cssRules.length)
+                        return onload();
                 }
             }
-            // If you made it here, success!
-            onload();
+            // if we get here, its not in document.styleSheets (we never saw the ID)
+            throw new Error;
         } catch(e) {
             // Keep polling
             setTimeout(poll, 20);
