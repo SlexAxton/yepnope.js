@@ -11,7 +11,7 @@
             setTimeout( cb, 0 );
           }
         },
-        id = "yn" + new Date,
+        id = "yn" + +new Date,
         ref, done, i;
 
     cb = internal ? yepnope.executeStack : ( cb || function(){} );
@@ -38,11 +38,13 @@
             var sheets = document.styleSheets;
             for(var j=0, k=sheets.length; j<k; j++) {
                 if(sheets[j].ownerNode.id == id) {
-                    sheets[j].cssRules;
+                    // this throws an exception, I believe, if not full loaded (was originally just "sheets[j].cssRules;")
+                    if (sheets[j].cssRules.length)
+                        return onload();
                 }
             }
-            // If you made it here, success!
-            onload();
+            // if we get here, its not in document.styleSheets (we never saw the ID)
+            throw new Error;
         } catch(e) {
             // Keep polling
             setTimeout(poll, 20);
