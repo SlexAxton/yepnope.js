@@ -15,6 +15,12 @@
 <!-- load the supported plugins so they can be tested as well. Will break them out when it makes sense -->
 <script type="text/javascript" src="../prefixes/yepnope.ie-prefix.js"></script>
 <script type="text/javascript" src="../prefixes/yepnope.preload.js"></script>
+<script type="text/javascript" src="../filters/yepnope.pathfilter.js"></script>
+<script type="text/javascript">
+	yepnope.paths = {
+		'jsb': 'js/basetest'
+	};
+</script>
 
 <script type="text/javascript" src="qunit.js"></script>
 <script type="text/javascript" src="jquery-1.6.4.min.js"></script>
