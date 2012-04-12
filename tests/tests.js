@@ -329,12 +329,10 @@ if ( ! window.console ) {
 
   asyncTest("Yepnope loads several files with a common base", 1, function() {
     yepnope({
-      base: 'basetest/',
+      base: 'js/basetest/',
       load: ['file3.js', 'file4.js'],
       complete: function(){
-        ok( w.file3 && w.file4, 'basetest/file3.js and basetest/file4.js have loaded.');
-        w.file3 = false;
-        w.file4 = false;
+        ok( w.file3 && w.file4, 'js/basetest/file3.js and js/basetest/file4.js have loaded.');
         start();
       }
     })
@@ -342,11 +340,10 @@ if ( ! window.console ) {
 
   asyncTest("Yepnope loads a single file with a given base", 1, function() {
     yepnope({
-      base: 'basetest/',
+      base: 'js/basetest/',
       load: 'file5.js',
       complete: function(){
         ok( w.file5, 'basetest/file5.js has loaded.');
-        w.file5 = false;
         start();
       }
     })
@@ -354,12 +351,10 @@ if ( ! window.console ) {
 
   asyncTest("Yepnope loads several files with prefixes that have a common base", 1, function() {
     yepnope({
-      base: 'basetest/',
+      base: 'js/basetest/',
       load: ['timeout=5000!file6.js', 'timeout=5000!file7.js'],
       complete: function() {
-        ok( w.file6 && w.file7, 'basetest/file6.js and basetest.file7.js have loaded.');
-        w.file6 = false;
-        w.file7 = false;
+        ok( w.file6 && w.file7, 'js/basetest/file6.js and js/basetest.file7.js have loaded.');
         start();
       }
     })
@@ -367,10 +362,10 @@ if ( ! window.console ) {
 
   asyncTest("Yepnope loads a single file with a prefix with a given base", 1, function() {
     yepnope({
-      base: 'basetest/',
+      base: 'js/basetest/',
       load: 'timeout=5000!file8.js',
       complete: function() {
-        ok( w.file8, 'basetest/file8.js has loaded.');
+        ok( w.file8, 'js/basetest/file8.js has loaded.');
         start();
       }
     })

@@ -1,1 +1,0 @@
-window.file6 = true;
