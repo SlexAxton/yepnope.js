@@ -351,8 +351,7 @@ var docElement            = doc.documentElement,
           callback :
           callback[ input ] ||
           callback[ index ] ||
-          callback[ ( input.split( "/" ).pop().split( "?" )[ 0 ] ) ] ||
-          executeStack;
+          callback[ ( input.split( "/" ).pop().split( "?" )[ 0 ] ) ];
       }
 
       // if someone is overriding all normal functionality
