@@ -397,7 +397,7 @@ var docElement            = doc.documentElement,
             complete   = testObject['complete'] || noop,
             needGroupSize,
             callbackKey;
-
+            
         // Reusable function for dealing with the different input types
         // NOTE:: relies on closures to keep 'chain' up to date, a bit confusing, but
         // much smaller than the functional equivalent in this case.
