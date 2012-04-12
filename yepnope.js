@@ -395,8 +395,28 @@ var docElement            = doc.documentElement,
             callback   = testObject['callback'] || noop,
             cbRef      = callback,
             complete   = testObject['complete'] || noop,
+            base       = testObject['base'],
             needGroupSize,
             callbackKey;
+
+        // Prepend base url to all urls
+        if (base) {
+          if (always instanceof Array) {
+            for (var i = 0, len = always.length; i < len; i++) {
+              always[i] = prependBase(always[i]);
+            }
+          } else {
+            always = prependBase(always);
+          }
+        }
+
+        // Function which prepends a base to a url
+        function prependBase(urlToPrepend) {
+          var splitUrl = urlToPrepend.split('!');
+          var idx = splitUrl.length - 1;
+          splitUrl[idx] = base + splitUrl[idx];
+          return splitUrl.join('!');
+        }
 
         // Reusable function for dealing with the different input types
         // NOTE:: relies on closures to keep 'chain' up to date, a bit confusing, but

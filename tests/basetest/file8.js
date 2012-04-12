@@ -1,0 +1,1 @@
+window.file8 = true;

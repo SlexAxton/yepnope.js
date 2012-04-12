@@ -1,0 +1,1 @@
+window.file4 = true;
