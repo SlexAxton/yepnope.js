@@ -327,6 +327,25 @@ if ( ! window.console ) {
     })
   });
 
+  asyncTest("Yepnope loads several files with a common base", 1, function() {
+    yepnope({
+      load: ['jsb/file3.js', 'jsb/file4.js'],
+      complete: function(){
+        ok( w.file3 && w.file4, 'js/basetest/file3.js and js/basetest/file4.js have loaded.');
+        start();
+      }
+    })
+  });
+
+  asyncTest("Yepnope loads a single file with a given base", 1, function() {
+    yepnope({
+      load: 'jsb/file5.js',
+      complete: function(){
+        ok( w.file5, 'basetest/file5.js has loaded.');
+        start();
+      }
+    })
+  });
 
   /** /
   asyncTest("CSS Callback Timing", 4, function() {
