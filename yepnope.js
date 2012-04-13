@@ -330,8 +330,11 @@ var docElement            = doc.documentElement,
       return res;
     }
 
-    function getExtension ( url ) {
-        return url.split(".").pop().split("?").shift();
+     function getExtension ( url ) {
+      //The extension is always the last characters before the ? and after a period.
+      //The previous method was not accounting for the possibility of a period in the query string.
+      var b = url.split('?')[0];
+      return b.substr(b.lastIndexOf('.')+1);
     }
 
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
