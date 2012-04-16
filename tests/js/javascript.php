@@ -15,7 +15,7 @@ if (sizeof($matches) > 1) {
   sleep($matches[1]);
 }
 
-$name = explode('.', basename($_SERVER['REQUEST_URI'], '.js'));
+$name = basename(array_shift(explode('?', $_SERVER['REQUEST_URI'])), '.js');
 
-echo 'window.' . $name[0] . 'time = (+new Date);';
-echo 'window.' . $name[0] . ' = true;';
+echo 'window.' . $name . 'time = (+new Date);';
+echo 'window.' . $name . ' = true;';
