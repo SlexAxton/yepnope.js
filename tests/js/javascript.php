@@ -14,5 +14,8 @@ preg_match($pattern, $subject, $matches);
 if (sizeof($matches) > 1) {
   sleep($matches[1]);
 }
-echo 'window.' . basename($_SERVER['REQUEST_URI'], '.js') . 'time = (+new Date);';
-echo 'window.' . basename($_SERVER['REQUEST_URI'], '.js') . ' = true;';
+
+$name = explode('.', basename($_SERVER['REQUEST_URI'], '.js'));
+
+echo 'window.' . $name[0] . 'time = (+new Date);';
+echo 'window.' . $name[0] . ' = true;';
