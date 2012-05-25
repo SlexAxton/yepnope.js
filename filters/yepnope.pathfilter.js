@@ -29,7 +29,6 @@
         return resource;
       });
     };
-  console.log(yepnope);
   if (yepnope) addPathFilter(yepnope);
   else if (modernizr.load) addPathFilter(modernizr.load);
 })();
