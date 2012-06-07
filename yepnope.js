@@ -218,6 +218,10 @@ var docElement            = doc.documentElement,
     // Setting url to data for objects or src for img/scripts
     if ( elem == "object" ) {
       preloadElem.data = url;
+	  
+      // Setting the type attribute to stop Firefox complaining about the mimetype when running locally.
+      // The type doesn't matter as long as it's real, thus text/css instead of text/javascript.
+      preloadElem.setAttribute("type", "text/css");
     } else {
       preloadElem.src = url;
 
