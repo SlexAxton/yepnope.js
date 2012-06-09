@@ -391,7 +391,7 @@ if ( ! window.console ) {
   });
   /**/
 
-  asyncTest("Handle resources with request parameters", 2, function() {
+  asyncTest("Handle resources with request parameters", 3, function() {
     ++u;
     var reqRGB = rgb();
 
@@ -407,10 +407,21 @@ if ( ! window.console ) {
         callback : function() {
             cssIsLoaded( reqRGB, function( result ) {
               ok( result, "Request parameters ignored on CSS successfully");
+            });
+        }
+    });
+
+    var reqRGB2 = rgb();
+    yepnope({
+        load : 'css/' + reqRGB2.join( ',' ) + '.css?abc=456.789',
+        callback : function() {
+            cssIsLoaded( reqRGB2, function( result ) {
+              ok( result, "Request parameters with decimal ignored on CSS successfully");
               start();
             });
         }
     });
+
   });
 
   module("Caching");
