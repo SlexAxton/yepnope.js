@@ -218,7 +218,7 @@ var docElement            = doc.documentElement,
     // Setting url to data for objects or src for img/scripts
     if ( elem == "object" ) {
       preloadElem.data = url;
-	  
+      
       // Setting the type attribute to stop Firefox complaining about the mimetype when running locally.
       // The type doesn't matter as long as it's real, thus text/css instead of text/javascript.
       preloadElem.setAttribute("type", "text/css");
@@ -427,7 +427,49 @@ var docElement            = doc.documentElement,
             // Just load the script of style
             loadScriptOrStyle( needGroup, callback, chain, 0, testResult );
           }
+          // See if we have an array.
+          // We need to handle arrays with properties differently than normal arrays.
+          // As such, we use an indexed approach to avoid unnecessary properties.
+          else if ( isArray( needGroup ) ) {
+            // We don't need any hacks for array size
+            needGroupSize = needGroup.length;
+            // Loop over the items in the array
+            while ( needGroupSize >= 0 ) {
+              // Since we need callbackKey to be set regardless of the value
+              // of --needGroupSize, we do both outside of the if-block.
+              callbackKey = --needGroupSize;
+              // Only use properties in the array
+              if ( needGroup.hasOwnProperty( callbackKey ) ) {
+                // Find the last added resource, and append to it's callback.
+                if ( ! moreToCome && ! ( needGroupSize ) ) {
+                  // If this is an object full of callbacks
+                  if ( ! isFunction( callback ) ) {
+                    // Add in the complete callback to go at the end
+                    callback[ callbackKey ] = (function( innerCb ) {
+                      return function () {
+                        var args = [].slice.call( arguments );
+                        innerCb && innerCb.apply( this, args );
+                        complete();
+                      };
+                    })( cbRef[ callbackKey ] );
+                  }
+                  // If this is just a single callback
+                  else {
+                    callback = function () {
+                      var args = [].slice.call( arguments );
+                      cbRef.apply( this, args );
+                      complete();
+                    };
+                  }
+                }
+                loadScriptOrStyle( needGroup[ callbackKey ], callback, chain, callbackKey, testResult );
+              }
+            }
+          }
+          /* <strike>
           // See if we have an object. Doesn't matter if it's an array or a key/val hash
+             </strike> */
+          // See if we have an object. It does matter if it's an array or a key/val hash
           // Note:: order cannot be guaranteed on an key value object with multiple elements
           // since the for-in does not preserve order. Arrays _should_ go in order though.
           else if ( isObject( needGroup ) ) {
