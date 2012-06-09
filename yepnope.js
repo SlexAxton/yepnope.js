@@ -431,14 +431,13 @@ var docElement            = doc.documentElement,
             // We don't need any hacks for array size
             needGroupSize = needGroup.length;
             // Loop over the items in the array
-            while ( needGroupSize >= 0 ) {
+			for ( callbackKey = 0; callbackKey < needGroupSize; callbackKey++ ) {
               // Since we need callbackKey to be set regardless of the value
               // of --needGroupSize, we do both outside of the if-block.
-              callbackKey = --needGroupSize;
               // Only use properties in the array
               if ( needGroup.hasOwnProperty( callbackKey ) ) {
                 // Find the last added resource, and append to it's callback.
-                if ( ! moreToCome && ! ( needGroupSize ) ) {
+                if ( ! moreToCome && ( callbackKey + 1 == needGroupSize ) ) {
                   // If this is an object full of callbacks
                   if ( ! isFunction( callback ) ) {
                     // Add in the complete callback to go at the end
