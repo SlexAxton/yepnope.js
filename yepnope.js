@@ -17,7 +17,7 @@
 
 var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
-    firstScript           = firstScript = doc.getElementsByTagName( "script" )[ 0 ],
+    firstScript           = doc.getElementsByTagName( "script" )[ 0 ],
     toString              = {}.toString,
     execStack             = [],
     started               = 0,
