@@ -46,7 +46,7 @@ var docElement            = doc.documentElement,
       return toString.call( fn ) == "[object Function]";
     },
     readFirstScript       = function() {
-        if (!firstScript || firstScript.parentNode) {
+        if (!firstScript || !firstScript.parentNode) {
             firstScript = doc.getElementsByTagName( "script" )[ 0 ];
         }
     },
