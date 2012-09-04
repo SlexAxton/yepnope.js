@@ -45,6 +45,11 @@ var docElement            = doc.documentElement,
     isFunction            = function ( fn ) {
       return toString.call( fn ) == "[object Function]";
     },
+    readFirstScript       = function() {
+        if (!firstScript || !firstScript.parentNode) {
+            firstScript = doc.getElementsByTagName( "script" )[ 0 ];
+        }
+    },
     globalFilters         = [],
     scriptCache           = {},
     prefixes              = {
@@ -109,6 +114,7 @@ var docElement            = doc.documentElement,
     // Inject script into to document
     // or immediately callback if we know there
     // was previously a timeout error
+    readFirstScript();
     err ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
   }
 
@@ -134,6 +140,7 @@ var docElement            = doc.documentElement,
     }
 
     if ( ! err ) {
+      readFirstScript();
       firstScript.parentNode.insertBefore( link, firstScript );
       sTimeout(cb, 0);
     }
@@ -247,6 +254,7 @@ var docElement            = doc.documentElement,
     if ( elem != "img" ) {
       // If it's the first time, or we've already loaded it all the way through
       if ( firstFlag || scriptCache[ url ] === 2 ) {
+        readFirstScript();
         insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
 
         // If something fails, and onerror doesn't fire,
