@@ -1,6 +1,5 @@
 {
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/SlexAxton/yepnope.js.git"
-  }
+  "name": "yepnope",
+  "version": "1.5.4",
+  "main": "./yepnope.1.5.4-min.js"
 }
