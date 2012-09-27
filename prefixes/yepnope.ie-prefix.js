@@ -2,9 +2,8 @@
  * Yepnope IE detection prefix
  * 
  * Use a combination of any of these, and they should work
- * Usage: ['ie6!ie6styles.css', 'ie7!ie7styles.css', 'ie!allIEstyles.css', 'ie6!ie7!oldIEstyles.css']
- * Usage: ['iegt5!iebutnot5.css', 'iegt6!ieHigherThan6.css', 'iegt7!gt7.css', 'iegt8!gt8.css']
- * Usage: ['ielt7!ieLessThan7.css', 'ielt8!lt8.css', 'ielt9!lt9.css']
+ * Usage: ['ie6!ie6styles.css', 'ie7!ie7styles.css', 'ie6!ie7!ie6and7styles.css']
+ * Usage: ['ielt7!ieLessThan7.css', 'ielt8!ieLessThan8.css', 'ielt9!ieLessThan9.css', 'oldie!ieLessThan10.css']
  * 
  * A logical OR will be applied to any combination of the supported prefixes.
  *
@@ -31,24 +30,29 @@
 
 
   // ----------------------------------------------------------
-  // A short snippet for detecting versions of IE in JavaScript
-  // without resorting to user-agent sniffing
+  // A short snippet for detecting versions of IE prior to IE10
+  // in JavaScript without resorting to user-agent sniffing.
   // ----------------------------------------------------------
-  // If you're not in IE (or IE version is less than 5) then:
-  //     ie === undefined
-  // If you're in IE (>=5) then you can determine which version:
-  //     ie === 7; // IE7
-  // Thus, to detect IE:
-  //     if (ie) {}
-  // And to detect the version:
-  //     ie === 6 // IE6
-  //     ie > 7 // IE8, IE9 ...
-  //     ie < 9 // Anything less than IE9
+  // If you're not in IE (or if your IE version is less than 5
+  // or greater than 9) then:
+  //     oldie === undefined // IE < 5 || IE > 9 || !IE
+  // If you're in IE (>=5 and <= 9) then you can determine
+  // which version you are using:
+  //     oldie === 5 // IE5
+  //     oldie === 6 // IE6
+  //     oldie === 7 // IE7
+  //     oldie === 8 // IE8
+  //     oldie === 9 // IE9
+  // Thus, to detect IE5-9:
+  //     if (oldie) {}
+  // And to detect the version or an upper bound on it:
+  //     oldie === 6 // IE6
+  //     oldie < 10  // Anything less than IE10
   // ----------------------------------------------------------
 
   // UPDATE: Now using Live NodeList idea from @jdalton
 
-  var ie = (function(){
+  var oldie = (function(){
 
     var undef,
         v = 3,
@@ -65,19 +69,18 @@
   }()),
 
   iePrefixes = {
-    ie:    !!ie,
-    ie5:   (ie === 5),
-    ie6:   (ie === 6),
-    ie7:   (ie === 7),
-    ie8:   (ie === 8),
-    ie9:   (ie === 9),
-    iegt5: (ie > 5),
-    iegt6: (ie > 6),
-    iegt7: (ie > 7),
-    iegt8: (ie > 8),
-    ielt7: (ie < 7),
-    ielt8: (ie < 8),
-    ielt9: (ie < 9)
+    other:  !oldie,
+    oldie:  !!oldie,
+    ie5:    (oldie === 5),
+    ie6:    (oldie === 6),
+    ie7:    (oldie === 7),
+    ie8:    (oldie === 8),
+    ie9:    (oldie === 9),
+    ielt6:  (oldie < 6),
+    ielt7:  (oldie < 7),
+    ielt8:  (oldie < 8),
+    ielt9:  (oldie < 9),
+    ielt10: (oldie < 10)
   },
   checkAllIEPrefixes = function(resource) {
     var prefixes = resource.prefixes,
