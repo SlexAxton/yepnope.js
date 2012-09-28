@@ -75,8 +75,6 @@ var docElement            = doc.documentElement,
   // in the appropriate order
   function injectJs ( src, cb, attrs, timeout, /* internal use */ err, internal ) {
 	  
-	 console.log("injectJs", src, cb, attrs, timeout);
-	  
     var script = doc.createElement( "script" ),
         done, i;
 
@@ -378,7 +376,7 @@ var docElement            = doc.documentElement,
       }
       else {
         // Handle if we've already had this url and it's completed loaded already
-        if ( scriptCache[ resource['url'] ] && resource['noexec'] !== false ) {
+        if ( scriptCache[ resource['url'] ] && resource['reexecute'] !== true) {
           // don't let this execute again
           resource['noexec'] = true;
         }
