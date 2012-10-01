@@ -74,6 +74,7 @@ var docElement            = doc.documentElement,
   // Takes a preloaded js obj (changes in different browsers) and injects it into the head
   // in the appropriate order
   function injectJs ( src, cb, attrs, timeout, /* internal use */ err, internal ) {
+	  
     var script = doc.createElement( "script" ),
         done, i;
 
@@ -375,7 +376,7 @@ var docElement            = doc.documentElement,
       }
       else {
         // Handle if we've already had this url and it's completed loaded already
-        if ( scriptCache[ resource['url'] ] ) {
+        if ( scriptCache[ resource['url'] ] && resource['reexecute'] !== true) {
           // don't let this execute again
           resource['noexec'] = true;
         }
