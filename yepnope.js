@@ -206,8 +206,6 @@ var docElement            = doc.documentElement,
 
         ! started && executeStack();
 
-        // Handle memory leak in IE
-        preloadElem.onload = preloadElem.onreadystatechange = null;
         if ( first ) {
           if ( elem != "img" ) {
             sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 50);
@@ -218,6 +216,9 @@ var docElement            = doc.documentElement,
               scriptCache[ url ][ i ].onload();
             }
           }
+          
+          // Handle memory leak in IE
+           preloadElem.onload = preloadElem.onreadystatechange = null;
         }
       }
     }
