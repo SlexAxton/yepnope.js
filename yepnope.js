@@ -386,7 +386,7 @@ var docElement            = doc.documentElement,
         }
 
         // Throw this into the queue
-        chain.load( resource['url'], ( ( resource['forceCSS'] || ( ! resource['forceJS'] && "css" == getExtension( resource['url'] ) ) ) ) ? "c" : undef, resource['noexec'], resource['attrs'], resource['timeout'] );
+        input && chain.load( resource['url'], ( ( resource['forceCSS'] || ( ! resource['forceJS'] && "css" == getExtension( resource['url'] ) ) ) ) ? "c" : undef, resource['noexec'], resource['attrs'], resource['timeout'] );
 
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
@@ -419,7 +419,7 @@ var docElement            = doc.documentElement,
         // NOTE:: relies on closures to keep 'chain' up to date, a bit confusing, but
         // much smaller than the functional equivalent in this case.
         function handleGroup ( needGroup, moreToCome ) {
-          if ( ! needGroup ) {
+          if ( '' !== needGroup && ! needGroup ) {
             // Call the complete callback when there's nothing to load.
             ! moreToCome && complete();
           }
@@ -486,11 +486,15 @@ var docElement            = doc.documentElement,
         }
 
         // figure out what this group should do
-        handleGroup( group, !!always );
+        handleGroup( group, !!always || !!testObject['complete']);
 
         // Run our loader on the load/both group too
         // the always stuff always loads second.
         always && handleGroup( always );
+
+	// If complete callback is used without loading anything
+        !always && !!testObject['complete'] && handleGroup('');
+
     }
 
     // Someone just decides to load a single script or css file as a string
