@@ -11,7 +11,7 @@
             setTimeout( cb, 0 );
           }
         },
-        id = "yn" + +new Date,
+        id = "yn" + (+new Date()),
         ref, done, i;
 
     cb = internal ? yepnope.executeStack : ( cb || function(){} );
