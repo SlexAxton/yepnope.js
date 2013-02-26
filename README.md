@@ -60,7 +60,7 @@ Dave Artz       - A.getJS was a huge code-inspiration for our loader. So he's re
 
 Kyle Simpson    - He is the creator of LABjs of which a lot of this is inspired by.
 
-Stoyan Stefanov - His work on resource preloading has been awesome: (http://www.phpied.com/preload-cssjavascript-without-execution/)[http://www.phpied.com/preload-cssjavascript-without-execution/]
+Stoyan Stefanov - His work on resource preloading has been awesome: [http://www.phpied.com/preload-cssjavascript-without-execution/](http://www.phpied.com/preload-cssjavascript-without-execution/)
 
 Steve Souders   - His evangelism and work in the space (ControlJS) have brought light to the issues at hand, he is the father of front-end performance.
 
