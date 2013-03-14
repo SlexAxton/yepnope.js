@@ -1,5 +1,5 @@
 #/bin/sh
-closure --js yepnope.js --compilation_level ADVANCED_OPTIMIZATIONS > yepnope.closure.min.js
+closure-compiler --js yepnope.js --compilation_level ADVANCED_OPTIMIZATIONS > yepnope.closure.min.js
 echo "/*yepnope1.5.x|WTFPL*/" > yepnope.uglify.min.js
 uglifyjs --unsafe yepnope.closure.min.js >> yepnope.uglify.min.js
 m=$(ls -la yepnope.uglify.min.js | awk '{ print $5}')
