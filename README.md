@@ -29,22 +29,13 @@ Any forks and stuff are welcome.
 
 ##Current Released Version##
 
-1.5.4
+2.0.0
 
-(NOTE:: there were some problems with 1.5.0 in IE, we strongly suggest an upgrade to 1.5.3+)
+Version 2 is a significant diversion from Version 1.x. We feel that the direction helps developers make the best decisions for performance rather than enabling poor uses.
 
-Changes in 1.5+ :
+Changes in 2.0+ :
 
-* Scripts with the same url don't reexecute, but their callbacks fire in the correct order.
-* The `complete` function behaves much more like the `callback` function with respect to 'recursive yepnope'.
-* CSS load callbacks were taken out by default and put in an official plugin. Too few people used it. Old code will still work, callbacks just fire immediately on CSS (unless css load plugin is included).
-* We exposed `yepnope.injectJs` and `yepnope.injectCss` in order to give you direct access to the injection functions.
-* We added the ability to use key/value pairs in prefixes.
-* We added a builtin prefix for overriding the global `yepnope.errorTimeout` with a specific timeout per script. `yepnope('timeout=5000!script.js');`
-* We smarten'd up detection of CSS files even if there are query parameters (without the use of the `css` prefix plugin)
-* We added the ability to write filters and prefixes that add arbitrary attributes on the eventual script and link tags.
-* We removed the old and busted `demo/` folder since we just use the `tests` folder for everything.
-* We just assume you have uglifyjs if you're running our `compress` script.
+* Rewrote entire library
 
 NOTE: the code in the github repository is considered in development. Use at your own risk. The download buttons will link to our current release version.
 
