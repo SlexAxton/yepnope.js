@@ -67,15 +67,30 @@ window.yepnope = (function (window, document, undef) {
     return (!readyState || readyState == 'loaded' || readyState == 'complete' || readyState == 'uninitialized');
   }
 
-  function runWhenReady (src) {
+  function runWhenReady (src, cb) {
     var fn = scriptCache[src];
     if (fn) {
       fn.call(window);
+      cb();
     }
   }
 
   // Inject a script into the page and know when it's done
   function injectJs (src, cb, attrs, timeout) {
+    cb = cb || noop;
+
+    var cached = scriptCache[src];
+
+    // If we already have a cached function for this just run it
+    if (cached) {
+      if (yepnope['dupes']) {
+        runWhenReady(src, cb);
+      }
+      else {
+        cb();
+      }
+      return;
+    }
 
     var script = document.createElement('script');
     var attrs = attrs || {};
@@ -98,8 +113,6 @@ window.yepnope = (function (window, document, undef) {
       script.setAttribute(i, attrs[i]);
     }
 
-    cb = cb || noop;
-
     // Bind to load events
     script.onreadystatechange = script.onload = function () {
 
@@ -116,8 +129,7 @@ window.yepnope = (function (window, document, undef) {
         }
 
         scriptCache[src] = scriptsQueue.shift();
-        runWhenReady(src);
-        cb();
+        runWhenReady(src, cb);
 
         // Handle memory leak in IE
         script.onload = script.onreadystatechange = null;
