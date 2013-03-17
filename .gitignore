@@ -1,1 +1,6 @@
+# but we'll keep the ones with version numbers in them
+dist/yepnope\.js
+dist/yepnope\.min\.js
+
+# npm install for these
 *node_modules*

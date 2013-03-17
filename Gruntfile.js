@@ -2,13 +2,22 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    concat: {
+      options: {
+        separator: ';'
+      },
+      dist: {
+        src: ['src/**/*.js'],
+        dest: 'dist/yepnope.js'
+      }
+    },
     uglify: {
       options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+        banner: '/*!yepnope<%= pkg.version %>|MIT*/\n'
       },
       dist: {
         files: {
-          'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+          'dist/yepnope.min.js': ['<%= concat.dist.dest %>']
         }
       }
     },
@@ -43,6 +52,7 @@ module.exports = function(grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mocha');
@@ -50,6 +60,6 @@ module.exports = function(grunt) {
   grunt.registerTask('lint', ['jshint']);
   grunt.registerTask('test', ['jshint', 'mocha']);
 
-  grunt.registerTask('default', ['jshint', 'mocha', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'mocha', 'concat', 'uglify']);
 
 };
