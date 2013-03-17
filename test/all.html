@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>yepnope.js test suite</title>
+    <link rel="stylesheet" href="test/css/mocha.css" type="text/css" />
+</head>
+<body>
+    <!-- Required for browser reporter -->
+    <div id="mocha"></div>
+
+    <!-- mocha -->
+    <script src="test/js/mocha.js"></script>
+    <script>
+        // This will be overridden by mocha-helper if you run with grunt
+        mocha.setup('bdd');
+    </script>
+
+    <!-- Include your assertion lib of choice -->
+    <script src="test/js/chai.js"></script>
+    <script type="text/javascript">
+        // Setup chai
+        var expect = chai.expect;
+    </script>
+
+    <!-- Spec files -->
+    <script src="test/spec.js"></script>
+
+    <!-- run mocha -->
+    <script>
+        // If tests run in a real browser
+        // Can alternatively do a check on window.PHANTOMJS
+        if (navigator.userAgent.indexOf('PhantomJS') < 0) {
+            mocha.run();
+        }
+    </script>
+</body>
+</html>

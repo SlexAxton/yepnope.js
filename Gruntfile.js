@@ -12,24 +12,31 @@ module.exports = function(grunt) {
         }
       }
     },
-    qunit: {
-      files: ['test/**/*.html']
+    mocha: {
+      all : {
+        options: {
+          // mocha options
+          mocha: {
+            ignoreLeaks: false
+          },
+
+          // URLs passed through as options
+          urls: [ 'http://localhost:' + port + '/test/all.html' ],
+
+          // Indicates whether 'mocha.run()' should be executed in
+          // 'bridge.js'
+          run: true
+        }
+      }
     },
     jshint: {
       files: ['gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
       options: {
         // options here to override JSHint defaults
         globals: {
-          jQuery: true,
-          console: true,
-          module: true,
           document: true
         }
       }
-    },
-    watch: {
-      files: ['<%= jshint.files %>'],
-      tasks: ['jshint', 'qunit']
     }
   });
 
