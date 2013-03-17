@@ -60,6 +60,9 @@ module.exports = function(grunt) {
   grunt.registerTask('lint', ['jshint']);
   grunt.registerTask('test', ['jshint', 'mocha']);
 
+  // Travis CI task.
+  grunt.registerTask('travis', 'test');
+
   grunt.registerTask('default', ['jshint', 'mocha', 'concat', 'uglify']);
 
 };
