@@ -1,3 +1,5 @@
+![https://api.travis-ci.org/SlexAxton/yepnope.js.png?branch=v2.0](https://api.travis-ci.org/SlexAxton/yepnope.js.png?branch=v2.0)
+
 #yepnope.js#
 
 A Conditional Script Loader For Your Polyfills, or Regressive Enhancement With Style.
