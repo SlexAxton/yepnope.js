@@ -1,5 +1,5 @@
 // yepnope.js
-// Version - 2.0.0pre
+// Version - 2.0.0
 //
 // by
 // Alex Sexton - @SlexAxton - AlexSexton[at]gmail.com
@@ -78,12 +78,13 @@ window.yepnope = (function (window, document, undef) {
   // Inject a script into the page and know when it's done
   function injectJs (src, cb, attrs, timeout) {
     cb = cb || noop;
+    attrs = attrs || {};
 
     var cached = scriptCache[src];
 
     // If we already have a cached function for this just run it
     if (cached) {
-      if (yepnope['dupes']) {
+      if (yepnope.dupes) {
         runWhenReady(src, cb);
       }
       else {
@@ -93,11 +94,10 @@ window.yepnope = (function (window, document, undef) {
     }
 
     var script = document.createElement('script');
-    var attrs = attrs || {};
     var done;
     var i;
 
-    timeout = timeout || yepnope['errorTimeout'];
+    timeout = timeout || yepnope.errorTimeout;
 
     script.src = src;
 
@@ -105,7 +105,7 @@ window.yepnope = (function (window, document, undef) {
     // http://jaubourg.net/2010/07/loading-script-as-onclick-handler-of.html
     if (isOldIE) {
       script.event = 'onclick';
-      script.id = script.htmlFor = attrs['id'] || uniq();
+      script.id = script.htmlFor = attrs.id || uniq();
     }
 
     // Add our extra attributes to the script element
@@ -186,11 +186,11 @@ window.yepnope = (function (window, document, undef) {
   }
 
   // Add a default for the error timer
-  yepnope['errorTimeout'] = 10e3;
+  yepnope.errorTimeout = 10e3;
   // Expose no BS script injection
-  yepnope['injectJs'] = injectJs;
+  yepnope.injectJs = injectJs;
   // Expose the wrapper
-  yepnope['wrap'] = wrap;
+  yepnope.wrap = wrap;
 
   return yepnope;
 })(window, document);

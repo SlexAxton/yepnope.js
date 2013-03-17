@@ -30,7 +30,7 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      files: ['gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
+      files: ['gruntfile.js', 'src/**/*.js', 'test/test.js'],
       options: {
         // options here to override JSHint defaults
         globals: {
@@ -45,6 +45,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mocha');
 
+  grunt.registerTask('lint', ['jshint']);
   grunt.registerTask('test', ['jshint', 'mocha']);
 
   grunt.registerTask('default', ['jshint', 'mocha', 'uglify']);
