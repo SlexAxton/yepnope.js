@@ -15,6 +15,8 @@ module.exports = function(grunt) {
     mocha: {
       all : {
         options: {
+          reporter: 'Spec',
+
           // mocha options
           mocha: {
             ignoreLeaks: false
