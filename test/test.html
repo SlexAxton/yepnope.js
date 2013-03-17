@@ -3,28 +3,31 @@
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <title>yepnope.js test suite</title>
-    <link rel="stylesheet" href="test/css/mocha.css" type="text/css" />
+    <link rel="stylesheet" href="css/mocha.css" type="text/css" />
 </head>
 <body>
     <!-- Required for browser reporter -->
     <div id="mocha"></div>
 
     <!-- mocha -->
-    <script src="test/js/mocha.js"></script>
+    <script src="js/mocha.js"></script>
     <script>
         // This will be overridden by mocha-helper if you run with grunt
         mocha.setup('bdd');
     </script>
 
     <!-- Include your assertion lib of choice -->
-    <script src="test/js/chai.js"></script>
-    <script type="text/javascript">
+    <script src="js/chai.js"></script>
+    <script>
         // Setup chai
         var expect = chai.expect;
     </script>
 
+    <!-- Stuff to test -->
+    <script src="../src/yepnope.js"></script>
+
     <!-- Spec files -->
-    <script src="test/test.js"></script>
+    <script src="test.js"></script>
 
     <!-- run mocha -->
     <script>
