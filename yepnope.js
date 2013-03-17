@@ -12,7 +12,7 @@
 //
 // Please minify before use.
 // Also available as Modernizr.load via the Modernizr Project
-//
+
 window.yepnope = (function (window, document, undef) {
   // Yepnope's style is intentionally very flat to aid in
   // minification. The authors are usually against too much
@@ -30,7 +30,7 @@ window.yepnope = (function (window, document, undef) {
 
   // This is just used for a race condition,
   // so even if it fails it's not a huge risk
-  var isOldIE = !!document.attachEvent && !(window.opera && toString.call( window.opera ) == "[object Opera]");
+  var isOldIE = !!document.attachEvent && !(window.opera && toString.call(window.opera) == "[object Opera]");
 
   function noop (){}
 
@@ -132,8 +132,20 @@ window.yepnope = (function (window, document, undef) {
         runWhenReady(src, cb);
 
         // Handle memory leak in IE
-        script.onload = script.onreadystatechange = null;
+        script.onload = script.onreadystatechange = script.onerror = null;
       }
+    };
+
+    // This won't work in every browser, but
+    // would be helpful in those that it does.
+    // http://stackoverflow.com/questions/2027849/how-to-trigger-script-onerror-in-internet-explorer/2032014#2032014
+    // For those that don't support it, the timeout will be the backup
+    script.onerror = function () {
+      done = 1;
+      cb(new Error('Script Error: ' + src));
+      // We don't waste bytes on cleaning up memory in error cases
+      // because hopefully it doesn't happen often enough to matter.
+      // And you're probably already in an 'uh-oh' situation.
     };
 
     // 404 Fallback
