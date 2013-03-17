@@ -1,4 +1,4 @@
-![https://api.travis-ci.org/SlexAxton/yepnope.js.png?branch=v2.0](https://api.travis-ci.org/SlexAxton/yepnope.js.png?branch=v2.0)
+![https://api.travis-ci.org/SlexAxton/yepnope.js.png?branch=v2.0](https://travis-ci.org/SlexAxton/yepnope.js)
 
 #yepnope.js#
 
