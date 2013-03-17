@@ -21,7 +21,7 @@ module.exports = function(grunt) {
           },
 
           // URLs passed through as options
-          urls: [ 'http://localhost:' + port + '/test/test.html' ],
+          urls: [ 'http://127.0.0.1:3000/test/test.html' ],
 
           // Indicates whether 'mocha.run()' should be executed in
           // 'bridge.js'
