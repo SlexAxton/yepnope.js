@@ -27,6 +27,28 @@ Follow: [@SlexAxton](http://twitter.com/SlexAxton) and [@ralphholzmann](http://t
 
 Any forks and stuff are welcome.
 
+##Building and Testing##
+
+```sh
+git clone git@github.com:SlexAxton/yepnope.js.git
+cd yepnope.js
+# optional
+git checkout <thebranchyouwant>
+npm install
+
+# You need to serve the root directory
+npm install serve -g
+serve . &
+
+# Run the tests
+grunt test
+
+# Run the tests and build
+grunt
+```
+
+Your build will be in the `dist/` folder.
+
 ##Current Released Version##
 
 2.0.0
