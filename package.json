@@ -24,6 +24,8 @@
     "url": "git://github.com/SlexAxton/yepnope.js.git"
   },
   "keywords": [
+    "script loader",
+    "conditional",
     "html5",
     "browser"
   ],
