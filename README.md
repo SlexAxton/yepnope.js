@@ -43,6 +43,9 @@ serve . &
 # Run the tests
 grunt test
 
+# View the tests in a browser
+open http://127.0.0.1:3000/test/index.html
+
 # Run the tests and build
 grunt
 ```
