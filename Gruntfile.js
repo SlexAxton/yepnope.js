@@ -34,6 +34,7 @@ module.exports = function(grunt) {
       options: {
         // options here to override JSHint defaults
         globals: {
+          yepnope: true,
           document: true
         }
       }
