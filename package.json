@@ -1,0 +1,27 @@
+{
+  "name": "yepnope.js",
+  "version": "2.0.0pre",
+  "description": "A conditional loader for your polyfills (redux)",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-contrib-clean": "~0.4.0",
+  },
+  "scripts": {
+    "test": "grunt mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/SlexAxton/yepnope.js.git"
+  },
+  "keywords": [
+    "html5",
+    "browser"
+  ],
+  "author": "Alex Sexton, Ralph Holzmann",
+  "license": "MIT, BSD, or WTFPL"
+}
