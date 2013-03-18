@@ -59,9 +59,7 @@ grunt
 
 Your build will be in the `dist/` folder.
 
-##Current Released Version##
-
-2.0.0
+##CHANGELOG##
 
 Version 2 is a significant diversion from Version 1.x. We feel that the direction helps developers make the best decisions for performance rather than enabling poor uses.
 
