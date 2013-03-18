@@ -41,7 +41,16 @@ describe('yepnope', function() {
         yepnope.injectJs(s.url, function () {
           expect(yeptest).to.have.property(s.name);
           done();
-        });
+        }, null, null, true);
+      });
+
+      it('should allow me to inject a script without a wrapper', function (done) {
+        var s = js(null, true);
+
+        yepnope.injectJs(s.url, function () {
+          expect(yeptest).to.have.property(s.name);
+          done();
+        }, null, null, null);
       });
 
       it('should be tolerant of long loading scripts', function (done) {
@@ -50,14 +59,14 @@ describe('yepnope', function() {
         yepnope.injectJs(s.url, function () {
           expect(yeptest).to.have.property(s.name);
           done();
-        });
+        }, null, null, true);
       });
 
       it('should throw an error on a 404', function (done) {
         yepnope.injectJs('/s/NOTFOUND.js', function (err) {
           expect(err).to.be.instanceOf(Error);
           done();
-        });
+        }, null, null, true);
       });
 
       it('should timeout if it takes too long, and be cancelled', function (done) {
@@ -80,7 +89,7 @@ describe('yepnope', function() {
             yepnope.errorTimeout = oldTimeout;
             done();
           }, 400);
-        });
+        }, null, null, true);
       });
 
       it('should listen to the local timeout over the global timeout', function (done) {
@@ -93,7 +102,7 @@ describe('yepnope', function() {
             expect(yeptest).to.not.have.property(s.name);
             done();
           }, 400);
-        }, null, 100);
+        }, null, 100, true);
         // The fourth argument is a local timeout
       });
 
@@ -111,7 +120,7 @@ describe('yepnope', function() {
         }, {
           'id' : id,
           'name': id
-        });
+        }, null, true);
       });
 
     });

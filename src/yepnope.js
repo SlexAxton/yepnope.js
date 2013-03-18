@@ -77,6 +77,9 @@ window.yepnope = (function (window, document, undef) {
       }
       cb();
     }
+    else if (justTheCallback) {
+      cb();
+    }
   }
 
   // Inject a script into the page and know when it's done
@@ -122,6 +125,11 @@ window.yepnope = (function (window, document, undef) {
 
     script.src = src;
 
+    // Ensure that his url is marked as active,
+    // so we don't try to load it with itself
+    // simultaneously.
+    scriptCache[src] = true;
+
     // IE Race condition
     // http://jaubourg.net/2010/07/loading-script-as-onclick-handler-of.html
     if (isOldIE) {
@@ -152,8 +160,13 @@ window.yepnope = (function (window, document, undef) {
           catch (e) {}
         }
 
-        scriptCache[src] = scriptsQueue.shift();
-        runWhenReady(src, cb);
+        if (wrapped) {
+          scriptCache[src] = scriptsQueue.shift();
+        }
+
+        // Run the inside and then the callback if it's wrapped,
+        // otherwise, just run the callback
+        runWhenReady(src, cb, !wrapped);
       }
 
       // Handle memory leak in IE
