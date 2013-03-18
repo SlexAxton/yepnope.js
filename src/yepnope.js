@@ -209,6 +209,36 @@ window.yepnope = (function (window, document, undef) {
     firstScript.parentNode.insertBefore(script, firstScript);
   }
 
+  function injectCss (href, cb, args) {
+    // Create stylesheet link
+    var link = doc.createElement('link');
+    var i;
+
+    cb = cb || noop;
+
+    // No need to check 'dupes' since nothing new happens
+    if (!linkCache[href]) {
+      linkCache[href] = true;
+      // Add attributes
+      link.href = href;
+      link.rel  = 'stylesheet';
+      link.type = 'text/css';
+
+      // Add our extra attributes to the link element
+      for (i in attrs) {
+        link.setAttribute(i, attrs[i]);
+      }
+
+      readFirstScript();
+      // We append link tags so the cascades work as expected.
+      // A little more dangerous, but if you're injecting CSS
+      // dynamically, you probably can handle it.
+      firstScript.parentNode.appendChild(link);
+    }
+
+    sTimeout(cb, 0);
+  }
+
   // Take the arguments passed to yepnope
   // and group them with their appropriate
   // actions.
@@ -236,6 +266,8 @@ window.yepnope = (function (window, document, undef) {
   yepnope.errorTimeout = 10e3;
   // Expose no BS script injection
   yepnope.injectJs = injectJs;
+  // Expose super-lightweight css injector
+  yepnope.injectCss = injectCss;
   // Expose the wrapper
   yepnope.wrap = wrap;
   // Default to allow duplicate executions of scripts
