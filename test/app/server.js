@@ -22,18 +22,26 @@ app.get( '/s/js/*', function( req, res ) {
 
   // Sleep to simulate a slow loading server
   sleep = /\/sleep-(\d+)\//.exec( url );
-    if ( sleep ) {
+  if ( sleep ) {
     sleep = sleep.pop() * 1000;
   } else {
     sleep = 0;
   }
 
+
+  var wrapStart = "yepnope.wrap(function(){";
+  var wrapEnd = "});";
+  if ( ~ url.indexOf("no-wrap")) {
+    wrapStart = "";
+    wrapEnd = "";
+  }
+
   setTimeout(function() {
     basename = url.split("/").pop().split(".").shift();
-    res.end(["yepnope.wrap(function(){",
-             "  window." + basename + "time = (+new Date);",
-             "  window." + basename + " = true;",
-             "});"
+    res.end([wrapStart,
+             "  yeptest." + basename + "time = (+new Date);",
+             "  yeptest." + basename + " = true;",
+             wrapEnd
     ].join("\n"));
 
   }, sleep);

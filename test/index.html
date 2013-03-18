@@ -1,41 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>yepnope.js test suite</title>
-    <link rel="stylesheet" href="css/mocha.css" type="text/css" />
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <title>yepnope.js test suite</title>
+  <link rel="stylesheet" href="css/mocha.css" type="text/css" />
 </head>
 <body>
-    <!-- Required for browser reporter -->
-    <div id="mocha"></div>
+  <!-- Required for browser reporter -->
+  <div id="mocha"></div>
 
-    <!-- mocha -->
-    <script src="js/mocha.js"></script>
-    <script>
-        // This will be overridden by mocha-helper if you run with grunt
-        mocha.setup('bdd');
-    </script>
+  <!-- mocha -->
+  <script src="js/mocha.js"></script>
+  <script>
+    // This will be overridden by mocha-helper if you run with grunt
+    mocha.setup({
+      ui: 'bdd',
+      // long timeouts since we have to test timeouts
+      timeout: 12000
+    });
+  </script>
 
-    <!-- Include your assertion lib of choice -->
-    <script src="js/chai.js"></script>
-    <script>
-        // Setup chai
-        var expect = chai.expect;
-    </script>
+  <!-- Include your assertion lib of choice -->
+  <script src="js/chai.js"></script>
+  <script>
+    // Setup chai
+    var expect = chai.expect;
+  </script>
 
-    <!-- Stuff to test -->
-    <script src="../src/yepnope.js"></script>
+  <!-- Stuff to test -->
+  <script src="../src/yepnope.js"></script>
 
-    <!-- Spec files -->
-    <script src="test.js"></script>
+  <!-- Spec files -->
+  <script src="test.js"></script>
 
-    <!-- run mocha -->
-    <script>
-        // If tests run in a real browser
-        // Can alternatively do a check on window.PHANTOMJS
-        if (navigator.userAgent.indexOf('PhantomJS') < 0) {
-            mocha.run();
-        }
-    </script>
+  <!-- run mocha -->
+  <script>
+    // A place to put loaded variables
+    window.yeptest = {};
+    // If tests run in a real browser
+    // Can alternatively do a check on window.PHANTOMJS
+    if (navigator.userAgent.indexOf('PhantomJS') < 0) {
+        mocha.run();
+    }
+  </script>
 </body>
 </html>
