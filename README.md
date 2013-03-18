@@ -35,18 +35,15 @@ Any forks and stuff are welcome.
 git clone git@github.com:SlexAxton/yepnope.js.git
 cd yepnope.js
 # optional
-git checkout <thebranchyouwant>
+git checkout <the-branch-you-want>
 npm install
-
-# You need to serve the root directory
-npm install serve -g
-serve . &
 
 # Run the tests
 grunt test
 
-# View the tests in a browser
-open http://127.0.0.1:3000/test/index.html
+# In order to view them in a browser
+grunt serve
+open http://127.0.0.1:3011/test/index.html
 
 # Run the tests and build
 grunt

@@ -1,4 +1,9 @@
+var path = require('path');
+
 module.exports = function(grunt) {
+
+  var testport = 3011;
+  var testhostname = '127.0.0.1';
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -32,7 +37,7 @@ module.exports = function(grunt) {
           },
 
           // URLs passed through as options
-          urls: [ 'http://127.0.0.1:3000/test/' ],
+          urls: [ 'http://' + testhostname + ':' + testport + '/test/' ],
 
           // Indicates whether 'mocha.run()' should be executed in
           // 'bridge.js'
@@ -49,6 +54,17 @@ module.exports = function(grunt) {
           document: true
         }
       }
+    },
+    express: {
+      testserver: {
+        options: {
+          hostname: testhostname,
+          port: testport,
+          bases: path.resolve('.'),
+          monitor: {},
+          server: path.resolve('./test/app/server')
+        }
+      }
     }
   });
 
@@ -56,13 +72,15 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mocha');
+  grunt.loadNpmTasks('grunt-express');
 
   grunt.registerTask('lint', ['jshint']);
-  grunt.registerTask('test', ['jshint', 'mocha']);
+  grunt.registerTask('test', ['jshint', 'express', 'mocha']);
+  grunt.registerTask('serve', ['express', 'express-keepalive']);
 
   // Travis CI task.
   grunt.registerTask('travis', 'test');
 
-  grunt.registerTask('default', ['jshint', 'mocha', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'express', 'mocha', 'concat', 'uglify']);
 
 };

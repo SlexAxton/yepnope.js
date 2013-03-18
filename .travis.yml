@@ -3,5 +3,4 @@ node_js:
   - 0.8
 before_script:
   - npm install serve grunt-cli -g
-  - serve . > /dev/null 2>&1 &
 script: grunt travis --verbose
