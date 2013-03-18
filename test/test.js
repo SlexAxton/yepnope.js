@@ -37,7 +37,7 @@ describe('yepnope', function() {
       });
 
       it('should be tolerant of long loading scripts', function (done) {
-        var s = js(3);
+        var s = js(2);
 
         yepnope.injectJs(s.url, function () {
           expect(yeptest).to.have.property(s.name);
