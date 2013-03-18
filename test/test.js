@@ -19,7 +19,7 @@ describe('yepnope', function() {
 
   beforeEach(function () {
     // Reset this each time to a low amount
-    // so we can fail fast. If you get a lot
+    // so we can fail fast in tests. If you get a lot
     // of false positives, increase this.
     yepnope.errorTimeout = 2000;
 
