@@ -45,6 +45,13 @@ describe('yepnope', function() {
         });
       });
 
+      it('should throw an error on a 404', function (done) {
+        yepnope.injectJs('/s/NOTFOUND.js', function (err) {
+          expect(err).to.be.instanceOf(Error);
+          done();
+        });
+      });
+
     });
 
   });
