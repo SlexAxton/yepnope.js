@@ -130,10 +130,10 @@ window.yepnope = (function (window, document, undef) {
 
         scriptCache[src] = scriptsQueue.shift();
         runWhenReady(src, cb);
-
-        // Handle memory leak in IE
-        script.onload = script.onreadystatechange = script.onerror = null;
       }
+
+      // Handle memory leak in IE
+      script.onload = script.onreadystatechange = script.onerror = null;
     };
 
     // This won't work in every browser, but

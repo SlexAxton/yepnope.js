@@ -23,7 +23,7 @@ app.get( '/s/js/*', function( req, res ) {
   // Sleep to simulate a slow loading server
   sleep = /\/sleep-(\d+)\//.exec( url );
   if ( sleep ) {
-    sleep = sleep.pop() * 1000;
+    sleep = sleep.pop();
   } else {
     sleep = 0;
   }
@@ -58,7 +58,7 @@ app.get( '/s/css/*', function( req, res ) {
   // Sleep to simulate a slow loading server
   sleep = /\/sleep-(\d+)\//.exec( url );
     if ( sleep ) {
-    sleep = sleep.pop() * 1000;
+    sleep = sleep.pop();
   } else {
     sleep = 0;
   }
