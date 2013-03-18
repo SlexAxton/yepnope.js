@@ -17,7 +17,7 @@ app.get( '/s/js/*', function( req, res ) {
     res.setHeader("Expires", date);
     res.setHeader("Pragma", "no-cache");
   } else {
-    res.setHeader("Expires", "Thu, 31 Dec 2020 20:00:00 GMT");
+    res.setHeader("Expires", "Thu, 31 Dec 2030 20:00:00 GMT");
   }
 
   // Sleep to simulate a slow loading server
@@ -30,9 +30,10 @@ app.get( '/s/js/*', function( req, res ) {
 
   setTimeout(function() {
     basename = url.split("/").pop().split(".").shift();
-    res.end([
-            "window." + basename + "time = (+new Date);",
-            "window." + basename + " = true"
+    res.end(["yepnope.wrap(function(){",
+             "  window." + basename + "time = (+new Date);",
+             "  window." + basename + " = true;",
+             "});"
     ].join("\n"));
 
   }, sleep);
@@ -44,7 +45,7 @@ app.get( '/s/css/*', function( req, res ) {
   date, sleep, basename;
 
   res.setHeader("Content-Type", "text/css");
-  res.setHeader("Expires", "Thu, 31 Dec 2020 20:00:00 GMT");
+  res.setHeader("Expires", "Thu, 31 Dec 2030 20:00:00 GMT");
 
   // Sleep to simulate a slow loading server
   sleep = /\/sleep-(\d+)\//.exec( url );
