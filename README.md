@@ -51,7 +51,7 @@ grunt test
 grunt serve
 
 # Open the test url in a browser
-open http://127.0.0.1:3011/test/
+open http://127.0.0.1:3010/test/
 
 # Run the tests and build
 grunt

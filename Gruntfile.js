@@ -56,10 +56,19 @@ module.exports = function(grunt) {
       }
     },
     express: {
-      testserver: {
+      test: {
         options: {
           hostname: testhostname,
           port: testport,
+          bases: path.resolve('.'),
+          monitor: {},
+          server: path.resolve('./test/app/server')
+        }
+      },
+      serve: {
+        options : {
+          hostname: testhostname ,
+          port: testport - 1,
           bases: path.resolve('.'),
           monitor: {},
           server: path.resolve('./test/app/server')
@@ -75,12 +84,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-express');
 
   grunt.registerTask('lint', ['jshint']);
-  grunt.registerTask('test', ['jshint', 'express', 'mocha']);
-  grunt.registerTask('serve', ['express', 'express-keepalive']);
+  grunt.registerTask('test', ['jshint', 'express:test', 'mocha']);
+  grunt.registerTask('serve', ['express:serve', 'express-keepalive']);
 
   // Travis CI task.
   grunt.registerTask('travis', 'test');
 
-  grunt.registerTask('default', ['jshint', 'express', 'mocha', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'express:test', 'mocha', 'concat', 'uglify']);
 
 };
