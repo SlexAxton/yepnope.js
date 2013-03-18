@@ -67,30 +67,51 @@ window.yepnope = (function (window, document, undef) {
     return (!readyState || readyState == 'loaded' || readyState == 'complete' || readyState == 'uninitialized');
   }
 
-  function runWhenReady (src, cb) {
+  function runWhenReady (src, cb, justTheCallback) {
     var fn = scriptCache[src];
-    if (fn) {
-      fn.call(window);
+
+    // This is far from correct, but fine as a start
+    if (typeof fn == 'function') {
+      if (!justTheCallback) {
+        fn.call(window);
+      }
       cb();
     }
   }
 
   // Inject a script into the page and know when it's done
-  function injectJs (src, cb, attrs, timeout) {
+  function injectJs (src, cb, attrs, timeout, wrapped) {
     cb = cb || noop;
     attrs = attrs || {};
 
     var cached = scriptCache[src];
 
     // If we already have a cached function for this just run it
-    if (cached) {
+    // as long as we're in a wrapped mode
+    if (cached && wrapped) {
+
+      // If we're allowing things to execute twice
       if (yepnope.dupes) {
+        // Run the the contents of the wrapper again
+        // then run the new callback
         runWhenReady(src, cb);
       }
       else {
-        cb();
+        // Otherwise just run the callback
+        // but still wait to make sure the src isn't still loading
+        runWhenReady(src, cb, true);
       }
+      // In all cases we're done
       return;
+    }
+    // If we're not wrapped, but cached (the script has been requested before)
+    else if (cached && !wrapped) {
+      if (!yepnope.dupes) {
+        // In case the script has been called, but not completed
+        runWhenReady(src, cb, true);
+        return;
+      }
+      // otherwise just reinject and it'll rerun like normal
     }
 
     var script = document.createElement('script');
@@ -123,6 +144,9 @@ window.yepnope = (function (window, document, undef) {
         // Second half of IE race condition hack
         if (isOldIE) {
           try {
+            // By calling this here, we create a synchronous
+            // execution of the contents of the script
+            // and the execution of the callback below.
             script.onclick();
           }
           catch (e) {}
@@ -141,6 +165,7 @@ window.yepnope = (function (window, document, undef) {
     // http://stackoverflow.com/questions/2027849/how-to-trigger-script-onerror-in-internet-explorer/2032014#2032014
     // For those that don't support it, the timeout will be the backup
     script.onerror = function () {
+      // Don't call the callback again, so we mark it done
       done = 1;
       cb(new Error('Script Error: ' + src));
       // We don't waste bytes on cleaning up memory in error cases
@@ -150,8 +175,16 @@ window.yepnope = (function (window, document, undef) {
 
     // 404 Fallback
     sTimeout(function () {
+      // Don't do anything if the script has already finished
       if (!done) {
+        // Mark it as done, which means the callback won't run again
+        // and if you're using wrapped scripts, then the contents won't
+        // execute if it ever finishes. For unwrapped scripts, you're a
+        // bit SOL if this finishes way down the line and you don't want it
+        // to execute as there's no reliable 'cancel' once we've started loading
+        // it in the dom.
         done = 1;
+
         // Might as well pass in an error-state if we fire the 404 fallback
         cb(new Error('Timeout: ' + src));
       }
@@ -191,6 +224,8 @@ window.yepnope = (function (window, document, undef) {
   yepnope.injectJs = injectJs;
   // Expose the wrapper
   yepnope.wrap = wrap;
+  // Default to allow duplicate executions of scripts
+  yepnope.dupes = true;
 
   return yepnope;
 })(window, document);
