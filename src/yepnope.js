@@ -77,7 +77,8 @@ window.yepnope = (function (window, document, undef) {
       }
       cb();
     }
-    else if (justTheCallback) {
+    // Otherwise, just call the callback
+    else if (fn) {
       cb();
     }
   }
