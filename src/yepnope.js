@@ -24,6 +24,7 @@ window.yepnope = (function (window, document, undef) {
   var sTimeout = window.setTimeout;
   var firstScript;
   var scriptCache = {};
+  var linkCache = {};
   var scriptsQueue = [];
   var count = 0;
   var toString = {}.toString;
