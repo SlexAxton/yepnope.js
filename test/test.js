@@ -1,3 +1,5 @@
+/* jshint -W024 */
+/* jshint expr:true */
 describe('yepnope', function() {
   // A unique number for each load
   var u = (new Date()).getTime();
