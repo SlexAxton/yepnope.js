@@ -32,10 +32,16 @@ Any forks and stuff are welcome.
 ##Building and Testing##
 
 ```sh
+# Clone the repo
 git clone git@github.com:SlexAxton/yepnope.js.git
+
+# Go inside of it
 cd yepnope.js
-# optional
+
+# Optionally switch branches
 git checkout <the-branch-you-want>
+
+# Install the dependencies
 npm install
 
 # Run the tests
@@ -43,7 +49,9 @@ grunt test
 
 # In order to view them in a browser
 grunt serve
-open http://127.0.0.1:3011/test/index.html
+
+# Open the test url in a browser
+open http://127.0.0.1:3011/test/
 
 # Run the tests and build
 grunt
