@@ -2,7 +2,8 @@ var path = require('path');
 
 module.exports = function(grunt) {
 
-  var testport = 3011;
+  var testport = 3030;
+  var testportKeepalive = 3333;
   var testhostname = '127.0.0.1';
 
   grunt.initConfig({
@@ -69,7 +70,7 @@ module.exports = function(grunt) {
       serve: {
         options : {
           hostname: testhostname ,
-          port: testport - 1,
+          port: testportKeepalive,
           bases: path.resolve('.'),
           monitor: {},
           server: path.resolve('./test/app/server')

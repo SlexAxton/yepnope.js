@@ -12,11 +12,14 @@
     "grunt-mocha": "git://github.com/SBoudrias/grunt-mocha.git#master",
     "grunt-contrib-clean": "~0.4.0",
     "grunt-contrib-jshint": "~0.3.0",
-    "chai": "~1.5.0",
     "mocha": "~1.8.2",
     "grunt-contrib-concat": "~0.1.3",
     "grunt-express": "~0.3.1",
-    "express": "~3.1.0"
+    "express": "~3.1.0",
+    "mocha-cloud": "git://github.com/SlexAxton/mocha-cloud.git#quit-callback",
+    "mocha-cloud-grid-view": "0.0.1",
+    "term-canvas": "0.0.5",
+    "expect.js": "~0.2.0"
   },
   "scripts": {
     "test": "grunt mocha"

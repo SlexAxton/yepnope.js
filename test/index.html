@@ -11,21 +11,19 @@
 
   <!-- mocha -->
   <script src="js/mocha.js"></script>
+  <script src="js/build.js"></script>
   <script>
     // This will be overridden by mocha-helper if you run with grunt
     mocha.setup({
       ui: 'bdd',
       // long timeouts since we have to test timeouts
-      timeout: 12000
+      timeout: 12000,
+      globals: ['yepnope', 'yeptest', 'getInterface', 'mochaResults']
     });
   </script>
 
   <!-- Include your assertion lib of choice -->
-  <script src="js/chai.js"></script>
-  <script>
-    // Setup chai
-    var expect = chai.expect;
-  </script>
+  <script src="js/expect.js"></script>
 
   <!-- Stuff to test -->
   <script src="../src/yepnope.js"></script>
@@ -40,7 +38,7 @@
     // If tests run in a real browser
     // Can alternatively do a check on window.PHANTOMJS
     if (navigator.userAgent.indexOf('PhantomJS') < 0) {
-        mocha.run();
+        cloud(mocha.run());
     }
   </script>
 </body>

@@ -1,0 +1,37 @@
+[
+  {
+    "browser": "chrome",
+    "version": "",
+    "os": "windows 2008"
+  },
+  {
+    "browser": "chrome",
+    "version": "",
+    "os": "Mac 10.8"
+  },
+  {
+    "browser": "safari",
+    "version": "5",
+    "os": "Mac 10.6"
+  },
+  {
+    "browser": "safari",
+    "version": "6",
+    "os": "Mac 10.8"
+  },
+  {
+    "browser": "firefox",
+    "version": "19",
+    "os": "Windows 2003"
+  },
+  {
+    "browser": "iexplore",
+    "version": "6",
+    "os": "Windows 2003"
+  },
+  {
+    "browser": "opera",
+    "version": "12",
+    "os": "Windows 2008"
+  }
+]

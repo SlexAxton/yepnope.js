@@ -64,7 +64,7 @@ describe('yepnope', function() {
 
       it('should throw an error on a 404', function (done) {
         yepnope.injectJs('/s/NOTFOUND.js', function (err) {
-          expect(err).to.be.instanceOf(Error);
+          expect(err).to.be.an(Error);
           done();
         }, null, null, true);
       });
@@ -78,7 +78,7 @@ describe('yepnope', function() {
 
         yepnope.injectJs(s.url, function (err) {
           // Expect it to have timed out
-          expect(err).to.be.instanceOf(Error);
+          expect(err).to.be.an(Error);
 
           // Make sure it never gets set though.
           window.setTimeout(function () {
@@ -96,7 +96,7 @@ describe('yepnope', function() {
         var s = js(300);
 
         yepnope.injectJs(s.url, function (err) {
-          expect(err).to.be.instanceOf(Error);
+          expect(err).to.be.an(Error);
 
           window.setTimeout(function () {
             expect(yeptest).to.not.have.property(s.name);
@@ -113,7 +113,7 @@ describe('yepnope', function() {
         yepnope.injectJs(s.url, function () {
           var scriptElem = document.getElementById(id);
 
-          expect(scriptElem).to.be.ok;
+          expect(scriptElem).to.be.ok();
           expect(scriptElem.getAttribute('name')).to.equal(id);
 
           done();
