@@ -237,7 +237,7 @@ window.yepnope = (function (window, document, undef) {
       firstScript.parentNode.appendChild(link);
     }
 
-    sTimeout(cb, 0);
+    runWhenReady(href, cb);
   }
 
   // Take the arguments passed to yepnope
