@@ -61,7 +61,12 @@ var docElement            = doc.documentElement,
           resourceObj['timeout'] = prefix_parts[ 0 ];
         }
         return resourceObj;
+      },
+      reexecute : function( resourceObj, prefix_parts ) {
+        resourceObj['reexecute'] = true;
+        return resourceObj;
       }
+    },
     },
     handler,
     yepnope;
