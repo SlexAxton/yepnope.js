@@ -31,8 +31,10 @@ var docElement            = doc.documentElement,
     // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
     isOpera               = window.opera && toString.call( window.opera ) == "[object Opera]",
     isIE                  = !! doc.attachEvent && !isOpera,
-    strJsElem             = isGecko ? "object" : isIE  ? "script" : "img",
-    strCssElem            = isIE ? "script" : strJsElem,
+    // isOlderWebkit fix for #95 - https://github.com/SlexAxton/yepnope.js/issues/95
+    isOlderWebkit		  = ( 'webkitAppearance' in docElement.style ) && !( 'async' in doc.createElement('script') ),
+    strJsElem             = isGecko ? "object" : (isIE || isOlderWebkit)  ? "script" : "img",
+    strCssElem            = isIE ? "script" : (isOlderWebkit) ? "img" : strJsElem,
     isArray               = Array.isArray || function ( obj ) {
       return toString.call( obj ) == "[object Array]";
     },
@@ -44,6 +46,11 @@ var docElement            = doc.documentElement,
     },
     isFunction            = function ( fn ) {
       return toString.call( fn ) == "[object Function]";
+    },
+    readFirstScript       = function() {
+        if (!firstScript || !firstScript.parentNode) {
+            firstScript = doc.getElementsByTagName( "script" )[ 0 ];
+        }
     },
     globalFilters         = [],
     scriptCache           = {},
@@ -109,6 +116,7 @@ var docElement            = doc.documentElement,
     // Inject script into to document
     // or immediately callback if we know there
     // was previously a timeout error
+    readFirstScript();
     err ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
   }
 
@@ -134,6 +142,7 @@ var docElement            = doc.documentElement,
     }
 
     if ( ! err ) {
+      readFirstScript();
       firstScript.parentNode.insertBefore( link, firstScript );
       sTimeout(function(){cb(execStack)}, 0);
     }
@@ -141,7 +150,6 @@ var docElement            = doc.documentElement,
 
   function executeStack ( execStack) {
     // shift an element off of the stack
-        //console.log(JSON.stringify(execStack))
     var i   = execStack.shift();
     execStack.started = 1;
 
@@ -199,8 +207,6 @@ var docElement            = doc.documentElement,
         stackObject['r'] = done = 1;
         !execStack.started && executeStack(execStack);
 
-        // Handle memory leak in IE
-        preloadElem.onload = preloadElem.onreadystatechange = null;
         if ( first ) {
           if ( elem != "img" ) {
             sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 50);
@@ -211,6 +217,9 @@ var docElement            = doc.documentElement,
               scriptCache[ url ][ i ].onload();
             }
           }
+          
+          // Handle memory leak in IE
+           preloadElem.onload = preloadElem.onreadystatechange = null;
         }
       }
     }
@@ -219,6 +228,10 @@ var docElement            = doc.documentElement,
     // Setting url to data for objects or src for img/scripts
     if ( elem == "object" ) {
       preloadElem.data = url;
+	  
+      // Setting the type attribute to stop Firefox complaining about the mimetype when running locally.
+      // The type doesn't matter as long as it's real, thus text/css instead of text/javascript.
+      preloadElem.setAttribute("type", "text/css");
     } else {
       preloadElem.src = url;
 
@@ -235,7 +248,6 @@ var docElement            = doc.documentElement,
     };
     // inject the element into the stack depending on if it's
     // in the middle of other scripts or not
-    //console.log(JSON.stringify(execStack))
     execStack.splice( splicePoint, 0, stackObject );
 
     // The only place these can't go is in the <head> element, since objects won't load in there
@@ -245,6 +257,7 @@ var docElement            = doc.documentElement,
     if ( elem != "img" ) {
       // If it's the first time, or we've already loaded it all the way through
       if ( firstFlag || scriptCache[ url ] === 2 ) {
+        readFirstScript();
         insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
 
         // If something fails, and onerror doesn't fire,
@@ -264,7 +277,6 @@ var docElement            = doc.documentElement,
     !execStack && (execStack=type);
 
     execStack.started = 0;
-    //console.log(arguments);
     // We'll do 'j' for js and 'c' for css, yay for unreadable minification tactics
     type = type || "j";
     if ( isString( resource ) ) {
@@ -368,20 +380,18 @@ var docElement            = doc.documentElement,
       }
       else {
         // Handle if we've already had this url and it's completed loaded already
-        if ( scriptCache[ resource['url'] ] ) {
+        if ( scriptCache[ resource['url'] ] && resource['reexecute'] !== true) {
           // don't let this execute again
           resource['noexec'] = true;
         }
         else {
           scriptCache[ resource['url'] ] = 1;
         }
-                                //  console.log(input, chain, chain.load, callback)
 
         // Throw this into the queue
-        chain.load( resource['url'], ( ( resource['forceCSS'] || ( ! resource['forceJS'] && "css" == getExtension( resource['url'] ) ) ) ) ? "c" : undef, resource['noexec'], resource['attrs'], resource['timeout'],execStack );
+        input && chain.load( resource['url'], ( ( resource['forceCSS'] || ( ! resource['forceJS'] && "css" == getExtension( resource['url'] ) ) ) ) ? "c" : undef, resource['noexec'], resource['attrs'], resource['timeout'], execStack );
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
-        console.log(resource['url'], isFunction(callback))
 
           // Call getJS with our current stack of things
           chain['load']( function () {
@@ -412,7 +422,7 @@ var docElement            = doc.documentElement,
         // NOTE:: relies on closures to keep 'chain' up to date, a bit confusing, but
         // much smaller than the functional equivalent in this case.
         function handleGroup ( needGroup, moreToCome ) {
-          if ( ! needGroup ) {
+          if ( '' !== needGroup && ! needGroup ) {
             // Call the complete callback when there's nothing to load.
             ! moreToCome && complete();
           }
@@ -475,7 +485,6 @@ var docElement            = doc.documentElement,
                     };
                   }
                 }
-                                     //             console.log(needGroup[callbackKey], chain,callback)
 
                 loadScriptOrStyle( needGroup[ callbackKey ], callback, chain, callbackKey, testResult,execStack );
               }
@@ -484,11 +493,15 @@ var docElement            = doc.documentElement,
         }
 
         // figure out what this group should do
-        handleGroup( group, !!always );
+        handleGroup( group, !!always || !!testObject['complete']);
 
         // Run our loader on the load/both group too
         // the always stuff always loads second.
         always && handleGroup( always );
+
+	// If complete callback is used without loading anything
+        !always && !!testObject['complete'] && handleGroup('');
+
     }
 
     // Someone just decides to load a single script or css file as a string
@@ -576,6 +589,3 @@ var docElement            = doc.documentElement,
   window['yepnope']['scriptCache'] = scriptCache;
 
 })( this, document );
-/*
-(function(){yepnope.injectCss=function(c,g,r,x,n,y,execStack){var e=document.createElement("link"),q=function(){o||(o=1,e.removeAttribute("id"),setTimeout(g,0))},h="yn"+ +new Date,o,l,g=y?execStack:g||function(){};e.href=c;e.rel="stylesheet";e.type="text/css";e.id=h;for(l in r)e.setAttribute(l,r[l]);if(!n){c=document.getElementsByTagName("base")[0]||document.getElementsByTagName("script")[0];c.parentNode.insertBefore(e,c);e.onload=q;var p=function(){try{for(var c=document.styleSheets,e=0,g=c.length;e<
-g;e++)if(c[e].ownerNode.id==h&&c[e].cssRules.length)return q();throw Error();}catch(l){setTimeout(p,20)}};p()}}})(this,this.document);*/
