@@ -1,6 +1,6 @@
 ( function ( window, doc, undef ) {
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
-  yepnope.injectCss = function( href, cb, attrs, timeout, /* Internal use */ err, internal ) {
+  yepnope.injectCss = function( href, cb, attrs, timeout, /* Internal use */ err, internal,execStack ) {
 
     // Create stylesheet link
     var link = document.createElement( "link" ),
@@ -8,7 +8,7 @@
           if ( ! done ) {
             done = 1;
             link.removeAttribute("id");
-            setTimeout( cb, 0 );
+            setTimeout( function(){cb(execStack)}, 0 );
           }
         },
         id = "yn" + +new Date,
