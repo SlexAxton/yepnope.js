@@ -1,9 +1,14 @@
-/**
- * yepnope.js preload prefix
+ /**
+ * Yepnope preload prefix
  *
- * by Alex Sexton
+ * Use the preload! modifier to cache content but not execute it
+ * Usage: ['preload!asset.js']
  *
- * Use the prefix! modifier to cache content but not execute it
+ * Official Yepnope Plugin
+ *
+ * WTFPL License
+ *
+ * by Alex Sexton | AlexSexton@gmail.com
  */
 yepnope.addPrefix( 'preload', function ( resource ) {
   resource.noexec = true;
