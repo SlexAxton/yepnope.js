@@ -279,6 +279,11 @@ var docElement            = doc.documentElement,
 
     // We'll do 'j' for js and 'c' for css, yay for unreadable minification tactics
     type = type || "j";
+
+    if(type == "j") {
+      strJsElem = "script";
+    }
+
     if ( isString( resource ) ) {
       // if the resource passed in here is a string, preload the file
       preloadFile( type == "c" ? strCssElem : strJsElem, resource, type, this['i']++, dontExec, attrObj, timeout );
