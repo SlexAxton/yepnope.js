@@ -145,8 +145,8 @@ var docElement            = doc.documentElement,
     if ( ! err ) {
       readFirstScript();
       firstScript.parentNode.insertBefore( link, firstScript );
-      sTimeout(cb, 0);
     }
+    sTimeout(cb, 0);
   }
 
   function executeStack ( ) {
