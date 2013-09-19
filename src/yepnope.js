@@ -85,7 +85,20 @@ window.yepnope = (function (window, document, undef) {
   }
 
   // Inject a script into the page and know when it's done
-  function injectJs (src, cb, attrs, timeout, wrapped) {
+  function injectJs (options, cb) {
+    var src, attrs, timeout, wrapped;
+
+    if (isString(options)) {
+      src = options;
+    }
+    else if (isObject(options)) {
+      src = options.src;
+      attrs = options.attrs;
+      timeout = options.timeout;
+      wrapped = options.wrapped;
+    }
+
+
     cb = cb || noop;
     attrs = attrs || {};
 

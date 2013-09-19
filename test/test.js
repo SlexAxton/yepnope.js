@@ -38,10 +38,10 @@ describe('yepnope', function() {
       it('should callback after a script is loaded', function (done) {
         var s = js();
 
-        yepnope.injectJs(s.url, function () {
+        yepnope.injectJs({ src: s.url, wrapped: true }, function () {
           expect(yeptest).to.have.property(s.name);
           done();
-        }, null, null, true);
+        });
       });
 
       it('should allow me to inject a script without a wrapper', function (done) {
@@ -50,23 +50,23 @@ describe('yepnope', function() {
         yepnope.injectJs(s.url, function () {
           expect(yeptest).to.have.property(s.name);
           done();
-        }, null, null, null);
+        });
       });
 
       it('should be tolerant of long loading scripts', function (done) {
         var s = js(1000);
 
-        yepnope.injectJs(s.url, function () {
+        yepnope.injectJs({ src: s.url, wrapped: true }, function () {
           expect(yeptest).to.have.property(s.name);
           done();
-        }, null, null, true);
+        });
       });
 
       it('should throw an error on a 404', function (done) {
-        yepnope.injectJs('/s/NOTFOUND.js', function (err) {
+        yepnope.injectJs({ src: '/s/NOTFOUND.js', wrapped: true }, function (err) {
           expect(err).to.be.an(Error);
           done();
-        }, null, null, true);
+        });
       });
 
       it('should timeout if it takes too long, and be cancelled', function (done) {
@@ -76,7 +76,7 @@ describe('yepnope', function() {
         // Set the timeout super low
         yepnope.errorTimeout = 100;
 
-        yepnope.injectJs(s.url, function (err) {
+        yepnope.injectJs({ src: s.url, wrapped: true}, function (err) {
           // Expect it to have timed out
           expect(err).to.be.an(Error);
 
@@ -89,56 +89,74 @@ describe('yepnope', function() {
             yepnope.errorTimeout = oldTimeout;
             done();
           }, 400);
-        }, null, null, true);
+        });
       });
 
       it('should listen to the local timeout over the global timeout', function (done) {
         var s = js(300);
 
-        yepnope.injectJs(s.url, function (err) {
+        yepnope.injectJs({ src: s.url, timeout: 100, wrapped: true }, function (err) {
           expect(err).to.be.an(Error);
 
           window.setTimeout(function () {
             expect(yeptest).to.not.have.property(s.name);
             done();
           }, 400);
-        }, null, 100, true);
-        // The fourth argument is a local timeout
+        });
       });
 
       it('should allow additional attributes to the script tags', function (done) {
         var s = js();
         var id = 'script_' + s.name;
 
-        yepnope.injectJs(s.url, function () {
+        yepnope.injectJs({
+          src: s.url,
+          attrs: {
+            'id': id,
+            'name': id
+          },
+          wrapped: true
+        }, function () {
           var scriptElem = document.getElementById(id);
 
           expect(scriptElem).to.be.ok();
           expect(scriptElem.getAttribute('name')).to.equal(id);
 
           done();
-        }, {
-          'id' : id,
-          'name': id
-        }, null, true);
+        });
       });
 
       it('should call the correct callback when things load out of order.', function (done) {
         var s1 = js(500);
-        var s2 = js();
+        var s2 = js(250);
+        var s3 = js();
+
+        var cbcount = 0;
 
         // s2 will load first because of the delay
 
-        yepnope.injectJs(s1.url, function () {
+        yepnope.injectJs({src: s1.url, wrapped: true}, function () {
+          cbcount++;
+          expect(cbcount).to.eql(3);
           expect(yeptest).to.have.property(s1.name);
           expect(yeptest).to.have.property(s2.name);
           done();
-        }, null, null, true);
+        });
 
-        yepnope.injectJs(s2.url, function () {
+        yepnope.injectJs({src: s2.url, wrapped: true}, function () {
+          cbcount++;
+          expect(cbcount).to.eql(2);
           expect(yeptest).to.have.property(s2.name);
           expect(yeptest).to.not.have.property(s1.name);
-        }, null, null, true);
+        });
+
+        yepnope.injectJs({src: s3.url, wrapped: true}, function () {
+          cbcount++;
+          expect(cbcount).to.eql(1);
+          expect(yeptest).to.have.property(s3.name);
+          expect(yeptest).to.not.have.property(s2.name);
+          expect(yeptest).to.not.have.property(s1.name);
+        });
       });
 
     });
