@@ -123,6 +123,24 @@ describe('yepnope', function() {
         }, null, true);
       });
 
+      it('should call the correct callback when things load out of order.', function (done) {
+        var s1 = js(500);
+        var s2 = js();
+
+        // s2 will load first because of the delay
+
+        yepnope.injectJs(s1.url, function () {
+          expect(yeptest).to.have.property(s1.name);
+          expect(yeptest).to.have.property(s2.name);
+          done();
+        }, null, null, true);
+
+        yepnope.injectJs(s2.url, function () {
+          expect(yeptest).to.have.property(s2.name);
+          expect(yeptest).to.not.have.property(s1.name);
+        }, null, null, true);
+      });
+
     });
 
   });

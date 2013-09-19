@@ -163,7 +163,7 @@ window.yepnope = (function (window, document, undef) {
         }
 
         if (wrapped) {
-          scriptCache[src] = scriptsQueue.shift();
+          scriptCache[src] = scriptsQueue.pop();
         }
 
         // Run the inside and then the callback if it's wrapped,

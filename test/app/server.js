@@ -39,9 +39,8 @@ app.get( '/s/js/*', function( req, res ) {
   setTimeout(function() {
     basename = url.split("/").pop().split(".").shift();
     res.end([wrapStart,
-             "  yeptest." + basename + "time = (+new Date);",
-             "  yeptest." + basename + " = true;",
-             wrapEnd
+      "  yeptest." + basename + " = (+new Date);",
+      wrapEnd
     ].join("\n"));
 
   }, sleep);
