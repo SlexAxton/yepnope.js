@@ -1,6 +1,6 @@
 [![Build Status](https://api.travis-ci.org/SlexAxton/yepnope.js.png?branch=v2.0)](https://travis-ci.org/SlexAxton/yepnope.js)
 
-#yepnope.js#
+# yepnope.js
 
 A Conditional Script Loader For Your Polyfills, or Regressive Enhancement With Style.
 
@@ -17,7 +17,7 @@ Ralph Holzmann - RalphHolzmann [at] gmail
 
 Follow: [@SlexAxton](http://twitter.com/SlexAxton) and [@ralphholzmann](http://twitter.com/ralphholzmann) on Twitter for more updates.
 
-##A simple example (assuming modernizr is there):##
+## A simple example (assuming modernizr is there):
 
     yepnope([
       {
@@ -29,7 +29,7 @@ Follow: [@SlexAxton](http://twitter.com/SlexAxton) and [@ralphholzmann](http://t
 
 Any forks and stuff are welcome.
 
-##Building and Testing##
+## Building and Testing
 
 ```sh
 # Clone the repo
@@ -51,7 +51,7 @@ grunt test
 grunt serve
 
 # Open the test url in a browser
-open http://127.0.0.1:3010/test/
+open http://127.0.0.1:3333/test/
 
 # Run the tests and build
 grunt

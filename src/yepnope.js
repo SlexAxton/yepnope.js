@@ -223,10 +223,21 @@ window.yepnope = (function (window, document, undef) {
     firstScript.parentNode.insertBefore(script, firstScript);
   }
 
-  function injectCss (href, cb, args) {
+  function injectCss (options, cb) {
+    var href, attrs, i;
+
+    // optionally accept an object of settings
+    // or a string that's the url
+    if (isObject(options)) {
+      href = options.href;
+      attrs = options.attrs;
+    }
+    else if (isString(options)) {
+      href = options;
+    }
+
     // Create stylesheet link
-    var link = doc.createElement('link');
-    var i;
+    var link = document.createElement('link');
 
     cb = cb || noop;
 

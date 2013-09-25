@@ -17,6 +17,35 @@ describe('yepnope', function() {
     };
   }
 
+  function css (delay) {
+    function rand (){
+      return Math.floor((255*Math.random()));
+    }
+    // Can cause skips, but ensures we're unique when
+    // we do multiple urls in one test
+    u += 1;
+    var vals = [rand(), rand(), rand()];
+    var name = vals.join(',');
+    return {
+      name: name,
+      val: vals.join(''),
+      url: '/s/css/' +
+           (delay ? 'sleep-' + delay + '/' : '' ) +
+           name + '.css'
+    };
+  }
+
+  var testDivZone = document.getElementById('testDivZone');
+
+  function checkStyle (id) {
+    id = 'item_' + id;
+
+    var elem = document.createElement('div');
+    elem.id = id;
+    testDivZone.appendChild(elem);
+    return !!(window.getComputedStyle(elem).color != 'rgb(0, 0, 0)');
+  }
+
   beforeEach(function () {
     // Reset this each time to a low amount
     // so we can fail fast in tests. If you get a lot
@@ -133,7 +162,7 @@ describe('yepnope', function() {
 
         var cbcount = 0;
 
-        // s2 will load first because of the delay
+        // files will load in reverse because of the delay
 
         yepnope.injectJs({src: s1.url, wrapped: true}, function () {
           cbcount++;
@@ -161,5 +190,16 @@ describe('yepnope', function() {
 
     });
 
+    describe('injectCss', function () {
+      it('should inject a css file', function (done) {
+        var s = css();
+        yepnope.injectCss(s.url, function () {
+          setTimeout(function(){
+            expect(checkStyle(s.val)).to.be.ok();
+            done();
+          }, 100);
+        });
+      });
+    })
   });
 });
