@@ -27,7 +27,7 @@ var docElement            = doc.documentElement,
     // If you have a better solution, we are actively looking to solve the problem
     isGecko               = ( "MozAppearance" in docElement.style ),
     isGeckoLTE18          = isGecko && !! doc.createRange().compareNode,
-    insBeforeObj          = isGeckoLTE18 ? docElement : firstScript.parentNode,
+    insBeforeObj          = isGeckoLTE18 ? docElement : firstScript ? firstScript.parentNode : docElement.firstChild,
     // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
     isOpera               = window.opera && toString.call( window.opera ) == "[object Opera]",
     isIE                  = !! doc.attachEvent && !isOpera,
@@ -118,7 +118,8 @@ var docElement            = doc.documentElement,
     // or immediately callback if we know there
     // was previously a timeout error
     readFirstScript();
-    err ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
+    insPoint = firstScript ? firstScript.parentNode : docElement.firstChild;
+    err ? script.onload() : insPoint.insertBefore( script, firstScript );
   }
 
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
@@ -144,7 +145,8 @@ var docElement            = doc.documentElement,
 
     if ( ! err ) {
       readFirstScript();
-      firstScript.parentNode.insertBefore( link, firstScript );
+      insPoint = firstScript ? firstScript.parentNode : docElement.firstChild;
+      insPoint.insertBefore( link, firstScript );
       sTimeout(cb, 0);
     }
   }
