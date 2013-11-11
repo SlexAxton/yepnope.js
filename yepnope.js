@@ -69,7 +69,7 @@ var docElement            = doc.documentElement,
   /* Loader helper functions */
   function isFileReady ( readyState ) {
     // Check to see if any of the ways a file can be ready are available as properties on the file's element
-    return ( ! readyState || readyState == "loaded" || readyState == "complete" || readyState == "uninitialized" );
+    return ( ! readyState || readyState == "loaded" || readyState == "complete" );
   }
 
 
@@ -95,7 +95,13 @@ var docElement            = doc.documentElement,
     script.onreadystatechange = script.onload = function () {
 
       if ( ! done && isFileReady( script.readyState ) ) {
-
+		
+		// Inject script into to document (if NOT using onload)
+		if(!err && script.readyState){
+			readFirstScript();
+			firstScript.parentNode.insertBefore( script, firstScript );
+		}
+		
         // Set done to prevent this function from being called twice.
         done = 1;
         cb();
@@ -114,11 +120,17 @@ var docElement            = doc.documentElement,
       }
     }, timeout );
 
-    // Inject script into to document
+    // Inject script into to document (if using onload)
     // or immediately callback if we know there
     // was previously a timeout error
-    readFirstScript();
-    err ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
+	if(!err){
+		if(!script.readyState){
+			readFirstScript();
+			firstScript.parentNode.insertBefore( script, firstScript );
+		}
+	}else{
+		script.onload()
+	}
   }
 
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
