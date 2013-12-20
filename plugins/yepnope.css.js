@@ -7,7 +7,6 @@
         onload = function() {
           if ( ! done ) {
             done = 1;
-            link.removeAttribute("id");
             setTimeout( cb, 0 );
           }
         },
