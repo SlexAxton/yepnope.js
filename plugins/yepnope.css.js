@@ -7,6 +7,7 @@
         onload = function() {
           if ( ! done ) {
             done = 1;
+            link.setAttribute('data-yepnope-loaded', true);
             setTimeout( cb, 0 );
           }
         },
@@ -37,6 +38,10 @@
             var sheets = document.styleSheets;
             for(var j=0, k=sheets.length; j<k; j++) {
                 if(sheets[j].ownerNode.id == id) {
+                    // stop polling if the onload was already called directly
+                    if (sheets[j].getAttribute('data-yepnope-loaded') == "true")
+                        return;
+
                     // this throws an exception, I believe, if not full loaded (was originally just "sheets[j].cssRules;")
                     if (sheets[j].cssRules.length)
                         return onload();
