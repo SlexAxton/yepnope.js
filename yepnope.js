@@ -209,7 +209,7 @@ var docElement            = doc.documentElement,
         ! started && executeStack();
 
         if ( first ) {
-          if ( elem != "img" ) {
+          if ( elem != "img" && elem != "object" ) {
             sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 50);
           }
 
