@@ -19,8 +19,8 @@ var docElement            = doc.documentElement,
     sTimeout              = window.setTimeout,
     firstScript           = doc.getElementsByTagName( "script" )[ 0 ],
     toString              = {}.toString,
-    execStack             = [],
-    started               = 0,
+   // execStack             = [],
+//    started               = 0,
     noop                  = function () {},
     // Before you get mad about browser sniffs, please read:
     // https://github.com/Modernizr/Modernizr/wiki/Undetectables
@@ -75,8 +75,7 @@ var docElement            = doc.documentElement,
 
   // Takes a preloaded js obj (changes in different browsers) and injects it into the head
   // in the appropriate order
-  function injectJs ( src, cb, attrs, timeout, /* internal use */ err, internal ) {
-	  
+  function injectJs ( src, cb, attrs, timeout, /* internal use */ err, internal ,execStack) {
     var script = doc.createElement( "script" ),
         done, i;
 
@@ -98,7 +97,7 @@ var docElement            = doc.documentElement,
 
         // Set done to prevent this function from being called twice.
         done = 1;
-        cb();
+        cb(execStack);
 
         // Handle memory leak in IE
         script.onload = script.onreadystatechange = null;
@@ -122,7 +121,7 @@ var docElement            = doc.documentElement,
   }
 
   // Takes a preloaded css obj (changes in different browsers) and injects it into the head
-  function injectCss ( href, cb, attrs, timeout, /* Internal use */ err, internal ) {
+  function injectCss ( href, cb, attrs, timeout, /* Internal use */ err, internal,execStack ) {
 
     // Create stylesheet link
     var link = doc.createElement( "link" ),
@@ -145,14 +144,15 @@ var docElement            = doc.documentElement,
     if ( ! err ) {
       readFirstScript();
       firstScript.parentNode.insertBefore( link, firstScript );
-      sTimeout(cb, 0);
+      sTimeout(function(){cb(execStack)}, 0);
     }
   }
 
-  function executeStack ( ) {
+  function executeStack ( execStack) {
     // shift an element off of the stack
     var i   = execStack.shift();
-    started = 1;
+    execStack.started = 1;
+
 
     // if a is truthy and the first item in the stack has an src
     if ( i ) {
@@ -161,22 +161,22 @@ var docElement            = doc.documentElement,
         // Inject after a timeout so FF has time to be a jerk about it and
         // not double load (ignore the cache)
         sTimeout( function () {
-          (i['t'] == "c" ?  yepnope['injectCss'] : yepnope['injectJs'])( i['s'], 0, i['a'], i['x'], i['e'], 1 );
+          (i['t'] == "c" ?  yepnope['injectCss'] : yepnope['injectJs'])( i['s'], 0, i['a'], i['x'], i['e'], 1,execStack );
         }, 0 );
       }
       // Otherwise, just call the function and potentially run the stack
       else {
         i();
-        executeStack();
+        executeStack(execStack);
       }
     }
     else {
       // just reset out of recursive mode
-      started = 0;
+      execStack.started = 0;
     }
   }
 
-  function preloadFile ( elem, url, type, splicePoint, dontExec, attrObj, timeout ) {
+  function preloadFile ( elem, url, type, splicePoint, dontExec, attrObj, timeout,execStack ) {
 
     timeout = timeout || yepnope['errorTimeout'];
 
@@ -205,8 +205,7 @@ var docElement            = doc.documentElement,
 
         // Set done to prevent this function from being called twice.
         stackObject['r'] = done = 1;
-
-        ! started && executeStack();
+        !execStack.started && executeStack(execStack);
 
         if ( first ) {
           if ( elem != "img" ) {
@@ -272,20 +271,21 @@ var docElement            = doc.documentElement,
     }
   }
 
-  function load ( resource, type, dontExec, attrObj, timeout ) {
+  function load ( resource, type, dontExec, attrObj, timeout,execStack) {
     // If this method gets hit multiple times, we should flag
     // that the execution of other threads should halt.
-    started = 0;
+    !execStack && (execStack=type);
 
+    execStack.started = 0;
     // We'll do 'j' for js and 'c' for css, yay for unreadable minification tactics
     type = type || "j";
     if ( isString( resource ) ) {
       // if the resource passed in here is a string, preload the file
-      preloadFile( type == "c" ? strCssElem : strJsElem, resource, type, this['i']++, dontExec, attrObj, timeout );
+      preloadFile( type == "c" ? strCssElem : strJsElem, resource, type, this['i']++, dontExec, attrObj, timeout,execStack );
     } else {
       // Otherwise it's a callback function and we can splice it into the stack to run
       execStack.splice( this['i']++, 0, resource );
-      execStack.length == 1 && executeStack();
+      execStack.length == 1 && executeStack(execStack);
     }
 
     // OMG is this jQueries? For chaining...
@@ -309,7 +309,9 @@ var docElement            = doc.documentElement,
     var i,
         need,
         // start the chain as a plain instance
-        chain = this['yepnope']['loader'];
+        chain = this['yepnope']['loader'],
+        execStack= [];
+        execStack.started=0;
 
     function satisfyPrefixes ( url ) {
       // split all prefixes out
@@ -372,7 +374,6 @@ var docElement            = doc.documentElement,
           callback[ index ] ||
           callback[ ( input.split( "/" ).pop().split( "?" )[ 0 ] ) ];
       }
-
       // if someone is overriding all normal functionality
       if ( resource['instead'] ) {
         return resource['instead']( input, callback, chain, index, testResult );
@@ -388,10 +389,10 @@ var docElement            = doc.documentElement,
         }
 
         // Throw this into the queue
-        input && chain.load( resource['url'], ( ( resource['forceCSS'] || ( ! resource['forceJS'] && "css" == getExtension( resource['url'] ) ) ) ) ? "c" : undef, resource['noexec'], resource['attrs'], resource['timeout'] );
-
+        input && chain.load( resource['url'], ( ( resource['forceCSS'] || ( ! resource['forceJS'] && "css" == getExtension( resource['url'] ) ) ) ) ? "c" : undef, resource['noexec'], resource['attrs'], resource['timeout'], execStack );
         // If we have a callback, we'll start the chain over
         if ( isFunction( callback ) || isFunction( autoCallback ) ) {
+
           // Call getJS with our current stack of things
           chain['load']( function () {
             // Hijack yepnope and restart index counter
@@ -402,7 +403,7 @@ var docElement            = doc.documentElement,
 
             // Override this to just a boolean positive
             scriptCache[ resource['url'] ] = 2;
-          } );
+          } ,execStack);
         }
       }
     }
@@ -436,13 +437,14 @@ var docElement            = doc.documentElement,
                 complete();
               };
             }
-            // Just load the script of style
-            loadScriptOrStyle( needGroup, callback, chain, 0, testResult );
+            // Just load the script or style
+            loadScriptOrStyle( needGroup, callback, chain, 0, testResult,execStack );
           }
           // See if we have an object. Doesn't matter if it's an array or a key/val hash
           // Note:: order cannot be guaranteed on an key value object with multiple elements
           // since the for-in does not preserve order. Arrays _should_ go in order though.
           else if ( isObject( needGroup ) ) {
+
             // I hate this, but idk another way for objects.
             needGroupSize = (function(){
               var count = 0, i
@@ -453,6 +455,8 @@ var docElement            = doc.documentElement,
               }
               return count;
             })();
+
+
 
             for ( callbackKey in needGroup ) {
               // Safari 2 does not have hasOwnProperty, but not worth the bytes for a shim
@@ -481,7 +485,8 @@ var docElement            = doc.documentElement,
                     };
                   }
                 }
-                loadScriptOrStyle( needGroup[ callbackKey ], callback, chain, callbackKey, testResult );
+
+                loadScriptOrStyle( needGroup[ callbackKey ], callback, chain, callbackKey, testResult,execStack );
               }
             }
           }
@@ -581,5 +586,6 @@ var docElement            = doc.documentElement,
   window['yepnope']['executeStack'] = executeStack;
   window['yepnope']['injectJs'] = injectJs;
   window['yepnope']['injectCss'] = injectCss;
+  window['yepnope']['scriptCache'] = scriptCache;
 
 })( this, document );
