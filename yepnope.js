@@ -242,6 +242,8 @@ var docElement            = doc.documentElement,
 
     // Don't let it show up visually
     preloadElem.width = preloadElem.height = "0";
+    // Issue #143
+    preloadElem.setAttribute("style","float:left;");
 
     // Attach handlers for all browsers
     preloadElem.onerror = preloadElem.onload = preloadElem.onreadystatechange = function(){
