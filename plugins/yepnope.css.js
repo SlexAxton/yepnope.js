@@ -35,6 +35,7 @@
 
       function poll() {
         try {
+            if (done) return;
             var sheets = document.styleSheets;
             for(var j=0, k=sheets.length; j<k; j++) {
                 if(sheets[j].ownerNode.id == id) {
