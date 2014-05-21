@@ -29,8 +29,8 @@
 
 
     if ( ! err ) {
-      ref = document.getElementsByTagName('base')[0] || document.getElementsByTagName('script')[0];
-      ref.parentNode.insertBefore( link, ref );
+      ref = document.getElementsByTagName('base')[0] || document.getElementsByTagName('link')[0] || document.getElementsByTagName('script')[0];
+      ref.parentNode.appendChild( link );
       link.onload = onload;
 
       function poll() {
