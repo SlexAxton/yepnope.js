@@ -128,8 +128,6 @@ var docElement            = doc.documentElement,
     var link = doc.createElement( "link" ),
         done, i;
 
-    timeout = timeout || yepnope['errorTimeout'];
-
     cb = internal ? executeStack : ( cb || noop );
 
     // Add attributes
