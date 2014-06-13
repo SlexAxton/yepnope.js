@@ -356,8 +356,7 @@ var docElement            = doc.documentElement,
     function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
       // run through our set of prefixes
       var resource     = satisfyPrefixes( input ),
-          autoCallback = resource['autoCallback'],
-          extension    = getExtension( resource['url'] );
+          autoCallback = resource['autoCallback'];
 
       // if no object is returned or the url is empty/0 just exit the load
       if ( resource['bypass'] ) {
