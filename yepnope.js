@@ -125,8 +125,7 @@ var docElement            = doc.documentElement,
   function injectCss ( href, cb, attrs, timeout, /* Internal use */ err, internal ) {
 
     // Create stylesheet link
-    var link = doc.createElement( "link" ),
-        done, i;
+    var link = doc.createElement( "link" ), i;
 
     timeout = timeout || yepnope['errorTimeout'];
 
