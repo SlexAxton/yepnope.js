@@ -445,7 +445,7 @@ var docElement            = doc.documentElement,
           else if ( isObject( needGroup ) ) {
             // I hate this, but idk another way for objects.
             needGroupSize = (function(){
-              var count = 0, i
+              var count = 0, i;
               for (i in needGroup ) {
                 if ( needGroup.hasOwnProperty( i ) ) {
                   count++;
