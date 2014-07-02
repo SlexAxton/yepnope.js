@@ -29,7 +29,7 @@
 
 
     if ( ! err ) {
-      ref = document.getElementsByTagName('base')[0] || document.getElementsByTagName('script')[0];
+      ref = document.getElementsByTagName('link')[0] || document.getElementsByTagName('script')[0];
       ref.parentNode.insertBefore( link, ref );
       link.onload = onload;
 
