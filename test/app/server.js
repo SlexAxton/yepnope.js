@@ -65,7 +65,7 @@ app.get( '/s/js/*', function( req, res ) {
       output['tests'] = tests;
     }
 
-    res.end('yeptest.' + basename + ' = ' + JSON.stringify(output) + ';');
+    res.end('yeptest["' + basename + '"] = ' + JSON.stringify(output) + ';');
   }, sleep);
 
 });

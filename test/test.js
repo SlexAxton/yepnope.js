@@ -248,6 +248,29 @@ describe('yepnope', function() {
         });
       });
 
+      it('should add in both params, multiple tests', function(done) {
+        var s = js();
+        yepnope(s.url, {
+          isfalse: false,
+          isalsofalse: false,
+          isalsoreallyfalse: false,
+          istrue: true,
+          isalsotrue: true,
+          isalsoreallytrue: true
+        }, function() {
+          expect(yeptest[s.name].tests).to.be.ok();
+          expect(yeptest[s.name].tests.nope).to.be.ok();
+          expect(yeptest[s.name].tests.nope).to.contain('isfalse');
+          expect(yeptest[s.name].tests.nope).to.contain('isalsofalse');
+          expect(yeptest[s.name].tests.nope).to.contain('isalsoreallyfalse');
+          expect(yeptest[s.name].tests.yep).to.be.ok();
+          expect(yeptest[s.name].tests.yep).to.contain('istrue');
+          expect(yeptest[s.name].tests.yep).to.contain('isalsotrue');
+          expect(yeptest[s.name].tests.yep).to.contain('isalsoreallytrue');
+          done();
+        });
+      });
+
       it('should correctly encode url params', function(done) {
         var s = js();
         yepnope(s.url, {
@@ -258,6 +281,38 @@ describe('yepnope', function() {
           expect(yeptest[s.name].tests.yep).to.contain('isCray™&?');
           done();
         });
+      });
+
+      it('should allow you to override the url formatter', function(done) {
+        var s = js();
+        var oldFormatter = yepnope.urlFormatter;
+        yepnope.urlFormatter = function(url, tests) {
+          var parts = url.split('.');
+          var extension = parts.pop();
+          var filename = parts.join('.');
+          var passes = [];
+
+          if (tests) {
+            for(var testname in tests) {
+              if (tests.hasOwnProperty(testname) && tests[testname]) {
+                passes.push(testname);
+              }
+            }
+          }
+          if (passes.length) {
+            return filename + '-' + passes.join('-') + '.' + extension;
+          }
+          return url;
+        };
+        yepnope(s.url, {
+          'iscray': true,
+          'isnotcray': false,
+          'anotherday': true
+        }, function() {
+          expect(yeptest[s.name + '-iscray-anotherday']).to.be.ok();
+          done();
+        });
+        yepnope.urlFormatter = oldFormatter;
       });
     });
 

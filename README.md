@@ -31,6 +31,7 @@ By [@SlexAxton](http://twitter.com/SlexAxton) and [@rlph](http://twitter.com/rlp
 ## Example
 
 ```javascript
+// It will Do The Right Thing™ with a .js or .css extension
 yepnope('script.js', {
   modernimages: Modernizr.webp && Modernizr.apng,
   css3: Modernizr.borderradius && Modernizr.boxshadow,
@@ -41,6 +42,56 @@ yepnope('script.js', {
 And a request for `script.js?yep=css3,consoleapis&nope=modernimages` would be made (assuming that set of results).
 
 **It's up to you to serve the correct build file from that url (you should statically build and/or cache this endpoint)**
+
+## With Modernizr
+
+If you're running a custom build of Modernizr (version 3+), the only "own properties" of the `Modernizr` object are the
+tests. All other properties are stored on the prototype. Because of this, you can easily just pass yepnope your `Modernizr`
+object, and not have to worry about creating a test object.
+
+```javascript
+yepnope('build.js', Modernizr, function() {
+  MyApp.init();
+});
+```
+
+## Just regular script and css injection
+
+We also expose our underlying script and css injection functions as
+
+* `yepnope.injectJs`
+* `yepnope.injectCss` (The callback does not wait for the css to actually be loaded)
+
+The `tests` are a good place to look at the uses.
+
+## Customizing the generated URL
+
+If you need the generated URL from the tests to look a certain way, feel free to override the
+`yepnope.urlFormatter` function.
+
+```javascript
+// change it to only output passing tests, as dashes on the file name
+yepnope.urlFormatter = function(url, tests) {
+  var parts = url.split('.');
+  var extension = parts.pop();
+  var filename = parts.join('.');
+  var passes = [];
+
+  if (tests) {
+    for(var testname in tests) {
+      if (tests.hasOwnProperty(testname) && tests[testname]) {
+        passes.push(testname);
+      }
+    }
+  }
+  if (passes.length) {
+    return filename + '-' + passes.join('-') + '.' + extension;
+  }
+  return url;
+};
+```
+
+Then the url generated from the first example above would be: `script-css3-consoleapis.js`
 
 ## Building and Testing
 

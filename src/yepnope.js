@@ -27,7 +27,7 @@ window.yepnope = (function (window, document, undef) {
 
   // This is just used for a race condition,
   // so even if it fails it's not a huge risk
-  var isOldIE = !!document.attachEvent && !(window.opera && toString.call(window.opera) == "[object Opera]");
+  var isOldIE = !!document.attachEvent && !(window.opera && toString.call(window.opera) == '[object Opera]');
 
   function noop(){}
 
