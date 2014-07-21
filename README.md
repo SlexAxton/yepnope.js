@@ -32,11 +32,10 @@ By [@SlexAxton](http://twitter.com/SlexAxton) and [@rlph](http://twitter.com/rlp
 
 ```javascript
 yepnope('script.js', {
-    modernimages: Modernizr.webp && Modernizr.apng,
-    css3: Modernizr.borderradius && Modernizr.boxshadow,
-    consoleapis: window.console && window.console.log
-  }
-]);
+  modernimages: Modernizr.webp && Modernizr.apng,
+  css3: Modernizr.borderradius && Modernizr.boxshadow,
+  consoleapis: window.console && window.console.log
+});
 ```
 
 And a request for `script.js?yep=css3,consoleapis&nope=modernimages` would be made (assuming that set of results).
@@ -83,8 +82,6 @@ Changes in 2.0+ :
 * Relicensed to New BSD
 * Deprecated Library
 
-NOTE: the code in the github repository is considered in development. Use at your own risk. The download buttons will link to our current release version.
-
 ## License
 
 ### New BSD License
@@ -109,6 +106,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 * Dave Artz - A.getJS was a huge code-inspiration for our loader. So he's responsible for a ton of awesome techniques here.
 * Kyle Simpson - He is the creator of LABjs of which a lot of this is inspired by.
-* Stoyan Stefanov - His work on resource preloading has been awesome: (http://www.phpied.com/preload-cssjavascript-without-execution/)[http://www.phpied.com/preload-cssjavascript-without-execution/]
+* Stoyan Stefanov - His work on resource preloading has been awesome: [http://www.phpied.com/preload-cssjavascript-without-execution/](http://www.phpied.com/preload-cssjavascript-without-execution/)
 * Steve Souders - His evangelism and work in the space (ControlJS) have brought light to the issues at hand, he is the father of front-end performance.
 
