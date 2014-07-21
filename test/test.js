@@ -3,7 +3,7 @@
 describe('yepnope', function() {
   // A unique number for each load
   var u = (new Date()).getTime();
-  function js (delay, nowrap) {
+  function js (delay) {
     // Can cause skips, but ensures we're unique when
     // we do multiple urls in one test
     u += 1;
@@ -12,7 +12,6 @@ describe('yepnope', function() {
       name: name,
       url: '/s/js/' +
            (delay ? 'sleep-' + delay + '/' : '' ) +
-           (nowrap ? 'no-wrap/' : '') +
            name + '.js'
     };
   }
@@ -191,6 +190,74 @@ describe('yepnope', function() {
           expect(yeptest).to.have.property(s.name);
           done();
         }, 50);
+      });
+
+      it('should add in yep param, single test', function(done) {
+        var s = js();
+        yepnope(s.url, {
+          istrue: true
+        }, function() {
+          expect(yeptest[s.name].tests).to.be.ok();
+          expect(yeptest[s.name].tests.yep).to.be.ok();
+          expect(yeptest[s.name].tests.yep).to.contain('istrue');
+          done();
+        });
+      });
+
+      it('should add in yep param, multiple tests', function(done) {
+        var s = js();
+        yepnope(s.url, {
+          istrue: true,
+          isalsotrue: true,
+          isalsoreallytrue: true
+        }, function() {
+          expect(yeptest[s.name].tests).to.be.ok();
+          expect(yeptest[s.name].tests.yep).to.be.ok();
+          expect(yeptest[s.name].tests.yep).to.contain('istrue');
+          expect(yeptest[s.name].tests.yep).to.contain('isalsotrue');
+          expect(yeptest[s.name].tests.yep).to.contain('isalsoreallytrue');
+          done();
+        });
+      });
+
+      it('should add in nope param, single test', function(done) {
+        var s = js();
+        yepnope(s.url, {
+          isfalse: false
+        }, function() {
+          expect(yeptest[s.name].tests).to.be.ok();
+          expect(yeptest[s.name].tests.nope).to.be.ok();
+          expect(yeptest[s.name].tests.nope).to.contain('isfalse');
+          done();
+        });
+      });
+
+      it('should add in nope param, multiple tests', function(done) {
+        var s = js();
+        yepnope(s.url, {
+          isfalse: false,
+          isalsofalse: false,
+          isalsoreallyfalse: false
+        }, function() {
+          expect(yeptest[s.name].tests).to.be.ok();
+          expect(yeptest[s.name].tests.nope).to.be.ok();
+          expect(yeptest[s.name].tests.nope).to.contain('isfalse');
+          expect(yeptest[s.name].tests.nope).to.contain('isalsofalse');
+          expect(yeptest[s.name].tests.nope).to.contain('isalsoreallyfalse');
+          done();
+        });
+      });
+
+      it('should correctly encode url params', function(done) {
+        var s = js();
+        yepnope(s.url, {
+          'isCray™&?': true
+        }, function() {
+          expect(yeptest[s.name].tests).to.be.ok();
+          expect(yeptest[s.name].tests.yep).to.be.ok();
+          expect(yeptest[s.name].tests.yep).to.contain('isCray™&?');
+          done();
+        });
       });
     });
 

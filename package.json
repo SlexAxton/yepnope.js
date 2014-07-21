@@ -20,6 +20,7 @@
     "mocha": "^1.8.2",
     "mocha-cloud": "git://github.com/SlexAxton/mocha-cloud.git#quit-callback",
     "mocha-cloud-grid-view": "0.0.1",
+    "qs": "^0.6.6",
     "term-canvas": "0.0.5"
   },
   "scripts": {

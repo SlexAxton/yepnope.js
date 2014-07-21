@@ -225,10 +225,10 @@ window.yepnope = (function (window, document, undef) {
     for(var i in tests) {
       if (tests.hasOwnProperty(i)) {
         if (tests[i]) {
-          passed.push(encodeURIComponent(tests[i]));
+          passed.push(encodeURIComponent(i));
         }
         else {
-          failed.push(encodeURIComponent(tests[i]));
+          failed.push(encodeURIComponent(i));
         }
       }
     }
