@@ -2,6 +2,8 @@
 
 # Deprecation Notice
 
+**TL;DR: we've replaced what yepnope used to do with a very minimal script to help you do what we think is best for your apps.**
+
 The authors of yepnope feel that the front-end community now offers better software for loading scripts, as well
 as conditionally loading scripts. None of the APIs for these new tools are quite as easy as yepnope, but we assure
 you that it's probably worth your while. We don't officially endorse any replacement, however we strongly suggest
