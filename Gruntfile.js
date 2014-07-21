@@ -89,9 +89,5 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['jshint', 'express:test', 'mocha']);
   grunt.registerTask('serve', ['express:serve', 'express-keepalive']);
 
-  // Travis CI task.
-  grunt.registerTask('travis', 'test');
-
   grunt.registerTask('default', ['test', 'concat', 'uglify']);
-
 };
