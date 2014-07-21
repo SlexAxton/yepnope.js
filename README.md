@@ -14,8 +14,13 @@ at that. Then you can inline a script into your page that only loads (asynchrono
 that is tuned to the features of that user. All the performance win of conditional loading, and none of the
 latency problems of loading 100 things at once.
 
-** We have replaced this repo with a script that will help you load the correct conditional build and will
-only be taking issues and pull requests for this new script.**
+**We have replaced this repo with a script that will help you load the correct conditional build and will
+only be taking issues and pull requests for this new script. I retains many of the original functions
+and features as the original yepnope. However it no longer executes scripts in an order. If you're looking
+for something that specifically does that, you can use an old version of yepnope, or another in-order
+script loader like LABjs.**
+
+For these reasons, we're also not going to include yepnope in the next version of Modernizr as `Modernizr.load`.
 
 # yepnope.js
 
