@@ -28,7 +28,7 @@ describe('yepnope', function() {
     var name = vals.join(',');
     return {
       name: name,
-      val: vals.join(''),
+      val: vals,
       url: '/s/css/' +
            (delay ? 'sleep-' + delay + '/' : '' ) +
            name + '.css'
@@ -37,13 +37,13 @@ describe('yepnope', function() {
 
   var testDivZone = document.getElementById('testDivZone');
 
-  function checkStyle (id) {
-    id = 'item_' + id;
+  function checkStyle (cssObj) {
+    var id = 'item_' + cssObj.val.join('');
 
     var elem = document.createElement('div');
     elem.id = id;
     testDivZone.appendChild(elem);
-    return !!(window.getComputedStyle(elem).color != 'rgb(0, 0, 0)');
+    return (window.getComputedStyle(elem).color === 'rgb(' + cssObj.val.join(', ') + ')') ? true : false;
   }
 
   beforeEach(function () {
@@ -195,11 +195,11 @@ describe('yepnope', function() {
         var s = css();
         yepnope.injectCss(s.url, function () {
           setTimeout(function(){
-            expect(checkStyle(s.val)).to.be.ok();
+            expect(checkStyle(s)).to.be.ok();
             done();
-          }, 100);
+          }, 200);
         });
       });
-    })
+    });
   });
 });

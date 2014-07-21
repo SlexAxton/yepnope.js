@@ -71,17 +71,19 @@ window.yepnope = (function (window, document, undef) {
   function runWhenReady (src, cb, justTheCallback) {
     var fn = scriptCache[src];
 
-    // This is far from correct, but fine as a start
-    if (typeof fn == 'function') {
-      if (!justTheCallback) {
-        fn.call(window);
+    sTimeout(function(){
+      // This is far from correct, but fine as a start
+      if (typeof fn == 'function') {
+        if (!justTheCallback) {
+          fn.call(window);
+        }
+        cb.call(window);
       }
-      cb();
-    }
-    // Otherwise, just call the callback
-    else if (fn) {
-      cb();
-    }
+      // Otherwise, just call the callback
+      else if (fn) {
+        cb.call(window);
+      }
+    });
   }
 
   // Inject a script into the page and know when it's done
@@ -224,13 +226,16 @@ window.yepnope = (function (window, document, undef) {
   }
 
   function injectCss (options, cb) {
-    var href, attrs, i;
+    var href;
+    var attrs = {};
+    var i;
+    var media;
 
     // optionally accept an object of settings
     // or a string that's the url
     if (isObject(options)) {
       href = options.href;
-      attrs = options.attrs;
+      attrs = options.attrs || {};
     }
     else if (isString(options)) {
       href = options;
@@ -246,8 +251,16 @@ window.yepnope = (function (window, document, undef) {
       linkCache[href] = true;
       // Add attributes
       link.href = href;
-      link.rel  = 'stylesheet';
+      link.rel = 'stylesheet';
+      // Technique to force non-blocking loading from:
+      // https://github.com/filamentgroup/loadCSS/blob/master/loadCSS.js#L20
+      link.media = 'only x';
       link.type = 'text/css';
+
+      // On next tick, just set the media to what it's supposed to be
+      sTimeout(function() {
+        link.media = attrs.media || 'all';
+      });
 
       // Add our extra attributes to the link element
       for (i in attrs) {
@@ -261,7 +274,11 @@ window.yepnope = (function (window, document, undef) {
       firstScript.parentNode.appendChild(link);
     }
 
-    runWhenReady(href, cb);
+    // Always just run the callback for CSS on next tick. We're not
+    // going to try to normalize this, so don't worry about runwhenready here.
+    sTimeout(function() {
+      cb.call(window);
+    });
   }
 
   // Take the arguments passed to yepnope

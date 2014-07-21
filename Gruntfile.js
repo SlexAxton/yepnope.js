@@ -69,7 +69,7 @@ module.exports = function(grunt) {
       },
       serve: {
         options : {
-          hostname: testhostname ,
+          hostname: testhostname,
           port: testportKeepalive,
           bases: path.resolve('.'),
           monitor: {},
@@ -92,6 +92,6 @@ module.exports = function(grunt) {
   // Travis CI task.
   grunt.registerTask('travis', 'test');
 
-  grunt.registerTask('default', ['jshint', 'express:test', 'mocha', 'concat', 'uglify']);
+  grunt.registerTask('default', ['test', 'concat', 'uglify']);
 
 };
