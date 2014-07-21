@@ -28,7 +28,7 @@ For these reasons, we're also not going to include yepnope in the next version o
 
 A Script Loader For Your Conditional Builds
 
-By [@SlexAxton](http://twitter.com/SlexAxton) and [@rlph](http://twitter.com/rlph) on Twitter for more updates.
+By [@SlexAxton](http://twitter.com/SlexAxton) and [@rlph](http://twitter.com/rlph)
 
 ## Example
 
