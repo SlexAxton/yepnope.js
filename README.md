@@ -1,33 +1,42 @@
 [![Build Status](https://api.travis-ci.org/SlexAxton/yepnope.js.png?branch=v2.0)](https://travis-ci.org/SlexAxton/yepnope.js)
 
+# Deprecation Notice
+
+The authors of yepnope feel that the front-end community now offers better software for loading scripts, as well
+as conditionally loading scripts. None of the APIs for these new tools are quite as easy as yepnope, but we assure
+you that it's probably worth your while. We don't officially endorse any replacement, however we strongly suggest
+you follow an approach using modules, and then package up your application using require.js, webpack, browserify,
+or one of the many other excellent **dependency managed** build tools.
+
+When it comes to loading things conditionally, we suggest that you output a build for each combination of the things
+you're testing. This might sound like it will generate a lot of files (it might), but computers are pretty good
+at that. Then you can inline a script into your page that only loads (asynchronously!) a single built script
+that is tuned to the features of that user. All the performance win of conditional loading, and none of the
+latency problems of loading 100 things at once.
+
+** We have replaced this repo with a script that will help you load the correct conditional build and will
+only be taking issues and pull requests for this new script.**
+
 # yepnope.js
 
-A Conditional Script Loader For Your Polyfills, or Regressive Enhancement With Style.
+A Script Loader For Your Conditional Builds
 
-A small script loader to help use feature detection to load exactly the scripts that your _user_ needs, not just all the scripts that you _think_ they might need.
+By [@SlexAxton](http://twitter.com/SlexAxton) and [@rlph](http://twitter.com/rlph) on Twitter for more updates.
 
-More docs, etc at: [http://yepnopejs.com](http://yepnopejs.com)
+## Example
 
-By:
+```javascript
+yepnope('script.js', {
+    modernimages: Modernizr.webp && Modernizr.apng,
+    css3: Modernizr.borderradius && Modernizr.boxshadow,
+    consoleapis: window.console && window.console.log
+  }
+]);
+```
 
-Alex Sexton - AlexSexton [at] gmail
+And a request for `script.js?yep=css3,consoleapis&nope=modernimages` would be made (assuming that set of results).
 
-Ralph Holzmann - RalphHolzmann [at] gmail
-
-
-Follow: [@SlexAxton](http://twitter.com/SlexAxton) and [@ralphholzmann](http://twitter.com/ralphholzmann) on Twitter for more updates.
-
-## A simple example (assuming modernizr is there):
-
-    yepnope([
-      {
-        test : Modernizr.indexeddb,
-        yep  : ['/js/indexeddb-wrapper.js', '/css/coolbrowser.css'],
-        nope : ['/js/polyfills/lawnchair.js', '/js/cookies.js', '/css/oldbrowser.css']
-      }
-    ]);
-
-Any forks and stuff are welcome.
+**It's up to you to serve the correct build file from that url (you should statically build and/or cache this endpoint)**
 
 ## Building and Testing
 
@@ -59,30 +68,42 @@ grunt
 
 Your build will be in the `dist/` folder.
 
-##CHANGELOG##
+## CHANGELOG
 
 Version 2 is a significant diversion from Version 1.x. We feel that the direction helps developers make the best decisions for performance rather than enabling poor uses.
 
 Changes in 2.0+ :
 
 * Rewrote entire library
+* Relicensed to New BSD
+* Deprecated Library
 
 NOTE: the code in the github repository is considered in development. Use at your own risk. The download buttons will link to our current release version.
 
-##License##
+## License
 
-All of the yepnope specific code is under the WTFPL license. Which means it's also MIT and BSD (or anything you want). However, the inspired works are subject to their own licenses.
+### New BSD License
 
-All contributions to yepnope should be code that you wrote, and will be subject to the Dojo CLA. By sending a pull request, you agree to this. All commits thus far have also been committed under this license.
+```
+Copyright (c) 2014, Alex Sexton
+Copyright (c) 2014, Ralph Holzmann
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
 
 ##Thanks##
 
-Dave Artz       - A.getJS was a huge code-inspiration for our loader. So he's responsible for a ton of awesome techniques here.
+* Dave Artz - A.getJS was a huge code-inspiration for our loader. So he's responsible for a ton of awesome techniques here.
+* Kyle Simpson - He is the creator of LABjs of which a lot of this is inspired by.
+* Stoyan Stefanov - His work on resource preloading has been awesome: (http://www.phpied.com/preload-cssjavascript-without-execution/)[http://www.phpied.com/preload-cssjavascript-without-execution/]
+* Steve Souders - His evangelism and work in the space (ControlJS) have brought light to the issues at hand, he is the father of front-end performance.
 
-Kyle Simpson    - He is the creator of LABjs of which a lot of this is inspired by.
-
-Stoyan Stefanov - His work on resource preloading has been awesome: (http://www.phpied.com/preload-cssjavascript-without-execution/)[http://www.phpied.com/preload-cssjavascript-without-execution/]
-
-Steve Souders   - His evangelism and work in the space (ControlJS) have brought light to the issues at hand, he is the father of front-end performance.
-
-Paul Irish      - Thanks or whatever.

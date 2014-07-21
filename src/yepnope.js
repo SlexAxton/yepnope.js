@@ -1,30 +1,26 @@
 // yepnope.js
-// Version - 2.0.0
+// v2.0.0
 //
 // by
-// Alex Sexton - @SlexAxton - AlexSexton[at]gmail.com
-// Ralph Holzmann - @ralphholzmann - ralphholzmann[at]gmail.com
+// Alex Sexton - @slexaxton - alexsexton[at]gmail.com
+// Ralph Holzmann - @rlph - ralphholzmann[at]gmail.com
 //
 // http://yepnopejs.com/
 // https://github.com/SlexAxton/yepnope.js/
 //
-// Tri-license - WTFPL | MIT | BSD
+// New BSD
 //
-// Please minify before use.
-// Also available as Modernizr.load via the Modernizr Project
+// Consider inlining this script after minifying
 
 window.yepnope = (function (window, document, undef) {
   // Yepnope's style is intentionally very flat to aid in
   // minification. The authors are usually against too much
   // self-minification, but in the case of a script loader, we're
-  // especially file size sensitive. For this reason we also use
-  // Closure Compiler Advanced Optimizations (as well as uglify).
+  // especially file size sensitive.
 
   // Some aliases
   var sTimeout = window.setTimeout;
   var firstScript;
-  var scriptCache = {};
-  var linkCache = {};
   var scriptsQueue = [];
   var count = 0;
   var toString = {}.toString;
@@ -33,106 +29,55 @@ window.yepnope = (function (window, document, undef) {
   // so even if it fails it's not a huge risk
   var isOldIE = !!document.attachEvent && !(window.opera && toString.call(window.opera) == "[object Opera]");
 
-  function noop (){}
+  function noop(){}
 
   // Helper functions
-  function isArray (obj) {
-    return toString.call(obj) == '[object Array]';
-  }
-
-  function isObject (obj) {
+  function isObject(obj) {
     return Object(obj) === obj;
   }
 
-  function isString (s) {
+  function isString(s) {
     return typeof s == 'string';
   }
 
-  function isFunction (fn) {
-    return toString.call( fn ) == '[object Function]';
-  }
-
   // Loader Utilities
-  function uniq () {
+  function uniq() {
     return 'yn_' + (count++);
   }
 
-  function readFirstScript () {
+  function readFirstScript() {
     if (!firstScript || !firstScript.parentNode) {
       firstScript = document.getElementsByTagName('script')[0];
     }
   }
 
-  function isFileReady (readyState) {
+  function isFileReady(readyState) {
     // Check to see if any of the ways a file can be ready are available as properties on the file's element
     return (!readyState || readyState == 'loaded' || readyState == 'complete' || readyState == 'uninitialized');
   }
 
-  function runWhenReady (src, cb, justTheCallback) {
-    var fn = scriptCache[src];
-
-    sTimeout(function(){
-      // This is far from correct, but fine as a start
-      if (typeof fn == 'function') {
-        if (!justTheCallback) {
-          fn.call(window);
-        }
-        cb.call(window);
-      }
-      // Otherwise, just call the callback
-      else if (fn) {
-        cb.call(window);
-      }
-    });
+  function runWhenReady(src, cb) {
+      cb.call(window);
   }
 
   // Inject a script into the page and know when it's done
-  function injectJs (options, cb) {
-    var src, attrs, timeout, wrapped;
+  function injectJs(options, cb) {
+    var src;
+    var attrs;
+    var timeout;
 
     if (isString(options)) {
       src = options;
     }
     else if (isObject(options)) {
-      src = options.src;
+      // Allow rewritten url to take precedence
+      src = options._url || options.src;
       attrs = options.attrs;
       timeout = options.timeout;
-      wrapped = options.wrapped;
     }
-
 
     cb = cb || noop;
     attrs = attrs || {};
-
-    var cached = scriptCache[src];
-
-    // If we already have a cached function for this just run it
-    // as long as we're in a wrapped mode
-    if (cached && wrapped) {
-
-      // If we're allowing things to execute twice
-      if (yepnope.dupes) {
-        // Run the the contents of the wrapper again
-        // then run the new callback
-        runWhenReady(src, cb);
-      }
-      else {
-        // Otherwise just run the callback
-        // but still wait to make sure the src isn't still loading
-        runWhenReady(src, cb, true);
-      }
-      // In all cases we're done
-      return;
-    }
-    // If we're not wrapped, but cached (the script has been requested before)
-    else if (cached && !wrapped) {
-      if (!yepnope.dupes) {
-        // In case the script has been called, but not completed
-        runWhenReady(src, cb, true);
-        return;
-      }
-      // otherwise just reinject and it'll rerun like normal
-    }
 
     var script = document.createElement('script');
     var done;
@@ -141,11 +86,6 @@ window.yepnope = (function (window, document, undef) {
     timeout = timeout || yepnope.errorTimeout;
 
     script.src = src;
-
-    // Ensure that his url is marked as active,
-    // so we don't try to load it with itself
-    // simultaneously.
-    scriptCache[src] = true;
 
     // IE Race condition
     // http://jaubourg.net/2010/07/loading-script-as-onclick-handler-of.html
@@ -177,13 +117,8 @@ window.yepnope = (function (window, document, undef) {
           catch (e) {}
         }
 
-        if (wrapped) {
-          scriptCache[src] = scriptsQueue.pop();
-        }
-
-        // Run the inside and then the callback if it's wrapped,
-        // otherwise, just run the callback
-        runWhenReady(src, cb, !wrapped);
+        // Just run the callback
+        runWhenReady(src, cb);
       }
 
       // Handle memory leak in IE
@@ -208,15 +143,12 @@ window.yepnope = (function (window, document, undef) {
       // Don't do anything if the script has already finished
       if (!done) {
         // Mark it as done, which means the callback won't run again
-        // and if you're using wrapped scripts, then the contents won't
-        // execute if it ever finishes. For unwrapped scripts, you're a
-        // bit SOL if this finishes way down the line and you don't want it
-        // to execute as there's no reliable 'cancel' once we've started loading
-        // it in the dom.
         done = 1;
 
         // Might as well pass in an error-state if we fire the 404 fallback
         cb(new Error('Timeout: ' + src));
+        // Maybe...
+        script.parentNode.removeChild(script);
       }
     }, timeout);
 
@@ -225,16 +157,17 @@ window.yepnope = (function (window, document, undef) {
     firstScript.parentNode.insertBefore(script, firstScript);
   }
 
-  function injectCss (options, cb) {
-    var href;
+  function injectCss(options, cb) {
     var attrs = {};
+    var href;
     var i;
     var media;
 
     // optionally accept an object of settings
     // or a string that's the url
     if (isObject(options)) {
-      href = options.href;
+      // allow the overriden _url property to take precendence
+      href = options._url || options.href;
       attrs = options.attrs || {};
     }
     else if (isString(options)) {
@@ -246,33 +179,29 @@ window.yepnope = (function (window, document, undef) {
 
     cb = cb || noop;
 
-    // No need to check 'dupes' since nothing new happens
-    if (!linkCache[href]) {
-      linkCache[href] = true;
-      // Add attributes
-      link.href = href;
-      link.rel = 'stylesheet';
-      // Technique to force non-blocking loading from:
-      // https://github.com/filamentgroup/loadCSS/blob/master/loadCSS.js#L20
-      link.media = 'only x';
-      link.type = 'text/css';
+    // Add attributes
+    link.href = href;
+    link.rel = 'stylesheet';
+    // Technique to force non-blocking loading from:
+    // https://github.com/filamentgroup/loadCSS/blob/master/loadCSS.js#L20
+    link.media = 'only x';
+    link.type = 'text/css';
 
-      // On next tick, just set the media to what it's supposed to be
-      sTimeout(function() {
-        link.media = attrs.media || 'all';
-      });
+    // On next tick, just set the media to what it's supposed to be
+    sTimeout(function() {
+      link.media = attrs.media || 'all';
+    });
 
-      // Add our extra attributes to the link element
-      for (i in attrs) {
-        link.setAttribute(i, attrs[i]);
-      }
-
-      readFirstScript();
-      // We append link tags so the cascades work as expected.
-      // A little more dangerous, but if you're injecting CSS
-      // dynamically, you probably can handle it.
-      firstScript.parentNode.appendChild(link);
+    // Add our extra attributes to the link element
+    for (i in attrs) {
+      link.setAttribute(i, attrs[i]);
     }
+
+    readFirstScript();
+    // We append link tags so the cascades work as expected.
+    // A little more dangerous, but if you're injecting CSS
+    // dynamically, you probably can handle it.
+    firstScript.parentNode.appendChild(link);
 
     // Always just run the callback for CSS on next tick. We're not
     // going to try to normalize this, so don't worry about runwhenready here.
@@ -281,27 +210,76 @@ window.yepnope = (function (window, document, undef) {
     });
   }
 
-  // Take the arguments passed to yepnope
-  // and group them with their appropriate
-  // actions.
-  function parseArgs (args) {
-    var i;
-    var len = args.length;
+  function getExtension(url) {
+    //The extension is always the last characters before the ? and after a period.
+    //The previous method was not accounting for the possibility of a period in the query string.
+    var b = url.split('?')[0];
+    return b.substr(b.lastIndexOf('.')+1);
+  }
 
-    // Loop over the args
-    for(i = 0; i < len; i++) {
+  function defaultUrlFormatter(base, tests) {
+    var url = base;
+    var passed = [];
+    var failed = [];
 
+    for(var i in tests) {
+      if (tests.hasOwnProperty(i)) {
+        if (tests[i]) {
+          passed.push(encodeURIComponent(tests[i]));
+        }
+        else {
+          failed.push(encodeURIComponent(tests[i]));
+        }
+      }
     }
+
+    if (passed.length || failed.length) {
+      url += '?';
+    }
+
+    if (passed.length) {
+      url += 'yep=' + passed.join(',');
+    }
+
+    if (failed.length) {
+      url += (passed.length ? '&' : '') + 'nope=' + failed.join(',');
+    }
+
+    return url;
   }
 
   // The leaked function. Mostly just takes a set
   // of arguments, and then passes them to be run.
-  function yepnope () {
-    var args = [].slice.apply(arguments);
-  }
+  function yepnope(url, tests, cb) {
+    var options;
 
-  function wrap (fn) {
-    scriptsQueue.push(fn);
+    if (isObject(url)) {
+      // It was just kidding about being the url
+      options = url;
+      // Can't ever have both, so this is fine
+      url = options.src || options.href;
+    }
+
+    url = yepnope.urlFormatter(url, tests);
+
+    if (!options) {
+      options = {_url: url};
+    }
+    else {
+      options._url = url;
+    }
+
+    var type = getExtension(url);
+
+    if (type === 'js') {
+      injectJs(options, cb);
+    }
+    else if (type === 'css') {
+      injectCss(options, cb);
+    }
+    else {
+      throw new Error('Unable to determine filetype.');
+    }
   }
 
   // Add a default for the error timer
@@ -310,10 +288,8 @@ window.yepnope = (function (window, document, undef) {
   yepnope.injectJs = injectJs;
   // Expose super-lightweight css injector
   yepnope.injectCss = injectCss;
-  // Expose the wrapper
-  yepnope.wrap = wrap;
-  // Default to allow duplicate executions of scripts
-  yepnope.dupes = true;
+  // Allow someone to override the url writer
+  yepnope.urlFormatter = defaultUrlFormatter;
 
   return yepnope;
 })(window, document);

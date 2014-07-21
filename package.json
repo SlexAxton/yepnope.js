@@ -1,7 +1,7 @@
 {
   "name": "yepnope.js",
   "version": "2.0.0",
-  "description": "A conditional loader for your polyfills (redux)",
+  "description": "A Script Loader For Your Conditional Builds",
   "directories": {
     "test": "test"
   },
@@ -36,5 +36,5 @@
     "browser"
   ],
   "author": "Alex Sexton, Ralph Holzmann",
-  "license": "MIT, BSD, or WTFPL"
+  "license": "New BSD"
 }

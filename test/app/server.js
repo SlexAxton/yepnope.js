@@ -29,19 +29,9 @@ app.get( '/s/js/*', function( req, res ) {
   }
 
 
-  var wrapStart = "yepnope.wrap(function(){";
-  var wrapEnd = "});";
-  if ( ~ url.indexOf("no-wrap")) {
-    wrapStart = "";
-    wrapEnd = "";
-  }
-
   setTimeout(function() {
     basename = url.split("/").pop().split(".").shift();
-    res.end([wrapStart,
-      "  yeptest." + basename + " = (+new Date);",
-      wrapEnd
-    ].join("\n"));
+    res.end("yeptest." + basename + " = (+new Date);");
 
   }, sleep);
 

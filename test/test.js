@@ -67,16 +67,7 @@ describe('yepnope', function() {
       it('should callback after a script is loaded', function (done) {
         var s = js();
 
-        yepnope.injectJs({ src: s.url, wrapped: true }, function () {
-          expect(yeptest).to.have.property(s.name);
-          done();
-        });
-      });
-
-      it('should allow me to inject a script without a wrapper', function (done) {
-        var s = js(null, true);
-
-        yepnope.injectJs(s.url, function () {
+        yepnope.injectJs({ src: s.url }, function () {
           expect(yeptest).to.have.property(s.name);
           done();
         });
@@ -85,14 +76,14 @@ describe('yepnope', function() {
       it('should be tolerant of long loading scripts', function (done) {
         var s = js(1000);
 
-        yepnope.injectJs({ src: s.url, wrapped: true }, function () {
+        yepnope.injectJs({ src: s.url }, function () {
           expect(yeptest).to.have.property(s.name);
           done();
         });
       });
 
       it('should throw an error on a 404', function (done) {
-        yepnope.injectJs({ src: '/s/NOTFOUND.js', wrapped: true }, function (err) {
+        yepnope.injectJs({ src: '/s/NOTFOUND.js' }, function (err) {
           expect(err).to.be.an(Error);
           done();
         });
@@ -105,32 +96,21 @@ describe('yepnope', function() {
         // Set the timeout super low
         yepnope.errorTimeout = 100;
 
-        yepnope.injectJs({ src: s.url, wrapped: true}, function (err) {
+        yepnope.injectJs({src: s.url}, function (err) {
           // Expect it to have timed out
           expect(err).to.be.an(Error);
 
-          // Make sure it never gets set though.
-          window.setTimeout(function () {
-            // Here, if the script ran, it would have executed by now
-            expect(yeptest).to.not.have.property(s.name);
-
-            // Reset the global timeout
-            yepnope.errorTimeout = oldTimeout;
-            done();
-          }, 400);
+          // We can't really do anything about it if it still eventually loads.
+          done();
         });
       });
 
       it('should listen to the local timeout over the global timeout', function (done) {
         var s = js(300);
 
-        yepnope.injectJs({ src: s.url, timeout: 100, wrapped: true }, function (err) {
+        yepnope.injectJs({ src: s.url, timeout: 100 }, function (err) {
           expect(err).to.be.an(Error);
-
-          window.setTimeout(function () {
-            expect(yeptest).to.not.have.property(s.name);
-            done();
-          }, 400);
+          done();
         });
       });
 
@@ -143,8 +123,7 @@ describe('yepnope', function() {
           attrs: {
             'id': id,
             'name': id
-          },
-          wrapped: true
+          }
         }, function () {
           var scriptElem = document.getElementById(id);
 
@@ -164,7 +143,7 @@ describe('yepnope', function() {
 
         // files will load in reverse because of the delay
 
-        yepnope.injectJs({src: s1.url, wrapped: true}, function () {
+        yepnope.injectJs({src: s1.url}, function () {
           cbcount++;
           expect(cbcount).to.eql(3);
           expect(yeptest).to.have.property(s1.name);
@@ -172,14 +151,14 @@ describe('yepnope', function() {
           done();
         });
 
-        yepnope.injectJs({src: s2.url, wrapped: true}, function () {
+        yepnope.injectJs({src: s2.url}, function () {
           cbcount++;
           expect(cbcount).to.eql(2);
           expect(yeptest).to.have.property(s2.name);
           expect(yeptest).to.not.have.property(s1.name);
         });
 
-        yepnope.injectJs({src: s3.url, wrapped: true}, function () {
+        yepnope.injectJs({src: s3.url}, function () {
           cbcount++;
           expect(cbcount).to.eql(1);
           expect(yeptest).to.have.property(s3.name);
@@ -197,9 +176,34 @@ describe('yepnope', function() {
           setTimeout(function(){
             expect(checkStyle(s)).to.be.ok();
             done();
-          }, 200);
+          }, 50);
         });
       });
     });
+  });
+
+  describe('Public api', function() {
+    describe('JS', function() {
+      it('should load a single script via a string', function(done) {
+        var s = js();
+        yepnope(s.url);
+        setTimeout(function() {
+          expect(yeptest).to.have.property(s.name);
+          done();
+        }, 50);
+      });
+    });
+
+    describe('CSS', function() {
+      it('should load a single css file via a string', function(done) {
+        var s = css();
+        yepnope(s.url);
+        setTimeout(function() {
+          expect(checkStyle(s)).to.be.ok();
+          done();
+        }, 50);
+      });
+    });
+
   });
 });
