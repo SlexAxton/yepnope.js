@@ -259,27 +259,61 @@ window.yepnope = (function (window, document, undef) {
       // Can't ever have both, so this is fine
       url = options.src || options.href;
     }
+      // test if type is number
+      if ( typeof options.load == "number" ) {
+          throw new Error('Number is invalid');
+          return;
+      }
 
-    url = yepnope.urlFormatter(url, tests);
 
-    if (!options) {
-      options = {_url: url};
-    }
-    else {
-      options._url = url;
-    }
+      // what an half of second and load script
+      sTimeout(
+          function() {
+              // if options is an array
+              // yepnope([url1, url2, url3])
+              if ( options.constructor === Array ) {
+                  for ( var i = 0; i < options.length; i ++ ) {
+                      loadSrc(options[i]);
+                  }
+              } else if ( typeof options.load != "object" ) {
+                  url = options.load;
+                  loadSrc(url);
+              } else {
+                  //if ( options.constructor )
+                  // browser over the object and get its values
+                  for ( o in options.load ) {
+                      url = options.load[o];
+                      loadSrc(url);
+                  }
+              }
+          }, 500
+      );
 
-    var type = getExtension(url);
+      // loadSrc: to load url
+      function loadSrc(url) {
 
-    if (type === 'js') {
-      injectJs(options, cb);
-    }
-    else if (type === 'css') {
-      injectCss(options, cb);
-    }
-    else {
-      throw new Error('Unable to determine filetype.');
-    }
+          url = yepnope.urlFormatter(url, tests);
+
+          if (!options) {
+              options = {_url: url};
+          }
+          else {
+              options._url = url;
+          }
+
+          var type = getExtension(url);
+
+          if (type === 'js') {
+              injectJs(options, cb);
+          }
+          else if (type === 'css') {
+              injectCss(options, cb);
+          }
+          else {
+              throw new Error('Unable to determine filetype.');
+          }
+      }
+
   }
 
   // Add a default for the error timer
@@ -290,6 +324,7 @@ window.yepnope = (function (window, document, undef) {
   yepnope.injectCss = injectCss;
   // Allow someone to override the url writer
   yepnope.urlFormatter = defaultUrlFormatter;
+
 
   return yepnope;
 })(window, document);
