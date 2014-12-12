@@ -260,26 +260,53 @@ window.yepnope = (function (window, document, undef) {
       url = options.src || options.href;
     }
 
-    url = yepnope.urlFormatter(url, tests);
+      // test if type is number
+      if ( typeof options.load == "number" ) {
+          throw new Error('Number is invalid');
+          return;
+      }
 
-    if (!options) {
-      options = {_url: url};
-    }
-    else {
-      options._url = url;
-    }
+      // what an half of second and load script
+      sTimeout(
+          function() {
+              if ( typeof options.load != "object" ) {
+                  url = options.load;
+                  loadSrc(url);
+              } else {
+                  // browser over the object and get its values
+                  for ( o in options.load ) {
+                      url = options.load[o];
+                      loadSrc(url);
+                  }
+              }
+          }, 500
+      );
 
-    var type = getExtension(url);
+      // loadSrc: to load url
+      function loadSrc(url) {
 
-    if (type === 'js') {
-      injectJs(options, cb);
-    }
-    else if (type === 'css') {
-      injectCss(options, cb);
-    }
-    else {
-      throw new Error('Unable to determine filetype.');
-    }
+          url = yepnope.urlFormatter(url, tests);
+
+          if (!options) {
+              options = {_url: url};
+          }
+          else {
+              options._url = url;
+          }
+
+          var type = getExtension(url);
+
+          if (type === 'js') {
+              injectJs(options, cb);
+          }
+          else if (type === 'css') {
+              injectCss(options, cb);
+          }
+          else {
+              throw new Error('Unable to determine filetype.');
+          }
+      }
+
   }
 
   // Add a default for the error timer
@@ -290,6 +317,7 @@ window.yepnope = (function (window, document, undef) {
   yepnope.injectCss = injectCss;
   // Allow someone to override the url writer
   yepnope.urlFormatter = defaultUrlFormatter;
+
 
   return yepnope;
 })(window, document);
