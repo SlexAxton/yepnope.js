@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/SlexAxton/yepnope.js.png?branch=v2.0)](https://travis-ci.org/SlexAxton/yepnope.js)
+[![Build Status](https://api.travis-ci.org/SlexAxton/yepnope.js.png?branch=master)](https://travis-ci.org/SlexAxton/yepnope.js)
 
 # Deprecation Notice
 
@@ -28,7 +28,7 @@ For these reasons, we're also not going to include yepnope in the next version o
 
 A Script Loader For Your Conditional Builds
 
-By [@SlexAxton](http://twitter.com/SlexAxton) and [@rlph](http://twitter.com/rlph) on Twitter for more updates.
+By [@SlexAxton](http://twitter.com/SlexAxton) and [@rlph](http://twitter.com/rlph)
 
 ## Example
 

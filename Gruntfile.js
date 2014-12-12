@@ -19,7 +19,7 @@ module.exports = function(grunt) {
     },
     uglify: {
       options: {
-        banner: '/*!yepnope<%= pkg.version %>|MIT*/\n'
+        banner: '/*!yepnope<%= pkg.version %>|New BSD*/\n'
       },
       dist: {
         files: {
