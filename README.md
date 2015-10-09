@@ -137,7 +137,7 @@ Changes in 2.0+ :
 
 ## License
 
-### New BSD License
+### BSD-3-Clause License
 
 ```
 Copyright (c) 2014, Alex Sexton
