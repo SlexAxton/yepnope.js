@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/SlexAxton/yepnope.js.png?branch=master)](https://travis-ci.org/SlexAxton/yepnope.js)
+[![Build Status](https://api.travis-ci.org/SlexAxton/yepnope.js.svg?branch=master)](https://travis-ci.org/SlexAxton/yepnope.js)
 
 # Deprecation Notice
 
