@@ -1,0 +1,12 @@
+{
+  "name": "yepnope",
+  "homepage": "http://yepnopejs.com/",
+  "version": "1.5.4",
+  "main": "yepnope.1.5.4-min.js",
+  "ignore": [
+    "tests",
+    ".gitignore",
+    ".gitmodules",
+    "compress"
+  ]
+}
